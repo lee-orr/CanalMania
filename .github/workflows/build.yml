@@ -2,8 +2,8 @@ name: Build project
 
 on:
   push:
-    tags:
-      - '*'
+    # tags:
+    #   - '*'
 
 env:
   binary: canal-mania
