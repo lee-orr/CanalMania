@@ -3,7 +3,6 @@ namespace Mapbox.Editor
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using NUnit.Framework;
 	// The TreeModel is a utility class working on a list of serializable TreeElements where the order and the depth of each TreeElement define
 	// the tree structure. Note that the TreeModel itself is not serializable (in Unity we are currently limited to serializing lists/arrays) but the 
 	// input list is.
@@ -227,60 +226,5 @@ namespace Mapbox.Editor
 				modelChanged ();
 		}
 	}
-
-
-	#region Tests
-	class TreeModelTests
-	{
-		[Test]
-		public static void TestTreeModelCanAddElements()
-		{
-			var root = new TreeElement {name = "Root", depth = -1};
-			var listOfElements = new List<TreeElement>();
-			listOfElements.Add(root);
-
-			var model = new TreeModel<TreeElement>(listOfElements);
-			model.AddElement(new TreeElement { name = "Element"  }, root, 0);
-			model.AddElement(new TreeElement { name = "Element " + root.children.Count }, root, 0);
-			model.AddElement(new TreeElement { name = "Element " + root.children.Count }, root, 0);
-			model.AddElement(new TreeElement { name = "Sub Element" }, root.children[1], 0);
-
-			// Assert order is correct
-			string[] namesInCorrectOrder = { "Root", "Element 2", "Element 1", "Sub Element", "Element" };
-			Assert.AreEqual(namesInCorrectOrder.Length, listOfElements.Count, "Result count does not match");
-			for (int i = 0; i < namesInCorrectOrder.Length; ++i)
-				Assert.AreEqual(namesInCorrectOrder[i], listOfElements[i].name);
-
-			// Assert depths are valid
-			TreeElementUtility.ValidateDepthValues(listOfElements);
-		}
-	
-		[Test]
-		public static void TestTreeModelCanRemoveElements()
-		{
-			var root = new TreeElement { name = "Root", depth = -1 };
-			var listOfElements = new List<TreeElement>();
-			listOfElements.Add(root);
-
-			var model = new TreeModel<TreeElement>(listOfElements);
-			model.AddElement(new TreeElement { name = "Element"  }, root, 0);
-			model.AddElement(new TreeElement { name = "Element " + root.children.Count }, root, 0);
-			model.AddElement(new TreeElement { name = "Element " + root.children.Count }, root, 0);
-			model.AddElement(new TreeElement { name = "Sub Element" }, root.children[1], 0);
-
-			model.RemoveElements(new[] { root.children[1].children[0], root.children[1] });
-
-			// Assert order is correct
-			string[] namesInCorrectOrder = { "Root", "Element 2", "Element" };
-			Assert.AreEqual(namesInCorrectOrder.Length, listOfElements.Count, "Result count does not match");
-			for (int i = 0; i < namesInCorrectOrder.Length; ++i)
-				Assert.AreEqual(namesInCorrectOrder[i], listOfElements[i].name);
-
-			// Assert depths are valid
-			TreeElementUtility.ValidateDepthValues(listOfElements);
-		}
-	}
-
-	#endregion
 
 }
