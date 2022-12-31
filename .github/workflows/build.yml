@@ -12,7 +12,7 @@ env:
 
 jobs:
   test:
-    uses: lee-orr/CargoMania/.github/workflows/test.yml@main
+    uses: lee-orr/CanalMania/.github/workflows/test.yml@main
     secrets: inherit
 
   buildForAllSupportedPlatforms:
