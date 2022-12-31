@@ -1,9 +1,9 @@
 name: Build project
 
 on:
-  push:
-    # tags:
-    #   - '*'
+  # push:
+  #   tags:
+  #     - '*'
 
 env:
   binary: canal-mania
@@ -26,7 +26,7 @@ jobs:
           - name: mac
             os: macos-latest
             targetPlatform: StandaloneOSX
-          - os: windows-latest
+          - os: windows-2019
             targetPlatform: StandaloneWindows64
             name: windows
           - os: ubuntu-latest
@@ -77,7 +77,7 @@ jobs:
           path: build/${{ matrix.name }}
       - name: Package as a zip
         run: |
-          zip --recurse-paths ../${{ env.binary }}-${{matrix.name}}.zip ./build/{{matrix.name}}
+          zip --recurse-paths ../${{ env.binary }}-${{matrix.name}}.zip ./build/${{matrix.name}}
       - name: Upload binaries to release
         if: ${{ env.add_binaries_to_github_release == 'true' }}
         uses: svenstaro/upload-release-action@v2
