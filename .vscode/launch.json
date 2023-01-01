@@ -1,0 +1,48 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'mini-jam-intermission'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=mini-jam-intermission",
+                    "--package=mini-jam-intermission",
+                    "--features=dev"
+                ],
+                "env": {"PATH":"${env:USERPROFILE}/.rustup/toolchains/nightly-x86_64-pc-windows-msvc/bin;${workspaceFolder}/target/debug/deps;"},
+                "filter": {
+                    "name": "mini-jam-intermission",
+                    "kind": "bin"
+                }
+            },
+            "env": {"PATH":"${env:USERPROFILE}/.rustup/toolchains/nightly-x86_64-pc-windows-msvc/bin;${workspaceFolder}/target/debug/deps;","CARGO_MANIFEST_DIR":"${workspaceFolder}" },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'mini-jam-intermission'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=mini-jam-intermission",
+                    "--package=mini-jam-intermission"
+                ],
+                "filter": {
+                    "name": "mini-jam-intermission",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
