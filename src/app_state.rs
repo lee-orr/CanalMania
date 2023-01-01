@@ -7,5 +7,5 @@ pub enum AppLoadingState {
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum AppState {
     Loading,
-    MainMenu
+    MainMenu,
 }

@@ -1,19 +1,19 @@
 use crate::assets::CanalManiaAssets;
 
-use bevy::ui::JustifyContent;
 use bevy::prelude::*;
+use bevy::ui::JustifyContent;
 
 #[derive(Clone, Component, Debug)]
 pub struct GameText {
     pub(crate) text: String,
     pub(crate) size: f32,
     pub(crate) alignment: JustifyContent,
-    pub(crate) style: FontStyle
+    pub(crate) style: FontStyle,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum FontStyle {
-    Regular, 
+    Regular,
     Italic,
 }
 
@@ -23,7 +23,7 @@ impl Default for GameText {
             text: Default::default(),
             size: 30.,
             alignment: JustifyContent::FlexStart,
-            style: FontStyle::Regular
+            style: FontStyle::Regular,
         }
     }
 }
@@ -45,13 +45,22 @@ impl GameText {
     }
 
     pub fn style(self, style: FontStyle) -> Self {
-        Self { style, ..self}
+        Self { style, ..self }
     }
 }
 
-pub(crate) fn spawn_text(mut commands: Commands, assets: Res<CanalManiaAssets>, texts: Query<(Entity, &GameText), Changed<GameText>>) {
-
-    let main_text_root_style : NodeBundle = NodeBundle { style: Style { flex_direction: FlexDirection::Column, ..Default::default() }, ..Default::default()};
+pub(crate) fn spawn_text(
+    mut commands: Commands,
+    assets: Res<CanalManiaAssets>,
+    texts: Query<(Entity, &GameText), Changed<GameText>>,
+) {
+    let main_text_root_style: NodeBundle = NodeBundle {
+        style: Style {
+            flex_direction: FlexDirection::Column,
+            ..Default::default()
+        },
+        ..Default::default()
+    };
 
     for (entity, main_text) in texts.iter() {
         println!("Spawning text: {main_text:?}");

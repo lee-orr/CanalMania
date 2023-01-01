@@ -1,7 +1,7 @@
 use crate::assets::CanalManiaAssets;
 
-use bevy::ui::{JustifyContent, FocusPolicy};
 use bevy::prelude::*;
+use bevy::ui::JustifyContent;
 
 #[derive(Clone, Component, Debug)]
 pub struct GameButton {
@@ -13,7 +13,7 @@ pub struct GameButton {
 #[derive(Clone, Debug)]
 pub enum ButtonStyle {
     Primary,
-    Secondary
+    Secondary,
 }
 
 impl Default for GameButton {
@@ -21,13 +21,13 @@ impl Default for GameButton {
         Self {
             text: Default::default(),
             name: Default::default(),
-            style: ButtonStyle::Primary
+            style: ButtonStyle::Primary,
         }
     }
 }
 
 impl GameButton {
-    pub fn new<R: Into<String>,T: Into<String>>(name: R,text: T) -> Self {
+    pub fn new<R: Into<String>, T: Into<String>>(name: R, text: T) -> Self {
         Self {
             name: name.into(),
             text: text.into(),
@@ -36,7 +36,7 @@ impl GameButton {
     }
 
     pub fn style(self, style: ButtonStyle) -> Self {
-        Self { style, ..self}
+        Self { style, ..self }
     }
 }
 
@@ -63,13 +63,17 @@ impl ButtonStyle {
     }
 }
 
-pub(crate) fn spawn_button(mut commands: Commands, assets: Res<CanalManiaAssets>, buttons: Query<(Entity, &GameButton), Changed<GameButton>>) {
+pub(crate) fn spawn_button(
+    mut commands: Commands,
+    assets: Res<CanalManiaAssets>,
+    buttons: Query<(Entity, &GameButton), Changed<GameButton>>,
+) {
     for (entity, button) in buttons.iter() {
         println!("Spawning button: {button:?}");
         let text = button.text.clone();
         let size = 25.;
         let style = TextStyle {
-            font:assets.font.clone(),
+            font: assets.font.clone(),
             font_size: size,
             color: Color::rgb_u8(94, 87, 71),
         };
@@ -88,29 +92,22 @@ pub(crate) fn spawn_button(mut commands: Commands, assets: Res<CanalManiaAssets>
         });
         commands.entity(entity).with_children(|parent| {
             parent.spawn(
-                TextBundle::from_section(text, style.clone())
-                    .with_style(Style {
-                        max_size: Size::new(Val::Undefined, Val::Px(size)),
-                        margin: UiRect::all(Val::Px(4.)),
-                        ..Default::default()
-                    }),
+                TextBundle::from_section(text, style.clone()).with_style(Style {
+                    max_size: Size::new(Val::Undefined, Val::Px(size)),
+                    margin: UiRect::all(Val::Px(4.)),
+                    ..Default::default()
+                }),
             );
         });
     }
 }
-
 
 #[derive(Debug, Clone)]
 pub struct ButtonClickEvent(pub String, pub Entity);
 
 pub fn button_events(
     mut buttons: Query<
-        (
-            Entity,
-            &Interaction,
-            &mut BackgroundColor,
-            &GameButton,
-        ),
+        (Entity, &Interaction, &mut BackgroundColor, &GameButton),
         Changed<Interaction>,
     >,
     mut click_event: EventWriter<ButtonClickEvent>,

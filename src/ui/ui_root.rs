@@ -1,4 +1,4 @@
-use bevy::{prelude::*, ecs::schedule::StateData};
+use bevy::{ecs::schedule::StateData, prelude::*};
 use iyes_loopless::prelude::AppLooplessStateExt;
 use std::fmt::Debug;
 use std::hash::Hash;
@@ -8,22 +8,18 @@ pub struct UiRoot;
 
 pub fn spawn_ui_root(mut commands: Commands, roots: Query<Entity, Added<UiRoot>>) {
     for entity in roots.iter() {
-    commands
-        .entity(entity)
-        .insert((
-            NodeBundle {
-                style: Style {
-                    size: Size::new(Val::Percent(100.), Val::Percent(100.)),
-                    max_size: Size::new(Val::Percent(100.), Val::Percent(100.)),
-                    justify_content: JustifyContent::Center,
-                    align_items: AlignItems::Center,
-                    flex_direction: FlexDirection::Column,
-                    padding: UiRect::all(Val::Px(10.)),
-                    ..Default::default()
-                },
+        commands.entity(entity).insert((NodeBundle {
+            style: Style {
+                size: Size::new(Val::Percent(100.), Val::Percent(100.)),
+                max_size: Size::new(Val::Percent(100.), Val::Percent(100.)),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                flex_direction: FlexDirection::Column,
+                padding: UiRect::all(Val::Px(10.)),
                 ..Default::default()
             },
-        ));
+            ..Default::default()
+        },));
     }
 }
 

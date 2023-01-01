@@ -1,17 +1,17 @@
-mod assets;
 mod app_state;
-mod ui;
+mod assets;
 mod menu;
+mod ui;
 
 use bevy::prelude::*;
+use bevy_asset_loader::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 use bevy_vfx_bag::{image::mask::*, BevyVfxBagPlugin, PostProcessingInput};
-use bevy_asset_loader::prelude::*;
 use iyes_loopless::prelude::*;
 
 use app_state::*;
 use menu::MainMenuPlugin;
-use ui::{GameUiPlugin};
+use ui::GameUiPlugin;
 
 fn main() {
     #[cfg(target_arch = "wasm32")]
@@ -44,8 +44,7 @@ fn main() {
             .with_collection::<assets::CanalManiaAssets>(),
     );
 
-    app
-        .add_plugin(GameUiPlugin)
+    app.add_plugin(GameUiPlugin)
         .add_plugin(MainMenuPlugin)
         .add_startup_system(setup)
         .add_enter_system(AppLoadingState::Loaded, on_loaded);
@@ -54,8 +53,9 @@ fn main() {
 }
 
 fn setup(mut commands: Commands) {
-    commands.spawn(Camera2dBundle::default())
-    .insert(PostProcessingInput);
+    commands
+        .spawn(Camera2dBundle::default())
+        .insert(PostProcessingInput);
 }
 
 fn on_loaded(mut commands: Commands) {
