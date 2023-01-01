@@ -1,0 +1,5 @@
+({
+    "font": File ( path: "libre-baskerville/LibreBaskerville-Regular.ttf"),
+    "font_italic": File ( path: "libre-baskerville/LibreBaskerville-Italic.ttf"),
+    "paper": File (path: "parchment-paper.png"),
+})

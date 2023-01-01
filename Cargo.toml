@@ -2,8 +2,31 @@
 name = "canal-mania"
 version = "0.1.0"
 edition = "2021"
+license = "MIT OR Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+dev = ["bevy/dynamic"]
+
 [dependencies]
 bevy = "0.9"
+console_error_panic_hook = "0.1"
+bevy_asset_loader = { version = "0.14", features = ["standard_dynamic_assets", "stageless" ]}
+bevy_common_assets = { version = "0.4", features= [ "json", "yaml"]}
+serde = "*"
+smooth-bevy-cameras = "*"
+bevy-inspector-egui = "*"
+bevy-sequential-actions = "0.6.0"
+bevy_mod_picking = "0.11.0"
+bevy_prototype_lyon = "0.7.2"
+bevy-vfx-bag = "*"
+iyes_loopless = "*"
+
+# Enable a small amount of optimization in debug mode
+[profile.dev]
+opt-level = 1
+
+# Enable high optimizations for dependencies (incl. Bevy), but not for our code:
+[profile.dev.package."*"]
+opt-level = 3
