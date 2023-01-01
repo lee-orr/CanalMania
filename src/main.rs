@@ -21,17 +21,21 @@ fn main() {
     // #[cfg(feature = "dev")]
     // app.add_plugin(bevy_inspector_egui::WorldInspectorPlugin::new());
 
-    app.add_plugins(DefaultPlugins.set(WindowPlugin {
-        window: WindowDescriptor {
-            fit_canvas_to_parent: true,
-            ..Default::default()
-        },
-        ..Default::default()
-    }))
+    app.add_plugins(
+        DefaultPlugins
+            .set(WindowPlugin {
+                window: WindowDescriptor {
+                    fit_canvas_to_parent: true,
+                    ..Default::default()
+                },
+                ..Default::default()
+            })
+            .set(AssetPlugin {
+                watch_for_changes: true,
+                ..Default::default()
+            }),
+    )
     .add_plugin(ShapePlugin)
-    .add_plugin(BevyVfxBagPlugin)
-    .insert_resource(Mask::new_vignette())
-    .add_plugin(MaskPlugin)
     .insert_resource(ClearColor(Color::hex("e7d2a4").unwrap_or_default()))
     .add_loopless_state(AppLoadingState::Loading)
     .add_loopless_state(AppState::Loading)
@@ -43,6 +47,11 @@ fn main() {
             ])
             .with_collection::<assets::CanalManiaAssets>(),
     );
+
+    #[cfg(not(target_family = "wasm"))]
+    app.add_plugin(BevyVfxBagPlugin)
+        .insert_resource(Mask::new_vignette())
+        .add_plugin(MaskPlugin);
 
     app.add_plugin(GameUiPlugin)
         .add_plugin(MainMenuPlugin)
