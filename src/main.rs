@@ -12,7 +12,6 @@ use bevy::{
 use bevy_asset_loader::prelude::*;
 use bevy_mod_picking::{DefaultPickingPlugins, PickingCameraBundle};
 
-use bevy_vfx_bag::PostProcessingInput;
 use credits::CreditsPlugin;
 use game::GamePlugin;
 use iyes_loopless::prelude::*;
@@ -78,11 +77,6 @@ fn main() {
         .add_startup_system(setup)
         .add_enter_system(AppLoadingState::Loaded, on_loaded);
 
-    // #[cfg(not(target_family = "wasm"))]
-    // app.add_plugin(BevyVfxBagPlugin)
-    //     .insert_resource(Mask::new_vignette())
-    //     .add_plugin(MaskPlugin);
-
     #[cfg(feature = "dev")]
     app.add_plugin(bevy_egui::EguiPlugin)
         .add_plugin(bevy_inspector_egui::WorldInspectorPlugin::new());
@@ -103,8 +97,7 @@ fn setup(mut commands: Commands) {
             eye,
             target,
         ))
-        .insert(PickingCameraBundle::default())
-        .insert(PostProcessingInput);
+        .insert(PickingCameraBundle::default());
     commands.spawn(DirectionalLightBundle {
         transform: Transform::from_rotation(Quat::from_euler(EulerRot::XYZ, -1., 1.2, 0.)),
         ..Default::default()

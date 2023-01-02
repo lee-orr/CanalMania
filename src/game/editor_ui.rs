@@ -1,4 +1,6 @@
-use bevy::prelude::*;
+use std::io::Write;
+
+use bevy::{asset::FileAssetIo, prelude::*};
 use iyes_loopless::prelude::*;
 
 use crate::ui::*;
@@ -6,6 +8,7 @@ use crate::ui::*;
 use super::{
     board::{Tile, TileEvent, TileType},
     game_state::GameState,
+    level::Level,
 };
 
 pub struct EditorUiPlugin;
@@ -59,10 +62,12 @@ fn display_ui(mut commands: Commands) {
                     .spawn(
                         Div::new()
                             .position(Val::Auto, Val::Px(2.), Val::Px(2.), Val::Auto)
+                            .horizontal()
                             .padding(1.),
                     )
                     .with_children(|parent| {
-                        parent.spawn(GameButton::new("exit_editor", "X").style(ButtonStyle::Exit));
+                        parent.spawn(GameButton::new("save", "Save").style(ButtonStyle::Small));
+                        parent.spawn(GameButton::new("exit_editor", "X").style(ButtonStyle::Small));
                     });
             });
         });
@@ -92,6 +97,7 @@ fn button_pressed(
     mut events: EventReader<ButtonClickEvent>,
     mut commands: Commands,
     operation: Res<CurrentState<EditorOperation>>,
+    tiles: Query<&Tile>,
 ) {
     for event in events.iter() {
         if event.0 == "exit_editor" {
@@ -111,6 +117,8 @@ fn button_pressed(
                 _ => TileType::Land,
             };
             commands.insert_resource(NextState(EditorOperation::ToggleType(next)));
+        } else if event.0 == "save" {
+            save(&tiles);
         }
     }
 }
@@ -157,6 +165,25 @@ fn tile_hovered_set(
                         new_tile.tile_type = t;
                     }
                 }
+            }
+        }
+    }
+}
+
+fn save(tiles: &Query<&Tile>) {
+    let level = Level {
+        tiles: tiles.iter().cloned().collect(),
+    };
+    let mut path = FileAssetIo::get_base_path();
+    path.push("assets");
+    path.push("levels");
+    if let Ok(time) = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH) {
+        let time = time.as_secs();
+        path.push(format!("edited_level_{time:?}.lvl.json"));
+
+        if let Ok(json) = serde_json::to_string(&level) {
+            if let Ok(mut file) = std::fs::File::create(path) {
+                let _ = write!(&mut file, "{json}");
             }
         }
     }

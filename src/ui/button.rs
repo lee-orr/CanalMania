@@ -16,7 +16,7 @@ pub struct GameButton {
 pub enum ButtonStyle {
     Primary,
     Secondary,
-    Exit,
+    Small,
 }
 
 impl Default for GameButton {
@@ -49,7 +49,7 @@ impl ButtonStyle {
         match self {
             Self::Primary => Color::rgb_u8(213, 194, 125),
             Self::Secondary => Color::rgb_u8(244, 235, 201),
-            Self::Exit => Color::rgb_u8(213, 194, 125),
+            Self::Small => Color::rgb_u8(213, 194, 125),
         }
     }
 
@@ -57,7 +57,7 @@ impl ButtonStyle {
         match self {
             Self::Primary => Color::rgb_u8(162, 147, 95),
             Self::Secondary => Color::rgb_u8(193, 185, 158),
-            Self::Exit => Color::rgb_u8(162, 147, 95),
+            Self::Small => Color::rgb_u8(162, 147, 95),
         }
     }
 
@@ -65,20 +65,20 @@ impl ButtonStyle {
         match self {
             Self::Primary => Color::rgb_u8(110, 100, 65),
             Self::Secondary => Color::rgb_u8(193, 185, 158),
-            Self::Exit => Color::rgb_u8(110, 100, 65),
+            Self::Small => Color::rgb_u8(110, 100, 65),
         }
     }
 
     fn padding(&self) -> f32 {
         match self {
-            Self::Exit => 5.,
+            Self::Small => 5.,
             _ => 20.,
         }
     }
 
     fn text_size(&self) -> f32 {
         match self {
-            Self::Exit => 10.,
+            Self::Small => 10.,
             _ => 25.,
         }
     }

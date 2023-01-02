@@ -269,16 +269,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bevy-vfx-bag"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5cadda710d2cc5ee9665d7a18a4437a83e3a39e325d9c91916c012cf7d92d59c"
-dependencies = [
- "alsa",
- "bevy",
-]
-
-[[package]]
 name = "bevy_animation"
 version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1106,7 +1096,6 @@ dependencies = [
  "bevy",
  "bevy-inspector-egui",
  "bevy-sequential-actions",
- "bevy-vfx-bag",
  "bevy_asset_loader",
  "bevy_common_assets",
  "bevy_egui",
@@ -1115,6 +1104,7 @@ dependencies = [
  "console_error_panic_hook",
  "iyes_loopless",
  "serde",
+ "serde_json",
  "smooth-bevy-cameras",
 ]
 

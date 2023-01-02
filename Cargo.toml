@@ -15,13 +15,13 @@ console_error_panic_hook = "0.1"
 bevy_asset_loader = { version = "0.14", features = ["standard_dynamic_assets", "stageless" ]}
 bevy_common_assets = { version = "0.4", features= [ "json", "yaml"]}
 serde = "*"
+serde_json = "*"
 smooth-bevy-cameras = "*"
 bevy_egui = "*"
 bevy-inspector-egui = "*"
 bevy-sequential-actions = "0.6.0"
 bevy_mod_picking = "0.11.0"
 bevy_prototype_lyon = "0.7.2"
-bevy-vfx-bag = "*"
 iyes_loopless = "*"
 
 # Enable a small amount of optimization in debug mode

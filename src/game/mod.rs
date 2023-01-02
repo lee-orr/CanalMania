@@ -1,6 +1,7 @@
 mod board;
 mod editor_ui;
 mod game_state;
+mod level;
 mod turn_start_ui;
 
 use bevy::prelude::*;

@@ -4,6 +4,7 @@ use iyes_loopless::{
     prelude::{AppLooplessStateExt, IntoConditionalSystem},
     state::NextState,
 };
+use serde::{Deserialize, Serialize};
 
 use crate::{
     app_state::{AppLoadingState, AppState},
@@ -43,7 +44,7 @@ struct Board {
     pub children: HashMap<(usize, usize), Entity>,
 }
 
-#[derive(Component, Default, Debug, Clone, Reflect)]
+#[derive(Component, Default, Debug, Clone, Reflect, Serialize, Deserialize)]
 #[reflect(Component)]
 pub struct Tile {
     pub x: usize,
@@ -52,7 +53,7 @@ pub struct Tile {
     pub tile_type: TileType,
 }
 
-#[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum TileType {
     Land,
     City,
