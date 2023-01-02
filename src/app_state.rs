@@ -8,4 +8,6 @@ pub enum AppLoadingState {
 pub enum AppState {
     Loading,
     MainMenu,
+    Credits,
+    InGame,
 }

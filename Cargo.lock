@@ -1109,6 +1109,7 @@ dependencies = [
  "bevy-vfx-bag",
  "bevy_asset_loader",
  "bevy_common_assets",
+ "bevy_egui",
  "bevy_mod_picking",
  "bevy_prototype_lyon",
  "console_error_panic_hook",

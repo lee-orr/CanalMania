@@ -16,6 +16,7 @@ bevy_asset_loader = { version = "0.14", features = ["standard_dynamic_assets", "
 bevy_common_assets = { version = "0.4", features= [ "json", "yaml"]}
 serde = "*"
 smooth-bevy-cameras = "*"
+bevy_egui = "*"
 bevy-inspector-egui = "*"
 bevy-sequential-actions = "0.6.0"
 bevy_mod_picking = "0.11.0"

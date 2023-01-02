@@ -40,10 +40,6 @@ impl GameText {
         Self { size, ..self }
     }
 
-    pub fn alignment(self, alignment: JustifyContent) -> Self {
-        Self { alignment, ..self }
-    }
-
     pub fn style(self, style: FontStyle) -> Self {
         Self { style, ..self }
     }
