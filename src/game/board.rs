@@ -1,5 +1,5 @@
 use bevy::{prelude::*, utils::HashMap};
-use bevy_mod_picking::{Highlighting, PickableBundle, PickingEvent};
+use bevy_mod_picking::{Highlighting, HoverEvent, PickableBundle, PickingEvent};
 use iyes_loopless::{
     prelude::{AppLooplessStateExt, IntoConditionalSystem},
     state::NextState,
@@ -52,7 +52,7 @@ pub struct Tile {
     pub tile_type: TileType,
 }
 
-#[derive(Debug, Clone, Copy, Reflect)]
+#[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq, Hash)]
 pub enum TileType {
     Land,
     City,
@@ -75,7 +75,7 @@ fn setup_board_materials(
         base_color_texture: Some(assets.tile_texture.clone()),
         ..Default::default()
     });
-    let selector = meshes.add(shape::Cube::default().into());
+    let selector = meshes.add(shape::Box::new(1., 0.1, 1.).into());
 
     let selector_base = materials.add(StandardMaterial {
         base_color: Color::rgba(0., 0., 0., 0.0),
@@ -123,7 +123,7 @@ fn build_board(mut commands: Commands) {
                             x,
                             y,
                             z,
-                            tile_type: TileType::Canal,
+                            tile_type: TileType::Land,
                         },
                         SpatialBundle::default(),
                     ));
@@ -205,6 +205,7 @@ fn build_tile(
 #[derive(Clone)]
 pub enum TileEvent {
     Clicked(Tile, Entity),
+    HoverStarted(Tile, Entity),
 }
 
 pub(crate) fn process_selection_events(
@@ -215,7 +216,13 @@ pub(crate) fn process_selection_events(
     for event in events.iter() {
         match event {
             PickingEvent::Selection(e) => info!("A selection event happened: {:?}", e),
-            PickingEvent::Hover(e) => info!("Egads! A hover event!? {:?}", e),
+            PickingEvent::Hover(e) => {
+                if let HoverEvent::JustEntered(e) = e {
+                    if let Ok(tile) = tiles.get(*e) {
+                        out_events.send(TileEvent::HoverStarted(tile.clone(), *e));
+                    }
+                }
+            }
             PickingEvent::Clicked(e) => {
                 if let Ok(tile) = tiles.get(*e) {
                     out_events.send(TileEvent::Clicked(tile.clone(), *e));

@@ -4,7 +4,7 @@ use iyes_loopless::prelude::*;
 use crate::ui::*;
 
 use super::{
-    board::{Tile, TileEvent},
+    board::{Tile, TileEvent, TileType},
     game_state::GameState,
 };
 
@@ -17,6 +17,7 @@ impl Plugin for EditorUiPlugin {
             .add_enter_system(GameState::Editor, display_ui)
             .add_system(update_labels.run_in_state(GameState::Editor))
             .add_system(tile_clicked.run_in_state(GameState::Editor))
+            .add_system(tile_hovered_set.run_in_state(GameState::Editor))
             .add_system(button_pressed.run_in_state(GameState::Editor));
     }
 }
@@ -26,7 +27,7 @@ enum EditorOperation {
     None,
     RaiseHeight,
     LowerHeight,
-    ToggleType,
+    ToggleType(TileType),
 }
 
 #[derive(Debug, Hash, PartialEq, Eq)]
@@ -79,7 +80,7 @@ fn update_labels(
                         EditorOperation::None => "No Operation Selected".to_string(),
                         EditorOperation::RaiseHeight => "Raise Height".to_string(),
                         EditorOperation::LowerHeight => "Lower Height".to_string(),
-                        EditorOperation::ToggleType => "Toggle Terrain Types".to_string(),
+                        EditorOperation::ToggleType(t) => format!("Set to {t:?}"),
                     }
                 }
             }
@@ -87,7 +88,11 @@ fn update_labels(
     }
 }
 
-fn button_pressed(mut events: EventReader<ButtonClickEvent>, mut commands: Commands) {
+fn button_pressed(
+    mut events: EventReader<ButtonClickEvent>,
+    mut commands: Commands,
+    operation: Res<CurrentState<EditorOperation>>,
+) {
     for event in events.iter() {
         if event.0 == "exit_editor" {
             commands.insert_resource(NextState(EditorOperation::None));
@@ -97,7 +102,15 @@ fn button_pressed(mut events: EventReader<ButtonClickEvent>, mut commands: Comma
         } else if event.0 == "lower" {
             commands.insert_resource(NextState(EditorOperation::LowerHeight));
         } else if event.0 == "toggle" {
-            commands.insert_resource(NextState(EditorOperation::ToggleType));
+            let next = match operation.0 {
+                EditorOperation::ToggleType(t) => match t {
+                    super::board::TileType::Land => super::board::TileType::City,
+                    super::board::TileType::City => super::board::TileType::Canal,
+                    super::board::TileType::Canal => super::board::TileType::Land,
+                },
+                _ => TileType::Land,
+            };
+            commands.insert_resource(NextState(EditorOperation::ToggleType(next)));
         }
     }
 }
@@ -108,8 +121,7 @@ fn tile_clicked(
     operation: Res<CurrentState<EditorOperation>>,
 ) {
     for event in events.iter() {
-        let TileEvent::Clicked(old_tile, entity) = event;
-        {
+        if let TileEvent::Clicked(old_tile, entity) = event {
             if let Ok(mut new_tile) = tiles.get_mut(*entity) {
                 match operation.0 {
                     EditorOperation::None => {}
@@ -119,12 +131,30 @@ fn tile_clicked(
                     EditorOperation::LowerHeight => {
                         new_tile.z = old_tile.z.checked_sub(1).unwrap_or_default();
                     }
-                    EditorOperation::ToggleType => {
-                        new_tile.tile_type = match old_tile.tile_type {
-                            super::board::TileType::Land => super::board::TileType::City,
-                            super::board::TileType::City => super::board::TileType::Canal,
-                            super::board::TileType::Canal => super::board::TileType::Land,
-                        }
+                    EditorOperation::ToggleType(t) => {
+                        new_tile.tile_type = t;
+                    }
+                }
+            }
+        }
+    }
+}
+
+fn tile_hovered_set(
+    mut events: EventReader<TileEvent>,
+    mut tiles: Query<&mut Tile>,
+    operation: Res<CurrentState<EditorOperation>>,
+    buttons: Res<Input<MouseButton>>,
+) {
+    if let EditorOperation::ToggleType(t) = operation.0 {
+        if buttons.pressed(MouseButton::Left) {
+            for event in events.iter() {
+                if let TileEvent::HoverStarted(old_tile, entity) = event {
+                    if old_tile.tile_type == t {
+                        continue;
+                    }
+                    if let Ok(mut new_tile) = tiles.get_mut(*entity) {
+                        new_tile.tile_type = t;
                     }
                 }
             }
