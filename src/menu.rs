@@ -18,7 +18,7 @@ impl Plugin for MainMenuPlugin {
 
 fn display_main_menu(mut commands: Commands) {
     println!("Display Main Menu");
-    commands.spawn(UiRoot).with_children(|parent| {
+    commands.spawn(UiRoot::new()).with_children(|parent| {
         parent.spawn(
             GameText::new("Canal Mania")
                 .size(100.)

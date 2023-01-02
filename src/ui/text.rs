@@ -3,6 +3,8 @@ use crate::assets::CanalManiaAssets;
 use bevy::prelude::*;
 use bevy::ui::JustifyContent;
 
+use super::ui_id::WithUiId;
+
 #[derive(Clone, Component, Debug)]
 pub struct GameText {
     pub(crate) text: String,
@@ -27,6 +29,9 @@ impl Default for GameText {
         }
     }
 }
+
+
+impl WithUiId for GameText {}
 
 impl GameText {
     pub fn new<T: Into<String>>(text: T) -> Self {

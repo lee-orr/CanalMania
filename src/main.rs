@@ -5,8 +5,12 @@ mod game;
 mod menu;
 mod ui;
 
-use bevy::prelude::*;
+use bevy::{
+    prelude::*,
+    render::{render_resource::{SamplerDescriptor, AddressMode, FilterMode}, texture::ImageSampler},
+};
 use bevy_asset_loader::prelude::*;
+use bevy_mod_picking::{DefaultPickingPlugins, PickingCameraBundle};
 use bevy_prototype_lyon::prelude::*;
 use bevy_vfx_bag::{image::mask::*, BevyVfxBagPlugin, PostProcessingInput};
 use credits::CreditsPlugin;
@@ -26,7 +30,9 @@ fn main() {
     console_error_panic_hook::set_once();
     let mut app = App::new();
 
-    app.add_plugins(
+    app
+        .insert_resource(Msaa { samples: 4 })
+        .add_plugins(
         DefaultPlugins
             .set(WindowPlugin {
                 window: WindowDescriptor {
@@ -38,9 +44,19 @@ fn main() {
             .set(AssetPlugin {
                 watch_for_changes: true,
                 ..Default::default()
+            })
+            .set(ImagePlugin {
+                default_sampler: SamplerDescriptor {
+                    address_mode_u: AddressMode::Repeat,
+                    address_mode_v: AddressMode::Repeat,
+                    mag_filter: FilterMode::Nearest,
+                    min_filter: FilterMode::Nearest,
+                    mipmap_filter: FilterMode::Linear,
+                    ..Default::default()
+                },
             }),
     )
-    .add_plugin(ShapePlugin)
+    .add_plugins(DefaultPickingPlugins)
     .add_plugin(LookTransformPlugin)
     .add_plugin(OrbitCameraPlugin::default());
 
@@ -63,10 +79,10 @@ fn main() {
         .add_startup_system(setup)
         .add_enter_system(AppLoadingState::Loaded, on_loaded);
 
-    #[cfg(not(target_family = "wasm"))]
-    app.add_plugin(BevyVfxBagPlugin)
-        .insert_resource(Mask::new_vignette())
-        .add_plugin(MaskPlugin);
+    // #[cfg(not(target_family = "wasm"))]
+    // app.add_plugin(BevyVfxBagPlugin)
+    //     .insert_resource(Mask::new_vignette())
+    //     .add_plugin(MaskPlugin);
 
     #[cfg(feature = "dev")]
     app.add_plugin(bevy_egui::EguiPlugin)
@@ -88,6 +104,7 @@ fn setup(mut commands: Commands) {
             eye,
             target,
         ))
+        .insert(PickingCameraBundle::default())
         .insert(PostProcessingInput);
     commands.spawn(DirectionalLightBundle {
         transform: Transform::from_rotation(Quat::from_euler(EulerRot::XYZ, -1., 1.2, 0.)),

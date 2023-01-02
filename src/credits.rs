@@ -17,7 +17,7 @@ impl Plugin for CreditsPlugin {
 }
 
 fn display_credits(mut commands: Commands) {
-    commands.spawn(UiRoot).with_children(|parent| {
+    commands.spawn(UiRoot::new()).with_children(|parent| {
         parent.spawn(GameText::new("Credits").size(100.).style(FontStyle::Italic));
         parent.spawn(GameText::new("Created by Lee-Orr"));
 

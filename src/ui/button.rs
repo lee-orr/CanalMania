@@ -3,6 +3,8 @@ use crate::assets::CanalManiaAssets;
 use bevy::prelude::*;
 use bevy::ui::JustifyContent;
 
+use super::ui_id::WithUiId;
+
 #[derive(Clone, Component, Debug)]
 pub struct GameButton {
     pub(crate) text: String,
@@ -39,6 +41,7 @@ impl GameButton {
         Self { style, ..self }
     }
 }
+impl WithUiId for GameButton {}
 
 impl ButtonStyle {
     fn main_color(&self) -> Color {
