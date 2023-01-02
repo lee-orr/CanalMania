@@ -31,6 +31,7 @@ enum EditorOperation {
     RaiseHeight,
     LowerHeight,
     ToggleType(TileType),
+    SetGoal,
 }
 
 #[derive(Debug, Hash, PartialEq, Eq)]
@@ -57,6 +58,7 @@ fn display_ui(mut commands: Commands) {
                         parent.spawn(GameButton::new("raise", "Raise Height"));
                         parent.spawn(GameButton::new("lower", "Lower Height"));
                         parent.spawn(GameButton::new("toggle", "Toggle Type"));
+                        parent.spawn(GameButton::new("goal", "Set Goals"));
                     });
                 parent
                     .spawn(
@@ -86,6 +88,7 @@ fn update_labels(
                         EditorOperation::RaiseHeight => "Raise Height".to_string(),
                         EditorOperation::LowerHeight => "Lower Height".to_string(),
                         EditorOperation::ToggleType(t) => format!("Set to {t:?}"),
+                        EditorOperation::SetGoal => "Set Goals".to_string(),
                     }
                 }
             }
@@ -107,6 +110,8 @@ fn button_pressed(
             commands.insert_resource(NextState(EditorOperation::RaiseHeight));
         } else if event.0 == "lower" {
             commands.insert_resource(NextState(EditorOperation::LowerHeight));
+        } else if event.0 == "goal" {
+            commands.insert_resource(NextState(EditorOperation::SetGoal));
         } else if event.0 == "toggle" {
             let next = match operation.0 {
                 EditorOperation::ToggleType(t) => match t {
@@ -141,6 +146,9 @@ fn tile_clicked(
                     }
                     EditorOperation::ToggleType(t) => {
                         new_tile.tile_type = t;
+                    }
+                    EditorOperation::SetGoal => {
+                        new_tile.is_goal = !new_tile.is_goal;
                     }
                 }
             }

@@ -1,0 +1,3 @@
+levels:
+  - name: test
+    file: test.lvl.json

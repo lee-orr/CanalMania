@@ -11,7 +11,7 @@ use crate::{
     assets::CanalManiaAssets,
 };
 
-use super::game_state::GameState;
+use super::{game_state::GameState, level::Level};
 
 pub struct BoardPlugin;
 
@@ -22,7 +22,7 @@ impl Plugin for BoardPlugin {
             .register_type::<TileType>()
             .add_event::<TileEvent>()
             .add_enter_system(AppLoadingState::Loaded, setup_board_materials)
-            .add_enter_system(AppState::InGame, build_board)
+            .add_system(build_board.run_in_state(AppState::InGame))
             .add_system(build_tile.run_in_state(AppState::InGame))
             .add_system(process_selection_events.run_in_state(AppState::InGame));
     }
@@ -31,6 +31,7 @@ impl Plugin for BoardPlugin {
 #[derive(Resource)]
 struct BoardRuntimeAssets {
     pub tile_base_material: Handle<StandardMaterial>,
+    pub goal_base_material: Handle<StandardMaterial>,
     pub selector: Handle<Mesh>,
     pub selector_base: Handle<StandardMaterial>,
     pub selector_hovered: Handle<StandardMaterial>,
@@ -49,8 +50,12 @@ struct Board {
 pub struct Tile {
     pub x: usize,
     pub y: usize,
+    #[serde(default)]
     pub z: usize,
+    #[serde(default)]
     pub tile_type: TileType,
+    #[serde(default)]
+    pub is_goal: bool,
 }
 
 #[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -74,6 +79,11 @@ fn setup_board_materials(
 ) {
     let tile_base_material = materials.add(StandardMaterial {
         base_color_texture: Some(assets.tile_texture.clone()),
+        ..Default::default()
+    });
+    let goal_base_material = materials.add(StandardMaterial {
+        base_color_texture: Some(assets.tile_texture.clone()),
+        base_color: Color::rgb(0.7, 0.2, 0.1),
         ..Default::default()
     });
     let selector = meshes.add(shape::Box::new(1., 0.1, 1.).into());
@@ -104,6 +114,7 @@ fn setup_board_materials(
 
     commands.insert_resource(BoardRuntimeAssets {
         tile_base_material,
+        goal_base_material,
         selector,
         selector_base,
         selector_hovered,
@@ -112,23 +123,18 @@ fn setup_board_materials(
     });
 }
 
-fn build_board(mut commands: Commands) {
+fn build_board(mut commands: Commands, level: Res<Level>, boards: Query<Entity, With<Board>>) {
+    if !level.is_changed() {
+        return;
+    }
+    for board in boards.iter() {
+        commands.entity(board).despawn_recursive();
+    }
     commands
         .spawn((Board::default(), SpatialBundle::default()))
         .with_children(|parent| {
-            for x in 0..10 {
-                for y in 0..10 {
-                    let z = (x + y) % 3;
-                    parent.spawn((
-                        Tile {
-                            x,
-                            y,
-                            z,
-                            tile_type: TileType::Land,
-                        },
-                        SpatialBundle::default(),
-                    ));
-                }
+            for tile in level.tiles.iter() {
+                parent.spawn(tile.clone());
             }
         });
     commands.insert_resource(NextState(GameState::TurnStart));
@@ -147,6 +153,13 @@ fn build_tile(
         }
         let center = Vec3::new(tile.x as f32, (tile.z as f32) / 6., tile.y as f32);
         let mut entity = commands.entity(entity);
+
+        let base_material = if tile.is_goal {
+            materials.goal_base_material.clone()
+        } else {
+            materials.tile_base_material.clone()
+        };
+
         entity.insert((
             PickableBundle::default(),
             Highlighting {
@@ -170,7 +183,7 @@ fn build_tile(
                     TileType::City => assets.city_center.clone(),
                     TileType::Canal => assets.canal_center.clone(),
                 },
-                material: materials.tile_base_material.clone(),
+                material: base_material.clone(),
                 ..Default::default()
             });
             for i in 0..4 {
@@ -180,7 +193,7 @@ fn build_tile(
                         TileType::City => assets.city_corner.clone(),
                         TileType::Canal => assets.canal_corner.clone(),
                     },
-                    material: materials.tile_base_material.clone(),
+                    material: base_material.clone(),
                     transform: Transform::from_rotation(Quat::from_rotation_y(
                         ((i as f32) * 90.).to_radians(),
                     )),
@@ -192,7 +205,7 @@ fn build_tile(
                         TileType::City => assets.city_edge.clone(),
                         TileType::Canal => assets.canal_edge.clone(),
                     },
-                    material: materials.tile_base_material.clone(),
+                    material: base_material.clone(),
                     transform: Transform::from_rotation(Quat::from_rotation_y(
                         ((i as f32) * 90.).to_radians(),
                     )),

@@ -26,11 +26,15 @@ fn display_ui(mut commands: Commands) {
             parent
                 .spawn(Div::new().opaque().horizontal())
                 .with_children(|parent| {
-                    #[cfg(feature = "dev")]
-                    parent.spawn(GameButton::new("editor", "Editor"));
-
                     parent.spawn(GameText::new("Your turn..."));
                 });
+        });
+
+    #[cfg(feature = "dev")]
+    commands
+        .spawn(UiRoot::new().position(Val::Auto, Val::Px(0.), Val::Px(0.), Val::Auto))
+        .with_children(|parent| {
+            parent.spawn(GameButton::new("editor", "Editor").style(ButtonStyle::Small));
         });
 }
 

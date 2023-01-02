@@ -1,19 +1,26 @@
 mod app_state;
 mod assets;
+mod choose_level;
 mod credits;
 mod game;
 mod menu;
 mod ui;
 
+use assets::CanalManiaAssets;
 use bevy::{
     prelude::*,
     render::render_resource::{AddressMode, FilterMode, SamplerDescriptor},
 };
 use bevy_asset_loader::prelude::*;
+use bevy_common_assets::{json::JsonAssetPlugin, yaml::YamlAssetPlugin};
 use bevy_mod_picking::{DefaultPickingPlugins, PickingCameraBundle};
 
+use choose_level::ChooseLevelPlugin;
 use credits::CreditsPlugin;
-use game::GamePlugin;
+use game::{
+    level::{Level, LevelList},
+    GamePlugin,
+};
 use iyes_loopless::prelude::*;
 
 use app_state::*;
@@ -56,7 +63,9 @@ fn main() {
         )
         .add_plugins(DefaultPickingPlugins)
         .add_plugin(LookTransformPlugin)
-        .add_plugin(OrbitCameraPlugin::default());
+        .add_plugin(OrbitCameraPlugin::default())
+        .add_plugin(JsonAssetPlugin::<Level>::new(&["lvl.json"]))
+        .add_plugin(YamlAssetPlugin::<LevelList>::new(&["levels.yml"]));
 
     app.insert_resource(ClearColor(Color::hex("e7d2a4").unwrap_or_default()))
         .add_loopless_state(AppLoadingState::Loading)
@@ -72,6 +81,7 @@ fn main() {
 
     app.add_plugin(GameUiPlugin)
         .add_plugin(MainMenuPlugin)
+        .add_plugin(ChooseLevelPlugin)
         .add_plugin(CreditsPlugin)
         .add_plugin(GamePlugin)
         .add_startup_system(setup)
@@ -104,7 +114,15 @@ fn setup(mut commands: Commands) {
     });
 }
 
-fn on_loaded(mut commands: Commands) {
+fn on_loaded(
+    mut commands: Commands,
+    assets: Res<CanalManiaAssets>,
+    level_list_asset: Res<Assets<LevelList>>,
+) {
     println!("Moving to main menu state");
     commands.insert_resource(NextState(AppState::MainMenu));
+    if let Some(list) = level_list_asset.get(&assets.level_list) {
+        let list = list.clone();
+        commands.insert_resource(list);
+    }
 }

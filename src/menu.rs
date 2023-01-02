@@ -32,7 +32,7 @@ fn display_main_menu(mut commands: Commands) {
 fn button_pressed(mut events: EventReader<ButtonClickEvent>, mut commands: Commands) {
     for event in events.iter() {
         if event.0 == "start_game" {
-            commands.insert_resource(NextState(AppState::InGame));
+            commands.insert_resource(NextState(AppState::ChooseLevel));
         } else if event.0 == "credits" {
             commands.insert_resource(NextState(AppState::Credits));
         }

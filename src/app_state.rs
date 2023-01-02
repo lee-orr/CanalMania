@@ -9,5 +9,6 @@ pub enum AppState {
     Loading,
     MainMenu,
     Credits,
+    ChooseLevel,
     InGame,
 }

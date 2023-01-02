@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 
+use crate::game::level::LevelList;
+
 #[derive(AssetCollection, Resource)]
 pub struct CanalManiaAssets {
     #[asset(key = "font")]
@@ -27,4 +29,6 @@ pub struct CanalManiaAssets {
     pub canal_edge: Handle<Mesh>,
     #[asset(key = "tile_texture")]
     pub tile_texture: Handle<Image>,
+    #[asset(key = "level_list")]
+    pub level_list: Handle<LevelList>,
 }
