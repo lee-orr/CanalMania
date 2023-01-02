@@ -101,6 +101,7 @@ fn button_pressed(
     mut commands: Commands,
     operation: Res<CurrentState<EditorOperation>>,
     tiles: Query<&Tile>,
+    level: Res<Level>,
 ) {
     for event in events.iter() {
         if event.0 == "exit_editor" {
@@ -123,7 +124,7 @@ fn button_pressed(
             };
             commands.insert_resource(NextState(EditorOperation::ToggleType(next)));
         } else if event.0 == "save" {
-            save(&tiles);
+            save(&tiles, &level);
         }
     }
 }
@@ -178,9 +179,10 @@ fn tile_hovered_set(
     }
 }
 
-fn save(tiles: &Query<&Tile>) {
+fn save(tiles: &Query<&Tile>, level: &Res<Level>) {
     let level = Level {
         tiles: tiles.iter().cloned().collect(),
+        title: level.title.clone(),
     };
     let mut path = FileAssetIo::get_base_path();
     path.push("assets");

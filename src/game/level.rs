@@ -7,6 +7,7 @@ use super::board::Tile;
 #[uuid = "b9b5565a-a06a-4647-bc62-274f32ba6a5f"]
 pub struct Level {
     pub tiles: Vec<Tile>,
+    pub title: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
