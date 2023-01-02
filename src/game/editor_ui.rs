@@ -1,9 +1,12 @@
-use bevy::{prelude::*, ecs::entity};
+use bevy::prelude::*;
 use iyes_loopless::prelude::*;
 
 use crate::ui::*;
 
-use super::{game_state::GameState, board::{TileEvent, Tile}};
+use super::{
+    board::{Tile, TileEvent},
+    game_state::GameState,
+};
 
 pub struct EditorUiPlugin;
 
@@ -34,31 +37,51 @@ enum EditorUiElement {
 fn display_ui(mut commands: Commands) {
     commands.insert_resource(NextState(EditorOperation::None));
     commands
-        .spawn(UiRoot::new().position(Val::Px(0.), Val::Px(0.), Val::Auto, Val::Px(0.)).padding(0.))
+        .spawn(
+            UiRoot::new()
+                .position(Val::Px(0.), Val::Px(0.), Val::Auto, Val::Px(0.))
+                .padding(0.),
+        )
         .with_children(|parent| {
             parent.spawn(Div::new().opaque()).with_children(|parent| {
-
-                parent.spawn(GameText::new("No Operation Selected").id(EditorUiElement::CurrentModeText));
-                parent.spawn(Div::new().horizontal()).with_children(|parent| {
-                    parent.spawn(GameButton::new("raise", "Raise Height"));
-                    parent.spawn(GameButton::new("lower", "Lower Height"));
-                    parent.spawn(GameButton::new("toggle", "Toggle Type"));
-                });
-                parent.spawn(GameButton::new("exit_editor", "Exit Editor"));
+                parent.spawn(
+                    GameText::new("No Operation Selected").id(EditorUiElement::CurrentModeText),
+                );
+                parent
+                    .spawn(Div::new().horizontal())
+                    .with_children(|parent| {
+                        parent.spawn(GameButton::new("raise", "Raise Height"));
+                        parent.spawn(GameButton::new("lower", "Lower Height"));
+                        parent.spawn(GameButton::new("toggle", "Toggle Type"));
+                    });
+                parent
+                    .spawn(
+                        Div::new()
+                            .position(Val::Auto, Val::Px(2.), Val::Px(2.), Val::Auto)
+                            .padding(1.),
+                    )
+                    .with_children(|parent| {
+                        parent.spawn(GameButton::new("exit_editor", "X").style(ButtonStyle::Exit));
+                    });
             });
         });
 }
 
-fn update_labels(mut labels: Query<(&mut GameText, &UiId<EditorUiElement>)>, operation: Res<CurrentState<EditorOperation>>) {
+fn update_labels(
+    mut labels: Query<(&mut GameText, &UiId<EditorUiElement>)>,
+    operation: Res<CurrentState<EditorOperation>>,
+) {
     if operation.is_changed() {
         for (mut label, id) in labels.iter_mut() {
             match id.val() {
-                EditorUiElement::CurrentModeText => label.text = match operation.0 {
-                    EditorOperation::None => "No Operation Selected".to_string(),
-                    EditorOperation::RaiseHeight => "Raise Height".to_string(),
-                    EditorOperation::LowerHeight => "Lower Height".to_string(),
-                    EditorOperation::ToggleType => "Toggle Terrain Types".to_string(),
-                },
+                EditorUiElement::CurrentModeText => {
+                    label.text = match operation.0 {
+                        EditorOperation::None => "No Operation Selected".to_string(),
+                        EditorOperation::RaiseHeight => "Raise Height".to_string(),
+                        EditorOperation::LowerHeight => "Lower Height".to_string(),
+                        EditorOperation::ToggleType => "Toggle Terrain Types".to_string(),
+                    }
+                }
             }
         }
     }
@@ -79,30 +102,32 @@ fn button_pressed(mut events: EventReader<ButtonClickEvent>, mut commands: Comma
     }
 }
 
-fn tile_clicked(mut events: EventReader<TileEvent>, mut tiles: Query<&mut Tile>, operation: Res<CurrentState<EditorOperation>>) {
+fn tile_clicked(
+    mut events: EventReader<TileEvent>,
+    mut tiles: Query<&mut Tile>,
+    operation: Res<CurrentState<EditorOperation>>,
+) {
     for event in events.iter() {
-        match event {
-            TileEvent::Clicked(old_tile, entity) => {
-                if let Ok(mut new_tile) = tiles.get_mut(entity.clone()) {
-                    match operation.0 {
-                        EditorOperation::None => {},
-                        EditorOperation::RaiseHeight => {
-                            new_tile.z = old_tile.z + 1;
-                        },
-                        EditorOperation::LowerHeight => {
-                            new_tile.z = old_tile.z.checked_sub(1).unwrap_or_default();
-                        },
-                        EditorOperation::ToggleType => {
-                            new_tile.tile_type = match old_tile.tile_type {
-                                super::board::TileType::Land => super::board::TileType::City,
-                                super::board::TileType::City => super::board::TileType::Canal,
-                                super::board::TileType::Canal => super::board::TileType::Land,
-                            }
-                        },
+        let TileEvent::Clicked(old_tile, entity) = event;
+        {
+            if let Ok(mut new_tile) = tiles.get_mut(*entity) {
+                match operation.0 {
+                    EditorOperation::None => {}
+                    EditorOperation::RaiseHeight => {
+                        new_tile.z = old_tile.z + 1;
+                    }
+                    EditorOperation::LowerHeight => {
+                        new_tile.z = old_tile.z.checked_sub(1).unwrap_or_default();
+                    }
+                    EditorOperation::ToggleType => {
+                        new_tile.tile_type = match old_tile.tile_type {
+                            super::board::TileType::Land => super::board::TileType::City,
+                            super::board::TileType::City => super::board::TileType::Canal,
+                            super::board::TileType::Canal => super::board::TileType::Land,
+                        }
                     }
                 }
             }
-            _ => (),
         }
     }
 }

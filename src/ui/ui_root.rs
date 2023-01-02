@@ -21,7 +21,7 @@ pub enum UiRootType {
 #[derive(Debug)]
 pub enum Background {
     Transparent,
-    Opaque
+    Opaque,
 }
 
 impl Default for UiRootType {
@@ -40,15 +40,8 @@ impl WithUiId for UiRoot {}
 impl UiRoot {
     pub fn new() -> Self {
         Self {
-            padding: 10., 
+            padding: 10.,
             ..Default::default()
-        }
-    }
-
-    pub fn opaque(self) -> Self {
-        Self {
-            background: Background::Opaque,
-            ..self
         }
     }
 
@@ -60,10 +53,7 @@ impl UiRoot {
     }
 
     pub fn padding(self, padding: f32) -> Self {
-        Self {
-            padding,
-            ..self
-        }
+        Self { padding, ..self }
     }
 }
 
@@ -89,13 +79,13 @@ pub fn spawn_ui_root(mut commands: Commands, roots: Query<(Entity, &UiRoot), Add
                 },
                 position: match root.ui_root_type {
                     UiRootType::Fill => UiRect::default(),
-                    UiRootType::Positioned(rect) => rect.clone(),
+                    UiRootType::Positioned(rect) => rect,
                 },
                 ..Default::default()
             },
             background_color: match root.background {
                 Background::Transparent => Color::rgba(0., 0., 0., 0.).into(),
-                Background::Opaque => Color::rgb_u8(177,162,124).into(),
+                Background::Opaque => Color::rgb_u8(177, 162, 124).into(),
             },
             ..Default::default()
         },));

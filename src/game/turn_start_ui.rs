@@ -17,14 +17,20 @@ impl Plugin for TurnStartUiPlugin {
 
 fn display_ui(mut commands: Commands) {
     commands
-        .spawn(UiRoot::new().position(Val::Px(0.), Val::Px(0.), Val::Auto, Val::Px(0.)).padding(0.))
+        .spawn(
+            UiRoot::new()
+                .position(Val::Px(0.), Val::Px(0.), Val::Auto, Val::Px(0.))
+                .padding(0.),
+        )
         .with_children(|parent| {
-            parent.spawn(Div::new().opaque().horizontal()).with_children(|parent| {
-                #[cfg(feature = "dev")]
-                parent.spawn(GameButton::new("editor", "Editor"));
+            parent
+                .spawn(Div::new().opaque().horizontal())
+                .with_children(|parent| {
+                    #[cfg(feature = "dev")]
+                    parent.spawn(GameButton::new("editor", "Editor"));
 
-                parent.spawn(GameText::new("Your turn..."));
-            });
+                    parent.spawn(GameText::new("Your turn..."));
+                });
         });
 }
 

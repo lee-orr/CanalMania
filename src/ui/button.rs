@@ -16,6 +16,7 @@ pub struct GameButton {
 pub enum ButtonStyle {
     Primary,
     Secondary,
+    Exit,
 }
 
 impl Default for GameButton {
@@ -48,6 +49,7 @@ impl ButtonStyle {
         match self {
             Self::Primary => Color::rgb_u8(213, 194, 125),
             Self::Secondary => Color::rgb_u8(244, 235, 201),
+            Self::Exit => Color::rgb_u8(213, 194, 125),
         }
     }
 
@@ -55,6 +57,7 @@ impl ButtonStyle {
         match self {
             Self::Primary => Color::rgb_u8(162, 147, 95),
             Self::Secondary => Color::rgb_u8(193, 185, 158),
+            Self::Exit => Color::rgb_u8(162, 147, 95),
         }
     }
 
@@ -62,6 +65,21 @@ impl ButtonStyle {
         match self {
             Self::Primary => Color::rgb_u8(110, 100, 65),
             Self::Secondary => Color::rgb_u8(193, 185, 158),
+            Self::Exit => Color::rgb_u8(110, 100, 65),
+        }
+    }
+
+    fn padding(&self) -> f32 {
+        match self {
+            Self::Exit => 5.,
+            _ => 20.,
+        }
+    }
+
+    fn text_size(&self) -> f32 {
+        match self {
+            Self::Exit => 10.,
+            _ => 25.,
         }
     }
 }
@@ -74,7 +92,7 @@ pub(crate) fn spawn_button(
     for (entity, button) in buttons.iter() {
         println!("Spawning button: {button:?}");
         let text = button.text.clone();
-        let size = 25.;
+        let size = button.style.text_size();
         let style = TextStyle {
             font: assets.font.clone(),
             font_size: size,
@@ -84,7 +102,7 @@ pub(crate) fn spawn_button(
         commands.entity(entity).insert(ButtonBundle {
             background_color: button.style.main_color().into(),
             style: Style {
-                padding: UiRect::all(Val::Px(20.)),
+                padding: UiRect::all(Val::Px(button.style.padding())),
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
                 border: UiRect::all(Val::Px(1.)),

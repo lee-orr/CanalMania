@@ -1,17 +1,17 @@
 mod button;
-mod text;
-mod ui_root;
 mod div;
+mod text;
 mod ui_id;
+mod ui_root;
 
 use crate::app_state::AppLoadingState;
 use bevy::prelude::*;
 pub use button::*;
+pub use div::*;
 use iyes_loopless::prelude::IntoConditionalSystem;
 pub use text::*;
-pub use ui_root::*;
-pub use div::*;
 pub use ui_id::*;
+pub use ui_root::*;
 
 pub struct GameUiPlugin;
 

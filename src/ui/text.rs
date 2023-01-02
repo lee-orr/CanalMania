@@ -30,7 +30,6 @@ impl Default for GameText {
     }
 }
 
-
 impl WithUiId for GameText {}
 
 impl GameText {

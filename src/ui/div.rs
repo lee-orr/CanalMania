@@ -1,10 +1,9 @@
-use bevy::{ecs::schedule::StateData, prelude::*};
-use iyes_loopless::prelude::AppLooplessStateExt;
-use std::fmt::Debug;
-use std::hash::Hash;
+use bevy::prelude::*;
 
-use super::Background;
+use std::fmt::Debug;
+
 use super::ui_id::WithUiId;
+use super::Background;
 
 #[derive(Component, Debug, Default)]
 pub struct Div {
@@ -29,7 +28,7 @@ impl Default for DivType {
 #[derive(Debug)]
 pub enum Direction {
     Vertical,
-    Horizontal
+    Horizontal,
 }
 
 impl Default for Direction {
@@ -69,10 +68,7 @@ impl Div {
     }
 
     pub fn padding(self, padding: f32) -> Self {
-        Self {
-            padding,
-            ..self
-        }
+        Self { padding, ..self }
     }
 }
 
@@ -93,13 +89,13 @@ pub fn spawn_div(mut commands: Commands, roots: Query<(Entity, &Div), Added<Div>
                 },
                 position: match div.div_type {
                     DivType::Auto => UiRect::default(),
-                    DivType::Positioned(rect) => rect.clone(),
+                    DivType::Positioned(rect) => rect,
                 },
                 ..Default::default()
             },
             background_color: match div.background {
                 Background::Transparent => Color::rgba(0., 0., 0., 0.).into(),
-                Background::Opaque => Color::rgb_u8(177,162,124).into(),
+                Background::Opaque => Color::rgb_u8(177, 162, 124).into(),
             },
             ..Default::default()
         },));

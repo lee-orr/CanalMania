@@ -1,7 +1,9 @@
 use bevy::{prelude::*, utils::HashMap};
-use bevy_mod_picking::{Highlighting, NoDeselect, PickableBundle, PickingEvent};
-use iyes_loopless::{prelude::{AppLooplessStateExt, IntoConditionalSystem}, state::NextState};
-use bevy_inspector_egui::{prelude::*};
+use bevy_mod_picking::{Highlighting, PickableBundle, PickingEvent};
+use iyes_loopless::{
+    prelude::{AppLooplessStateExt, IntoConditionalSystem},
+    state::NextState,
+};
 
 use crate::{
     app_state::{AppLoadingState, AppState},
@@ -14,8 +16,7 @@ pub struct BoardPlugin;
 
 impl Plugin for BoardPlugin {
     fn build(&self, app: &mut App) {
-        app
-            .register_type::<Board>()
+        app.register_type::<Board>()
             .register_type::<Tile>()
             .register_type::<TileType>()
             .add_event::<TileEvent>()
@@ -39,7 +40,7 @@ struct BoardRuntimeAssets {
 #[derive(Component, Debug, Default, Reflect)]
 #[reflect(Component)]
 struct Board {
-    pub children: HashMap<(usize, usize), Entity>
+    pub children: HashMap<(usize, usize), Entity>,
 }
 
 #[derive(Component, Default, Debug, Clone, Reflect)]
@@ -110,24 +111,25 @@ fn setup_board_materials(
     });
 }
 
-fn build_board(
-    mut commands: Commands,
-) {
-    commands.spawn((Board::default(), SpatialBundle::default())).with_children(|parent| {
-    for x in 0..10 {
-        for y in 0..10 {
-            let z = (x + y) % 3;
-            parent.spawn((
-                Tile {
-                    x,
-                    y,
-                    z,
-                    tile_type: TileType::Canal,
-                },
-                SpatialBundle::default(),
-            ));
-        }
-    }});
+fn build_board(mut commands: Commands) {
+    commands
+        .spawn((Board::default(), SpatialBundle::default()))
+        .with_children(|parent| {
+            for x in 0..10 {
+                for y in 0..10 {
+                    let z = (x + y) % 3;
+                    parent.spawn((
+                        Tile {
+                            x,
+                            y,
+                            z,
+                            tile_type: TileType::Canal,
+                        },
+                        SpatialBundle::default(),
+                    ));
+                }
+            }
+        });
     commands.insert_resource(NextState(GameState::TurnStart));
 }
 
@@ -140,9 +142,9 @@ fn build_tile(
 ) {
     for (entity, tile, parent) in tiles.iter() {
         if let Ok(mut parent) = boards.get_mut(parent.get()) {
-            parent.children.insert((tile.x, tile.y), entity.clone());
+            parent.children.insert((tile.x, tile.y), entity);
         }
-        let center = Vec3::new(tile.x as f32, (tile.z as f32) / 6. , tile.y as f32);
+        let center = Vec3::new(tile.x as f32, (tile.z as f32) / 6., tile.y as f32);
         let mut entity = commands.entity(entity);
         entity.insert((
             PickableBundle::default(),
@@ -161,7 +163,6 @@ fn build_tile(
         ));
         entity.despawn_descendants();
         entity.with_children(|parent| {
-            
             parent.spawn(PbrBundle {
                 mesh: match tile.tile_type {
                     TileType::Land => assets.tile_center.clone(),
@@ -179,7 +180,9 @@ fn build_tile(
                         TileType::Canal => assets.canal_corner.clone(),
                     },
                     material: materials.tile_base_material.clone(),
-                    transform: Transform::from_rotation(Quat::from_rotation_y(((i as f32) * 90.).to_radians())),
+                    transform: Transform::from_rotation(Quat::from_rotation_y(
+                        ((i as f32) * 90.).to_radians(),
+                    )),
                     ..Default::default()
                 });
                 parent.spawn(PbrBundle {
@@ -189,7 +192,9 @@ fn build_tile(
                         TileType::Canal => assets.canal_edge.clone(),
                     },
                     material: materials.tile_base_material.clone(),
-                    transform: Transform::from_rotation(Quat::from_rotation_y(((i as f32) * 90.).to_radians())),
+                    transform: Transform::from_rotation(Quat::from_rotation_y(
+                        ((i as f32) * 90.).to_radians(),
+                    )),
                     ..Default::default()
                 });
             }
@@ -212,8 +217,8 @@ pub(crate) fn process_selection_events(
             PickingEvent::Selection(e) => info!("A selection event happened: {:?}", e),
             PickingEvent::Hover(e) => info!("Egads! A hover event!? {:?}", e),
             PickingEvent::Clicked(e) => {
-                if let Ok(tile) = tiles.get(e.clone()) {
-                    out_events.send(TileEvent::Clicked(tile.clone(), e.clone()));
+                if let Ok(tile) = tiles.get(*e) {
+                    out_events.send(TileEvent::Clicked(tile.clone(), *e));
                 }
             }
         }

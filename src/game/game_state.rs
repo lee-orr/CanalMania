@@ -3,5 +3,4 @@ pub enum GameState {
     Setup,
     TurnStart,
     Editor,
-    Teardown,
 }

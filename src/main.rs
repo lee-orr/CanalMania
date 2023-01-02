@@ -7,12 +7,12 @@ mod ui;
 
 use bevy::{
     prelude::*,
-    render::{render_resource::{SamplerDescriptor, AddressMode, FilterMode}, texture::ImageSampler},
+    render::render_resource::{AddressMode, FilterMode, SamplerDescriptor},
 };
 use bevy_asset_loader::prelude::*;
 use bevy_mod_picking::{DefaultPickingPlugins, PickingCameraBundle};
-use bevy_prototype_lyon::prelude::*;
-use bevy_vfx_bag::{image::mask::*, BevyVfxBagPlugin, PostProcessingInput};
+
+use bevy_vfx_bag::PostProcessingInput;
 use credits::CreditsPlugin;
 use game::GamePlugin;
 use iyes_loopless::prelude::*;
@@ -30,35 +30,34 @@ fn main() {
     console_error_panic_hook::set_once();
     let mut app = App::new();
 
-    app
-        .insert_resource(Msaa { samples: 4 })
+    app.insert_resource(Msaa { samples: 4 })
         .add_plugins(
-        DefaultPlugins
-            .set(WindowPlugin {
-                window: WindowDescriptor {
-                    fit_canvas_to_parent: true,
+            DefaultPlugins
+                .set(WindowPlugin {
+                    window: WindowDescriptor {
+                        fit_canvas_to_parent: true,
+                        ..Default::default()
+                    },
                     ..Default::default()
-                },
-                ..Default::default()
-            })
-            .set(AssetPlugin {
-                watch_for_changes: true,
-                ..Default::default()
-            })
-            .set(ImagePlugin {
-                default_sampler: SamplerDescriptor {
-                    address_mode_u: AddressMode::Repeat,
-                    address_mode_v: AddressMode::Repeat,
-                    mag_filter: FilterMode::Nearest,
-                    min_filter: FilterMode::Nearest,
-                    mipmap_filter: FilterMode::Linear,
+                })
+                .set(AssetPlugin {
+                    watch_for_changes: true,
                     ..Default::default()
-                },
-            }),
-    )
-    .add_plugins(DefaultPickingPlugins)
-    .add_plugin(LookTransformPlugin)
-    .add_plugin(OrbitCameraPlugin::default());
+                })
+                .set(ImagePlugin {
+                    default_sampler: SamplerDescriptor {
+                        address_mode_u: AddressMode::Repeat,
+                        address_mode_v: AddressMode::Repeat,
+                        mag_filter: FilterMode::Nearest,
+                        min_filter: FilterMode::Nearest,
+                        mipmap_filter: FilterMode::Linear,
+                        ..Default::default()
+                    },
+                }),
+        )
+        .add_plugins(DefaultPickingPlugins)
+        .add_plugin(LookTransformPlugin)
+        .add_plugin(OrbitCameraPlugin::default());
 
     app.insert_resource(ClearColor(Color::hex("e7d2a4").unwrap_or_default()))
         .add_loopless_state(AppLoadingState::Loading)
