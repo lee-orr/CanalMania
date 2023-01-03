@@ -11,6 +11,9 @@
     "canal_center": File (path: "models.gltf#Mesh6/Primitive0"),
     "canal_corner": File (path: "models.gltf#Mesh7/Primitive0"),
     "canal_edge": File (path: "models.gltf#Mesh8/Primitive0"),
+    "canal_wet_center": File (path: "models.gltf#Mesh9/Primitive0"),
+    "canal_wet_corner": File (path: "models.gltf#Mesh10/Primitive0"),
+    "canal_wet_edge": File (path: "models.gltf#Mesh11/Primitive0"),
     "tile_texture": File (path: "simple_texture.png"),
     "level_list": File (path: "level_list.levels.yml"),
 })

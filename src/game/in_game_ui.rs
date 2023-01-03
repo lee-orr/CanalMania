@@ -5,13 +5,13 @@ use crate::ui::*;
 
 use super::game_state::GameState;
 
-pub struct TurnStartUiPlugin;
+pub struct InGameUiPlugin;
 
-impl Plugin for TurnStartUiPlugin {
+impl Plugin for InGameUiPlugin {
     fn build(&self, app: &mut App) {
-        clear_ui_system_set(app, GameState::TurnStart)
-            .add_enter_system(GameState::TurnStart, display_ui)
-            .add_system(button_pressed.run_in_state(GameState::TurnStart));
+        clear_ui_system_set(app, GameState::InGame)
+            .add_enter_system(GameState::InGame, display_ui)
+            .add_system(button_pressed.run_in_state(GameState::InGame));
     }
 }
 

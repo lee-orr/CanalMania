@@ -2,7 +2,7 @@ use bevy::{prelude::*, utils::HashMap};
 use bevy_mod_picking::{Highlighting, HoverEvent, PickableBundle, PickingEvent};
 use iyes_loopless::{
     prelude::{AppLooplessStateExt, IntoConditionalSystem},
-    state::NextState,
+    state::{CurrentState, NextState},
 };
 use serde::{Deserialize, Serialize};
 
@@ -62,7 +62,8 @@ pub struct Tile {
 pub enum TileType {
     Land,
     City,
-    Canal,
+    CanalDry,
+    CanalWet,
 }
 
 impl Default for TileType {
@@ -123,21 +124,56 @@ fn setup_board_materials(
     });
 }
 
-fn build_board(mut commands: Commands, level: Res<Level>, boards: Query<Entity, With<Board>>) {
+fn build_board(
+    mut commands: Commands,
+    level: Res<Level>,
+    boards: Query<Entity, With<Board>>,
+    state: Res<CurrentState<GameState>>,
+) {
     if !level.is_changed() {
         return;
     }
     for board in boards.iter() {
         commands.entity(board).despawn_recursive();
     }
+    let center = Vec3::new(
+        -1. * (level.width as f32) / 2.,
+        0.,
+        -1. * (level.height as f32) / 2.,
+    );
     commands
-        .spawn((Board::default(), SpatialBundle::default()))
+        .spawn((
+            Board::default(),
+            SpatialBundle {
+                transform: Transform::from_translation(center),
+                ..Default::default()
+            },
+        ))
         .with_children(|parent| {
-            for tile in level.tiles.iter() {
-                parent.spawn(tile.clone());
+            let mut x = 0usize;
+            for column in level.tiles.iter() {
+                let mut y = 0usize;
+                for row in column.iter() {
+                    let tile = Tile {
+                        x,
+                        y,
+                        z: row.height,
+                        tile_type: row.tile_type,
+                        is_goal: row.is_goal,
+                    };
+                    parent.spawn(tile);
+                    y += 1;
+                }
+                x += 1;
             }
         });
-    commands.insert_resource(NextState(GameState::TurnStart));
+
+    match state.0 {
+        GameState::Editor => {}
+        _ => {
+            commands.insert_resource(NextState(GameState::InGame));
+        }
+    }
 }
 
 fn build_tile(
@@ -181,7 +217,8 @@ fn build_tile(
                 mesh: match tile.tile_type {
                     TileType::Land => assets.tile_center.clone(),
                     TileType::City => assets.city_center.clone(),
-                    TileType::Canal => assets.canal_center.clone(),
+                    TileType::CanalDry => assets.canal_center.clone(),
+                    TileType::CanalWet => assets.canal_wet_center.clone(),
                 },
                 material: base_material.clone(),
                 ..Default::default()
@@ -191,7 +228,8 @@ fn build_tile(
                     mesh: match tile.tile_type {
                         TileType::Land => assets.tile_corner.clone(),
                         TileType::City => assets.city_corner.clone(),
-                        TileType::Canal => assets.canal_corner.clone(),
+                        TileType::CanalDry => assets.canal_corner.clone(),
+                        TileType::CanalWet => assets.canal_wet_corner.clone(),
                     },
                     material: base_material.clone(),
                     transform: Transform::from_rotation(Quat::from_rotation_y(
@@ -203,7 +241,8 @@ fn build_tile(
                     mesh: match tile.tile_type {
                         TileType::Land => assets.tile_edge.clone(),
                         TileType::City => assets.city_edge.clone(),
-                        TileType::Canal => assets.canal_edge.clone(),
+                        TileType::CanalDry => assets.canal_edge.clone(),
+                        TileType::CanalWet => assets.canal_wet_edge.clone(),
                     },
                     material: base_material.clone(),
                     transform: Transform::from_rotation(Quat::from_rotation_y(

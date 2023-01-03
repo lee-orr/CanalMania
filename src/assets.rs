@@ -27,6 +27,12 @@ pub struct CanalManiaAssets {
     pub canal_corner: Handle<Mesh>,
     #[asset(key = "canal_edge")]
     pub canal_edge: Handle<Mesh>,
+    #[asset(key = "canal_wet_center")]
+    pub canal_wet_center: Handle<Mesh>,
+    #[asset(key = "canal_wet_corner")]
+    pub canal_wet_corner: Handle<Mesh>,
+    #[asset(key = "canal_wet_edge")]
+    pub canal_wet_edge: Handle<Mesh>,
     #[asset(key = "tile_texture")]
     pub tile_texture: Handle<Image>,
     #[asset(key = "level_list")]

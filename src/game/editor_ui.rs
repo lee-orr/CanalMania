@@ -8,7 +8,7 @@ use crate::ui::*;
 use super::{
     board::{Tile, TileEvent, TileType},
     game_state::GameState,
-    level::Level,
+    level::{Level, TileInfo},
 };
 
 pub struct EditorUiPlugin;
@@ -37,9 +37,11 @@ enum EditorOperation {
 #[derive(Debug, Hash, PartialEq, Eq)]
 enum EditorUiElement {
     CurrentModeText,
+    Width,
+    Height,
 }
 
-fn display_ui(mut commands: Commands) {
+fn display_ui(mut commands: Commands, level: Res<Level>) {
     commands.insert_resource(NextState(EditorOperation::None));
     commands
         .ui_root()
@@ -57,30 +59,65 @@ fn display_ui(mut commands: Commands) {
                     parent.button("toggle", "Toggle Type").spawn();
                     parent.button("goal", "Set Goals").spawn();
                 });
-                parent
-                    .div()
-                    .position(Val::Auto, Val::Px(2.), Val::Px(2.), Val::Auto)
-                    .horizontal()
-                    .padding(1.)
-                    .with_children(|parent| {
-                        parent
-                            .button("save", "Save")
-                            .style(ButtonStyle::Small)
-                            .spawn();
-                        parent
-                            .button("exit_editor", "X")
-                            .style(ButtonStyle::Small)
-                            .spawn();
-                    });
             });
+        });
+    commands
+        .ui_root()
+        .position(Val::Auto, Val::Px(2.), Val::Px(2.), Val::Auto)
+        .with_children(|parent| {
+            parent
+                .div()
+                .horizontal()
+                .padding(1.)
+                .with_children(|parent| {
+                    parent.text("Width:").spawn();
+                    parent
+                        .text(level.width.to_string())
+                        .id(EditorUiElement::Width)
+                        .spawn();
+                    parent
+                        .button("width_add", "+")
+                        .style(ButtonStyle::Small)
+                        .spawn();
+                    parent
+                        .button("width_sub", "-")
+                        .style(ButtonStyle::Small)
+                        .spawn();
+                    parent.text("Height:").spawn();
+                    parent
+                        .text(level.height.to_string())
+                        .id(EditorUiElement::Height)
+                        .spawn();
+                    parent
+                        .button("height_add", "+")
+                        .style(ButtonStyle::Small)
+                        .spawn();
+                    parent
+                        .button("height_sub", "-")
+                        .style(ButtonStyle::Small)
+                        .spawn();
+                    parent
+                        .button("new", "New")
+                        .style(ButtonStyle::Small)
+                        .spawn();
+                    parent
+                        .button("save", "Save")
+                        .style(ButtonStyle::Small)
+                        .spawn();
+                    parent
+                        .button("exit_editor", "X")
+                        .style(ButtonStyle::Small)
+                        .spawn();
+                });
         });
 }
 
 fn update_labels(
     mut labels: Query<(&mut GameText, &UiId<EditorUiElement>)>,
     operation: Res<CurrentState<EditorOperation>>,
+    level: Res<Level>,
 ) {
-    if operation.is_changed() {
+    if operation.is_changed() || level.is_changed() {
         for (mut label, id) in labels.iter_mut() {
             match id.val() {
                 EditorUiElement::CurrentModeText => {
@@ -92,6 +129,12 @@ fn update_labels(
                         EditorOperation::SetGoal => "Set Goals".to_string(),
                     }
                 }
+                EditorUiElement::Width => {
+                    label.text = level.width.to_string();
+                }
+                EditorUiElement::Height => {
+                    label.text = level.height.to_string();
+                }
             }
         }
     }
@@ -102,12 +145,12 @@ fn button_pressed(
     mut commands: Commands,
     operation: Res<CurrentState<EditorOperation>>,
     tiles: Query<&Tile>,
-    level: Res<Level>,
+    mut level: ResMut<Level>,
 ) {
     for event in events.iter() {
         if event.0 == "exit_editor" {
             commands.insert_resource(NextState(EditorOperation::None));
-            commands.insert_resource(NextState(GameState::TurnStart));
+            commands.insert_resource(NextState(GameState::InGame));
         } else if event.0 == "raise" {
             commands.insert_resource(NextState(EditorOperation::RaiseHeight));
         } else if event.0 == "lower" {
@@ -118,16 +161,56 @@ fn button_pressed(
             let next = match operation.0 {
                 EditorOperation::ToggleType(t) => match t {
                     super::board::TileType::Land => super::board::TileType::City,
-                    super::board::TileType::City => super::board::TileType::Canal,
-                    super::board::TileType::Canal => super::board::TileType::Land,
+                    super::board::TileType::City => super::board::TileType::CanalDry,
+                    super::board::TileType::CanalDry => super::board::TileType::CanalWet,
+                    super::board::TileType::CanalWet => super::board::TileType::Land,
                 },
                 _ => TileType::Land,
             };
             commands.insert_resource(NextState(EditorOperation::ToggleType(next)));
         } else if event.0 == "save" {
             save(&tiles, &level);
+        } else if event.0 == "new" {
+            for column in level.tiles.iter_mut() {
+                for mut tile in column.iter_mut() {
+                    tile.height = 0;
+                    tile.tile_type = TileType::Land;
+                    tile.is_goal = false;
+                }
+            }
+        } else if event.0 == "width_add" {
+            reset_tile_dimensions(level.width + 1, level.height, &mut level, &tiles);
+        } else if event.0 == "width_sub" {
+            reset_tile_dimensions(level.width - 1, level.height, &mut level, &tiles);
+        } else if event.0 == "height_add" {
+            reset_tile_dimensions(level.width, level.height + 1, &mut level, &tiles);
+        } else if event.0 == "height_sub" {
+            reset_tile_dimensions(level.width, level.height - 1, &mut level, &tiles);
         }
     }
+}
+
+fn reset_tile_dimensions(width: usize, height: usize, mut level: &mut Level, tiles: &Query<&Tile>) {
+    let mut tiles = tiles_to_tile_info(tiles.iter(), level.width, level.height);
+    while width < tiles.len() {
+        let _ = tiles.pop();
+    }
+    while width > tiles.len() {
+        tiles.push((0..height).map(|_| TileInfo::default()).collect());
+    }
+
+    for row in tiles.iter_mut() {
+        while height < row.len() {
+            let _ = row.pop();
+        }
+        while height > row.len() {
+            row.push(TileInfo::default());
+        }
+    }
+
+    level.tiles = tiles;
+    level.width = width;
+    level.height = height;
 }
 
 fn tile_clicked(
@@ -180,10 +263,36 @@ fn tile_hovered_set(
     }
 }
 
-fn save(tiles: &Query<&Tile>, level: &Res<Level>) {
+fn tiles_to_tile_info<'a, T: Iterator<Item = &'a Tile>>(
+    tiles: T,
+    width: usize,
+    height: usize,
+) -> Vec<Vec<TileInfo>> {
+    let mut tile_vec: Vec<Vec<TileInfo>> = (0..width)
+        .map(|_| (0..height).map(|_| TileInfo::default()).collect())
+        .collect();
+
+    for tile in tiles {
+        if let Some(row) = tile_vec.get_mut(tile.x) {
+            if let Some(mut info) = row.get_mut(tile.y) {
+                info.height = tile.z;
+                info.is_goal = tile.is_goal;
+                info.tile_type = tile.tile_type;
+            }
+        }
+    }
+
+    tile_vec
+}
+
+fn save(tiles: &Query<&Tile>, level: &Level) {
+    let tiles = tiles_to_tile_info(tiles.iter(), level.width, level.height);
+
     let level = Level {
-        tiles: tiles.iter().cloned().collect(),
+        tiles,
         title: level.title.clone(),
+        width: level.width,
+        height: level.height,
     };
     let mut path = FileAssetIo::get_base_path();
     path.push("assets");
