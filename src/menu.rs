@@ -17,15 +17,17 @@ impl Plugin for MainMenuPlugin {
 }
 
 fn display_main_menu(mut commands: Commands) {
-    println!("Display Main Menu");
-    commands.spawn(UiRoot::new()).with_children(|parent| {
-        parent.spawn(
-            GameText::new("Canal Mania")
-                .size(100.)
-                .style(FontStyle::Italic),
-        );
-        parent.spawn(GameButton::new("start_game", "Start Game"));
-        parent.spawn(GameButton::new("credits", "Credits").style(ButtonStyle::Secondary));
+    commands.ui_root().spawn().with_children(|parent| {
+        parent
+            .text("Canal Mania")
+            .size(100.)
+            .style(FontStyle::Italic)
+            .spawn();
+        parent.button("start_game", "Start Game").spawn();
+        parent
+            .button("credits", "Credits")
+            .style(ButtonStyle::Secondary)
+            .spawn();
     });
 }
 

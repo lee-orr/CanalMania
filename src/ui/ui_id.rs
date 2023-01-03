@@ -9,6 +9,10 @@ impl<T: Debug + PartialEq + Eq + Hash> UiId<T> {
     pub fn val(&self) -> &T {
         &self.0
     }
+
+    pub fn new(val: T) -> Self {
+        Self(val)
+    }
 }
 
 pub trait WithUiId {

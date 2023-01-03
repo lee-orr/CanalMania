@@ -4,6 +4,7 @@ use std::fmt::Debug;
 use std::hash::Hash;
 
 use super::ui_id::WithUiId;
+use super::UiComponentSpawner;
 
 #[derive(Component, Debug, Default)]
 pub struct UiRoot {
@@ -54,6 +55,22 @@ impl UiRoot {
 
     pub fn padding(self, padding: f32) -> Self {
         Self { padding, ..self }
+    }
+}
+
+pub trait UiRootSpawner {
+    fn position(self, left: Val, right: Val, top: Val, bottom: Val) -> Self;
+
+    fn padding(self, padding: f32) -> Self;
+}
+
+impl<T: UiComponentSpawner<UiRoot>> UiRootSpawner for T {
+    fn position(self, left: Val, right: Val, top: Val, bottom: Val) -> Self {
+        self.update_value(|v| v.position(left, right, top, bottom))
+    }
+
+    fn padding(self, padding: f32) -> Self {
+        self.update_value(|v| v.padding(padding))
     }
 }
 

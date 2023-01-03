@@ -4,6 +4,7 @@ use bevy::prelude::*;
 use bevy::ui::JustifyContent;
 
 use super::ui_id::WithUiId;
+use super::{InternalUiSpawner, UiComponentSpawner};
 
 #[derive(Clone, Component, Debug)]
 pub struct GameButton {
@@ -43,6 +44,16 @@ impl GameButton {
     }
 }
 impl WithUiId for GameButton {}
+
+pub trait ButtonSpawner {
+    fn style(self, style: ButtonStyle) -> Self;
+}
+
+impl<T: UiComponentSpawner<GameButton>> ButtonSpawner for T {
+    fn style(self, style: ButtonStyle) -> Self {
+        self.update_value(move |v| v.style(style.clone()))
+    }
+}
 
 impl ButtonStyle {
     fn main_color(&self) -> Color {

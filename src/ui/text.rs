@@ -4,6 +4,7 @@ use bevy::prelude::*;
 use bevy::ui::JustifyContent;
 
 use super::ui_id::WithUiId;
+use super::{InternalUiSpawner, UiComponentSpawner};
 
 #[derive(Clone, Component, Debug)]
 pub struct GameText {
@@ -46,6 +47,20 @@ impl GameText {
 
     pub fn style(self, style: FontStyle) -> Self {
         Self { style, ..self }
+    }
+}
+
+pub trait TextSpawner {
+    fn size(self, size: f32) -> Self;
+    fn style(self, style: FontStyle) -> Self;
+}
+
+impl<T: UiComponentSpawner<GameText>> TextSpawner for T {
+    fn style(self, style: FontStyle) -> Self {
+        self.update_value(|v| v.style(style.clone()))
+    }
+    fn size(self, size: f32) -> Self {
+        self.update_value(|v| v.size(size))
     }
 }
 

@@ -17,17 +17,21 @@ impl Plugin for CreditsPlugin {
 }
 
 fn display_credits(mut commands: Commands) {
-    commands.spawn(UiRoot::new()).with_children(|parent| {
-        parent.spawn(GameText::new("Credits").size(100.).style(FontStyle::Italic));
-        parent.spawn(GameText::new("Created by Lee-Orr"));
+    commands.ui_root().spawn().with_children(|parent| {
+        parent
+            .text("Credits")
+            .size(100.)
+            .style(FontStyle::Italic)
+            .spawn();
+        parent.text("Created by Lee-Orr").spawn();
 
-        parent.spawn(GameText::new("for Historically Accurate Game Jam 6"));
+        parent.text("for Historically Accurate Game Jam 6").spawn();
 
-        parent.spawn(GameText::new(
-            "Using the Libre-Baskerville font by Rodrigo Fuenzalida and Pablo Impallari",
-        ));
+        parent
+            .text("Using the Libre-Baskerville font by Rodrigo Fuenzalida and Pablo Impallari")
+            .spawn();
 
-        parent.spawn(GameButton::new("menu", "Back"));
+        parent.button("menu", "Back").spawn();
     });
 }
 

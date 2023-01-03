@@ -42,34 +42,37 @@ enum EditorUiElement {
 fn display_ui(mut commands: Commands) {
     commands.insert_resource(NextState(EditorOperation::None));
     commands
-        .spawn(
-            UiRoot::new()
-                .position(Val::Px(0.), Val::Px(0.), Val::Auto, Val::Px(0.))
-                .padding(0.),
-        )
+        .ui_root()
+        .position(Val::Px(0.), Val::Px(0.), Val::Auto, Val::Px(0.))
+        .padding(0.)
+        .spawn()
         .with_children(|parent| {
-            parent.spawn(Div::new().opaque()).with_children(|parent| {
-                parent.spawn(
-                    GameText::new("No Operation Selected").id(EditorUiElement::CurrentModeText),
-                );
+            parent.div().opaque().spawn().with_children(|parent| {
                 parent
-                    .spawn(Div::new().horizontal())
-                    .with_children(|parent| {
-                        parent.spawn(GameButton::new("raise", "Raise Height"));
-                        parent.spawn(GameButton::new("lower", "Lower Height"));
-                        parent.spawn(GameButton::new("toggle", "Toggle Type"));
-                        parent.spawn(GameButton::new("goal", "Set Goals"));
-                    });
+                    .text("No Operation Selected")
+                    .id(EditorUiElement::CurrentModeText)
+                    .spawn();
+                parent.div().horizontal().spawn().with_children(|parent| {
+                    parent.button("raise", "Raise Height").spawn();
+                    parent.button("lower", "Lower Height").spawn();
+                    parent.button("toggle", "Toggle Type").spawn();
+                    parent.button("goal", "Set Goals").spawn();
+                });
                 parent
-                    .spawn(
-                        Div::new()
-                            .position(Val::Auto, Val::Px(2.), Val::Px(2.), Val::Auto)
-                            .horizontal()
-                            .padding(1.),
-                    )
+                    .div()
+                    .position(Val::Auto, Val::Px(2.), Val::Px(2.), Val::Auto)
+                    .horizontal()
+                    .padding(1.)
+                    .spawn()
                     .with_children(|parent| {
-                        parent.spawn(GameButton::new("save", "Save").style(ButtonStyle::Small));
-                        parent.spawn(GameButton::new("exit_editor", "X").style(ButtonStyle::Small));
+                        parent
+                            .button("save", "Save")
+                            .style(ButtonStyle::Small)
+                            .spawn();
+                        parent
+                            .button("exit_editor", "X")
+                            .style(ButtonStyle::Small)
+                            .spawn();
                     });
             });
         });

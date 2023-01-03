@@ -21,17 +21,17 @@ impl Plugin for ChooseLevelPlugin {
 }
 
 fn display_ui(mut commands: Commands, levels: Res<LevelList>) {
-    commands.spawn(UiRoot::new()).with_children(|parent| {
-        parent.spawn(
-            GameText::new("Choose Level")
-                .size(100.)
-                .style(FontStyle::Italic),
-        );
+    commands.ui_root().spawn().with_children(|parent| {
+        parent
+            .text("Choose Level")
+            .size(100.)
+            .style(FontStyle::Italic)
+            .spawn();
 
         for level in levels.levels.iter() {
             let file = &level.file;
             let name = &level.name;
-            parent.spawn(GameButton::new(format!("level:{file}"), name));
+            parent.button(format!("level:{file}"), name).spawn();
         }
     });
 }

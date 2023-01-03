@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use std::fmt::Debug;
 
 use super::ui_id::WithUiId;
-use super::Background;
+use super::{Background, UiComponentSpawner};
 
 #[derive(Component, Debug, Default)]
 pub struct Div {
@@ -69,6 +69,34 @@ impl Div {
 
     pub fn padding(self, padding: f32) -> Self {
         Self { padding, ..self }
+    }
+}
+
+pub trait DivSpawner {
+    fn position(self, left: Val, right: Val, top: Val, bottom: Val) -> Self;
+
+    fn padding(self, padding: f32) -> Self;
+
+    fn horizontal(self) -> Self;
+
+    fn opaque(self) -> Self;
+}
+
+impl<T: UiComponentSpawner<Div>> DivSpawner for T {
+    fn position(self, left: Val, right: Val, top: Val, bottom: Val) -> Self {
+        self.update_value(|v| v.position(left, right, top, bottom))
+    }
+
+    fn padding(self, padding: f32) -> Self {
+        self.update_value(|v| v.padding(padding))
+    }
+
+    fn horizontal(self) -> Self {
+        self.update_value(|v| v.horizontal())
+    }
+
+    fn opaque(self) -> Self {
+        self.update_value(|v| v.opaque())
     }
 }
 
