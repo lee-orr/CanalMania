@@ -39,18 +39,19 @@ impl GameButton {
         }
     }
 
-    pub fn style(self, style: ButtonStyle) -> Self {
-        Self { style, ..self }
+    pub fn style(&mut self, style: ButtonStyle) -> &mut Self {
+        self.style = style;
+        self
     }
 }
 impl WithUiId for GameButton {}
 
 pub trait ButtonSpawner {
-    fn style(self, style: ButtonStyle) -> Self;
+    fn style(  self, style: ButtonStyle) ->   Self;
 }
 
 impl<T: UiComponentSpawner<GameButton>> ButtonSpawner for T {
-    fn style(self, style: ButtonStyle) -> Self {
+    fn style(  self, style: ButtonStyle) ->  Self {
         self.update_value(move |v| v.style(style.clone()))
     }
 }
@@ -89,7 +90,7 @@ impl ButtonStyle {
 
     fn text_size(&self) -> f32 {
         match self {
-            Self::Small => 10.,
+            Self::Small => 15.,
             _ => 25.,
         }
     }

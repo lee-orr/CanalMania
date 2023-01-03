@@ -34,7 +34,7 @@ enum EditorOperation {
     SetGoal,
 }
 
-#[derive(Debug, Hash, PartialEq, Eq)]
+#[derive(Debug, Hash, PartialEq, Eq, Clone)]
 enum EditorUiElement {
     CurrentModeText,
     Width,
@@ -70,10 +70,11 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
                 .horizontal()
                 .padding(1.)
                 .with_children(|parent| {
-                    parent.text("Width:").spawn();
+                    parent.text("Width:").size(15.).spawn();
                     parent
                         .text(level.width.to_string())
                         .id(EditorUiElement::Width)
+                        .size(15.)
                         .spawn();
                     parent
                         .button("width_add", "+")
@@ -83,10 +84,11 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
                         .button("width_sub", "-")
                         .style(ButtonStyle::Small)
                         .spawn();
-                    parent.text("Height:").spawn();
+                    parent.text("Height:").size(15.).spawn();
                     parent
                         .text(level.height.to_string())
                         .id(EditorUiElement::Height)
+                        .size(15.)
                         .spawn();
                     parent
                         .button("height_add", "+")

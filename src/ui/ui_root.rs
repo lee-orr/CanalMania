@@ -6,20 +6,20 @@ use std::hash::Hash;
 use super::ui_id::WithUiId;
 use super::UiComponentSpawner;
 
-#[derive(Component, Debug, Default)]
+#[derive(Component, Debug, Default, Clone)]
 pub struct UiRoot {
     pub ui_root_type: UiRootType,
     pub background: Background,
     pub padding: f32,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum UiRootType {
     Fill,
     Positioned(UiRect),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Background {
     Transparent,
     Opaque,
@@ -46,15 +46,14 @@ impl UiRoot {
         }
     }
 
-    pub fn position(self, left: Val, right: Val, top: Val, bottom: Val) -> Self {
-        Self {
-            ui_root_type: UiRootType::Positioned(UiRect::new(left, right, top, bottom)),
-            ..self
-        }
+    pub fn position(&mut self, left: Val, right: Val, top: Val, bottom: Val) -> &mut Self {
+        self.ui_root_type = UiRootType::Positioned(UiRect::new(left, right, top, bottom));
+        self
     }
 
-    pub fn padding(self, padding: f32) -> Self {
-        Self { padding, ..self }
+    pub fn padding(&mut self, padding: f32) -> &mut Self {
+        self.padding = padding;
+        self
     }
 }
 

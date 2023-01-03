@@ -20,7 +20,7 @@ impl Plugin for ChooseLevelPlugin {
     }
 }
 
-#[derive(Debug, Hash, PartialEq, Eq)]
+#[derive(Debug, Hash, PartialEq, Eq, Clone)]
 enum ElId {
     Text,
     LevelButtonContainer,

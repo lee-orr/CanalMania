@@ -3,7 +3,7 @@ use iyes_loopless::prelude::*;
 
 use crate::ui::*;
 
-use super::game_state::GameState;
+use super::{game_state::GameState, level::Level};
 
 pub struct InGameUiPlugin;
 
@@ -15,15 +15,14 @@ impl Plugin for InGameUiPlugin {
     }
 }
 
-fn display_ui(mut commands: Commands) {
-    commands
-        .ui_root()
-        .position(Val::Px(0.), Val::Px(0.), Val::Auto, Val::Px(0.))
-        .padding(0.)
+fn display_ui(mut commands: Commands, level: Res<Level>) {
+    commands.ui_root().position(Val::Px(0.), Val::Px(0.), Val::Px(0.), Val::Auto)
+        .padding(3.)
         .with_children(|parent| {
-            parent.div().opaque().horizontal().with_children(|parent| {
-                parent.text("Your turn...").spawn();
-            });
+            if let Some(label) = &level.title {
+                parent.text(label).size(30.).spawn();
+            }
+            parent.text("Build a canal connecting the water to the goals").spawn();
         });
 
     #[cfg(feature = "dev")]

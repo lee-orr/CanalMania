@@ -41,26 +41,37 @@ impl GameText {
         }
     }
 
-    pub fn size(self, size: f32) -> Self {
-        Self { size, ..self }
+    pub fn size(&mut self, size: f32) -> &mut Self {
+        self.size = size;
+        self
     }
 
-    pub fn style(self, style: FontStyle) -> Self {
-        Self { style, ..self }
+    pub fn style(&mut self, style: FontStyle) -> &mut Self {
+        self.style = style;
+        self
+    }
+
+    pub fn text<T: Into<String>>(&mut self, text: T) -> &mut Self {
+        self.text = text.into();
+        self
     }
 }
 
 pub trait TextSpawner {
-    fn size(self, size: f32) -> Self;
-    fn style(self, style: FontStyle) -> Self;
+    fn size( self, size: f32) ->  Self;
+    fn style( self, style: FontStyle) ->  Self;
 }
 
 impl<T: UiComponentSpawner<GameText>> TextSpawner for T {
-    fn style(self, style: FontStyle) -> Self {
-        self.update_value(|v| v.style(style.clone()))
+    fn style( self, style: FontStyle) ->  Self {
+        self.update_value(|mut v| {
+            v.style(style.clone())
+        })
     }
-    fn size(self, size: f32) -> Self {
-        self.update_value(|v| v.size(size))
+    fn size( self, size: f32) ->  Self {
+        self.update_value(|mut v| {
+            v.size(size)
+        })
     }
 }
 

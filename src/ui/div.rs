@@ -5,7 +5,7 @@ use std::fmt::Debug;
 use super::ui_id::WithUiId;
 use super::{Background, UiComponentSpawner};
 
-#[derive(Component, Debug, Default)]
+#[derive(Component, Debug, Default, Clone)]
 pub struct Div {
     pub div_type: DivType,
     pub background: Background,
@@ -13,7 +13,7 @@ pub struct Div {
     pub padding: f32,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum DivType {
     Auto,
     Positioned(UiRect),
@@ -25,7 +25,7 @@ impl Default for DivType {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Direction {
     Vertical,
     Horizontal,
@@ -46,56 +46,51 @@ impl Div {
         }
     }
 
-    pub fn opaque(self) -> Self {
-        Self {
-            background: Background::Opaque,
-            ..self
-        }
+    pub fn opaque( &mut self) ->  &mut Self {
+        self.background = Background::Opaque;
+        self
     }
 
-    pub fn position(self, left: Val, right: Val, top: Val, bottom: Val) -> Self {
-        Self {
-            div_type: DivType::Positioned(UiRect::new(left, right, top, bottom)),
-            ..self
-        }
+    pub fn position( &mut self, left: Val, right: Val, top: Val, bottom: Val) ->  &mut Self {
+        self.div_type = DivType::Positioned(UiRect::new(left, right, top, bottom));
+            self
     }
 
-    pub fn horizontal(self) -> Self {
-        Self {
-            direction: Direction::Horizontal,
-            ..self
-        }
+    pub fn horizontal( &mut self) ->  &mut Self {
+        self.direction = Direction::Horizontal;
+            self
     }
 
-    pub fn padding(self, padding: f32) -> Self {
-        Self { padding, ..self }
+    pub fn padding( &mut self, padding: f32) ->  &mut Self {
+        self.padding = padding;
+            self
     }
 }
 
 pub trait DivSpawner {
-    fn position(self, left: Val, right: Val, top: Val, bottom: Val) -> Self;
+    fn position( self, left: Val, right: Val, top: Val, bottom: Val) ->  Self;
 
-    fn padding(self, padding: f32) -> Self;
+    fn padding( self, padding: f32) ->  Self;
 
-    fn horizontal(self) -> Self;
+    fn horizontal( self) ->  Self;
 
-    fn opaque(self) -> Self;
+    fn opaque( self) ->  Self;
 }
 
 impl<T: UiComponentSpawner<Div>> DivSpawner for T {
-    fn position(self, left: Val, right: Val, top: Val, bottom: Val) -> Self {
+    fn position( self, left: Val, right: Val, top: Val, bottom: Val) ->  Self {
         self.update_value(|v| v.position(left, right, top, bottom))
     }
 
-    fn padding(self, padding: f32) -> Self {
+    fn padding( self, padding: f32) ->  Self {
         self.update_value(|v| v.padding(padding))
     }
 
-    fn horizontal(self) -> Self {
+    fn horizontal( self) ->  Self {
         self.update_value(|v| v.horizontal())
     }
 
-    fn opaque(self) -> Self {
+    fn opaque( self) ->  Self {
         self.update_value(|v| v.opaque())
     }
 }
