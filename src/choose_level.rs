@@ -21,7 +21,7 @@ impl Plugin for ChooseLevelPlugin {
 }
 
 fn display_ui(mut commands: Commands, levels: Res<LevelList>) {
-    commands.ui_root().spawn().with_children(|parent| {
+    commands.ui_root().with_children(|parent| {
         parent
             .text("Choose Level")
             .size(100.)

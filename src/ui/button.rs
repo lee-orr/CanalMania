@@ -4,7 +4,7 @@ use bevy::prelude::*;
 use bevy::ui::JustifyContent;
 
 use super::ui_id::WithUiId;
-use super::{InternalUiSpawner, UiComponentSpawner};
+use super::UiComponentSpawner;
 
 #[derive(Clone, Component, Debug)]
 pub struct GameButton {

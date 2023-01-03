@@ -17,7 +17,7 @@ impl Plugin for MainMenuPlugin {
 }
 
 fn display_main_menu(mut commands: Commands) {
-    commands.ui_root().spawn().with_children(|parent| {
+    commands.ui_root().with_children(|parent| {
         parent
             .text("Canal Mania")
             .size(100.)

@@ -20,23 +20,16 @@ fn display_ui(mut commands: Commands) {
         .ui_root()
         .position(Val::Px(0.), Val::Px(0.), Val::Auto, Val::Px(0.))
         .padding(0.)
-        .spawn()
         .with_children(|parent| {
-            parent
-                .div()
-                .opaque()
-                .horizontal()
-                .spawn()
-                .with_children(|parent| {
-                    parent.text("Your turn...").spawn();
-                });
+            parent.div().opaque().horizontal().with_children(|parent| {
+                parent.text("Your turn...").spawn();
+            });
         });
 
     #[cfg(feature = "dev")]
     commands
         .ui_root()
         .position(Val::Auto, Val::Px(0.), Val::Px(0.), Val::Auto)
-        .spawn()
         .with_children(|parent| {
             parent
                 .button("editor", "Editor")

@@ -17,7 +17,7 @@ impl Plugin for CreditsPlugin {
 }
 
 fn display_credits(mut commands: Commands) {
-    commands.ui_root().spawn().with_children(|parent| {
+    commands.ui_root().with_children(|parent| {
         parent
             .text("Credits")
             .size(100.)

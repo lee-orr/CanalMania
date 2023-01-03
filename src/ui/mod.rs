@@ -84,6 +84,17 @@ pub trait UiComponentSpawner<T: WithUiId + Component> {
 
 pub trait UiComponentSpawnerActivator<'w, 's, 'a, T, S> {
     fn spawn(self) -> EntityCommands<'w, 's, 'a>;
+    fn with_children<F: FnOnce(&mut bevy::prelude::ChildBuilder<'_, '_, '_>)>(
+        self,
+        f: F,
+    ) -> EntityCommands<'w, 's, 'a>
+    where
+        Self: Sized,
+    {
+        let mut commands = self.spawn();
+        commands.with_children(move |builder| f(builder));
+        commands
+    }
 }
 
 pub trait InternalUiSpawner<'w, 's> {

@@ -45,14 +45,13 @@ fn display_ui(mut commands: Commands) {
         .ui_root()
         .position(Val::Px(0.), Val::Px(0.), Val::Auto, Val::Px(0.))
         .padding(0.)
-        .spawn()
         .with_children(|parent| {
-            parent.div().opaque().spawn().with_children(|parent| {
+            parent.div().opaque().with_children(|parent| {
                 parent
                     .text("No Operation Selected")
                     .id(EditorUiElement::CurrentModeText)
                     .spawn();
-                parent.div().horizontal().spawn().with_children(|parent| {
+                parent.div().horizontal().with_children(|parent| {
                     parent.button("raise", "Raise Height").spawn();
                     parent.button("lower", "Lower Height").spawn();
                     parent.button("toggle", "Toggle Type").spawn();
@@ -63,7 +62,6 @@ fn display_ui(mut commands: Commands) {
                     .position(Val::Auto, Val::Px(2.), Val::Px(2.), Val::Auto)
                     .horizontal()
                     .padding(1.)
-                    .spawn()
                     .with_children(|parent| {
                         parent
                             .button("save", "Save")
