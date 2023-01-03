@@ -20,31 +20,55 @@ impl Plugin for ChooseLevelPlugin {
     }
 }
 
+#[derive(Debug, Hash, PartialEq, Eq)]
+enum ElId {
+    Text,
+    LevelButtonContainer,
+}
+
 fn display_ui(mut commands: Commands, levels: Res<LevelList>) {
     commands.ui_root().with_children(|parent| {
         parent
             .text("Choose Level")
             .size(100.)
             .style(FontStyle::Italic)
+            .id(ElId::Text)
             .spawn();
 
-        for level in levels.levels.iter() {
-            let file = &level.file;
-            let name = &level.name;
-            parent.button(format!("level:{file}"), name).spawn();
-        }
+        parent
+            .div()
+            .id(ElId::LevelButtonContainer)
+            .with_children(|parent| {
+                for level in levels.levels.iter() {
+                    let file = &level.file;
+                    let name = &level.name;
+                    parent.button(format!("level:{file}"), name).spawn();
+                }
+            });
     });
 }
 
 fn button_pressed(
     mut events: EventReader<ButtonClickEvent>,
-    _commands: Commands,
+    mut commands: Commands,
     asset_server: Res<AssetServer>,
+    mut texts: Query<(&UiId<ElId>, &mut GameText)>,
+    containers: Query<(Entity, &UiId<ElId>), With<Div>>,
 ) {
     for event in events.iter() {
         if event.0.starts_with("level:") {
             let file = event.0.replace("level:", "levels/");
             let _ = asset_server.load::<Level, String>(file);
+            for (id, mut text) in texts.iter_mut() {
+                if id.val() == &ElId::Text {
+                    text.text = "Loading...".into();
+                }
+            }
+            for (entity, id) in containers.iter() {
+                if id.val() == &ElId::LevelButtonContainer {
+                    commands.entity(entity).despawn_recursive();
+                }
+            }
         }
     }
 }

@@ -109,7 +109,22 @@ pub fn spawn_ui_root(mut commands: Commands, roots: Query<(Entity, &UiRoot), Add
     }
 }
 
-fn clear_ui(mut commands: Commands, query: Query<Entity, With<UiRoot>>) {
+pub struct ClearUi;
+
+fn clear_ui_on_exit(mut commands: Commands, query: Query<Entity, With<UiRoot>>) {
+    for entity in &query {
+        commands.entity(entity).despawn_recursive();
+    }
+}
+
+pub fn clear_ui_on_event(
+    event: EventReader<ClearUi>,
+    mut commands: Commands,
+    query: Query<Entity, With<UiRoot>>,
+) {
+    if event.is_empty() {
+        return;
+    }
     for entity in &query {
         commands.entity(entity).despawn_recursive();
     }
@@ -119,6 +134,6 @@ pub fn clear_ui_system_set<T: Debug + Clone + Eq + PartialEq + Hash + StateData>
     app: &mut App,
     t: T,
 ) -> &mut App {
-    app.add_exit_system(t, clear_ui);
+    app.add_exit_system(t, clear_ui_on_exit);
     app
 }
