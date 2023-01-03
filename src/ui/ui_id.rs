@@ -14,12 +14,3 @@ impl<T: Debug + PartialEq + Eq + Hash> UiId<T> {
         Self(val)
     }
 }
-
-pub trait WithUiId {
-    fn id<T: Debug + PartialEq + Eq + Hash>(self, id: T) -> (Self, UiId<T>)
-    where
-        Self: Sized,
-    {
-        (self, UiId(id))
-    }
-}

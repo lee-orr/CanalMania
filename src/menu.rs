@@ -21,13 +21,11 @@ fn display_main_menu(mut commands: Commands) {
         parent
             .text("Canal Mania")
             .size(100.)
-            .style(FontStyle::Italic)
-            .spawn();
-        parent.button("start_game", "Start Game").spawn();
+            .style(FontStyle::Italic);
+        parent.button("start_game", "Start Game");
         parent
             .button("credits", "Credits")
-            .style(ButtonStyle::Secondary)
-            .spawn();
+            .style(ButtonStyle::Secondary);
     });
 }
 

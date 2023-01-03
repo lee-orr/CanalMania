@@ -3,7 +3,6 @@ use crate::assets::CanalManiaAssets;
 use bevy::prelude::*;
 use bevy::ui::JustifyContent;
 
-use super::ui_id::WithUiId;
 use super::UiComponentSpawner;
 
 #[derive(Clone, Component, Debug)]
@@ -44,14 +43,13 @@ impl GameButton {
         self
     }
 }
-impl WithUiId for GameButton {}
 
 pub trait ButtonSpawner {
-    fn style(  self, style: ButtonStyle) ->   Self;
+    fn style(self, style: ButtonStyle) -> Self;
 }
 
 impl<T: UiComponentSpawner<GameButton>> ButtonSpawner for T {
-    fn style(  self, style: ButtonStyle) ->  Self {
+    fn style(self, style: ButtonStyle) -> Self {
         self.update_value(move |v| v.style(style.clone()))
     }
 }

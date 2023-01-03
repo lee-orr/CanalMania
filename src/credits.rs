@@ -18,20 +18,14 @@ impl Plugin for CreditsPlugin {
 
 fn display_credits(mut commands: Commands) {
     commands.ui_root().with_children(|parent| {
-        parent
-            .text("Credits")
-            .size(100.)
-            .style(FontStyle::Italic)
-            .spawn();
-        parent.text("Created by Lee-Orr").spawn();
+        parent.text("Credits").size(100.).style(FontStyle::Italic);
+        parent.text("Created by Lee-Orr");
 
-        parent.text("for Historically Accurate Game Jam 6").spawn();
+        parent.text("for Historically Accurate Game Jam 6");
 
-        parent
-            .text("Using the Libre-Baskerville font by Rodrigo Fuenzalida and Pablo Impallari")
-            .spawn();
+        parent.text("Using the Libre-Baskerville font by Rodrigo Fuenzalida and Pablo Impallari");
 
-        parent.button("menu", "Back").spawn();
+        parent.button("menu", "Back");
     });
 }
 

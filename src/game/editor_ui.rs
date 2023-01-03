@@ -51,13 +51,12 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
             parent.div().opaque().with_children(|parent| {
                 parent
                     .text("No Operation Selected")
-                    .id(EditorUiElement::CurrentModeText)
-                    .spawn();
+                    .id(EditorUiElement::CurrentModeText);
                 parent.div().horizontal().with_children(|parent| {
-                    parent.button("raise", "Raise Height").spawn();
-                    parent.button("lower", "Lower Height").spawn();
-                    parent.button("toggle", "Toggle Type").spawn();
-                    parent.button("goal", "Set Goals").spawn();
+                    parent.button("raise", "Raise Height");
+                    parent.button("lower", "Lower Height");
+                    parent.button("toggle", "Toggle Type");
+                    parent.button("goal", "Set Goals");
                 });
             });
         });
@@ -70,46 +69,23 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
                 .horizontal()
                 .padding(1.)
                 .with_children(|parent| {
-                    parent.text("Width:").size(15.).spawn();
+                    parent.text("Width:").size(15.);
                     parent
                         .text(level.width.to_string())
                         .id(EditorUiElement::Width)
-                        .size(15.)
-                        .spawn();
-                    parent
-                        .button("width_add", "+")
-                        .style(ButtonStyle::Small)
-                        .spawn();
-                    parent
-                        .button("width_sub", "-")
-                        .style(ButtonStyle::Small)
-                        .spawn();
-                    parent.text("Height:").size(15.).spawn();
+                        .size(15.);
+                    parent.button("width_add", "+").style(ButtonStyle::Small);
+                    parent.button("width_sub", "-").style(ButtonStyle::Small);
+                    parent.text("Height:").size(15.);
                     parent
                         .text(level.height.to_string())
                         .id(EditorUiElement::Height)
-                        .size(15.)
-                        .spawn();
-                    parent
-                        .button("height_add", "+")
-                        .style(ButtonStyle::Small)
-                        .spawn();
-                    parent
-                        .button("height_sub", "-")
-                        .style(ButtonStyle::Small)
-                        .spawn();
-                    parent
-                        .button("new", "New")
-                        .style(ButtonStyle::Small)
-                        .spawn();
-                    parent
-                        .button("save", "Save")
-                        .style(ButtonStyle::Small)
-                        .spawn();
-                    parent
-                        .button("exit_editor", "X")
-                        .style(ButtonStyle::Small)
-                        .spawn();
+                        .size(15.);
+                    parent.button("height_add", "+").style(ButtonStyle::Small);
+                    parent.button("height_sub", "-").style(ButtonStyle::Small);
+                    parent.button("new", "New").style(ButtonStyle::Small);
+                    parent.button("save", "Save").style(ButtonStyle::Small);
+                    parent.button("exit_editor", "X").style(ButtonStyle::Small);
                 });
         });
 }

@@ -32,8 +32,7 @@ fn display_ui(mut commands: Commands, levels: Res<LevelList>) {
             .text("Choose Level")
             .size(100.)
             .style(FontStyle::Italic)
-            .id(ElId::Text)
-            .spawn();
+            .id(ElId::Text);
 
         parent
             .div()
@@ -42,7 +41,7 @@ fn display_ui(mut commands: Commands, levels: Res<LevelList>) {
                 for level in levels.levels.iter() {
                     let file = &level.file;
                     let name = &level.name;
-                    parent.button(format!("level:{file}"), name).spawn();
+                    parent.button(format!("level:{file}"), name);
                 }
             });
     });

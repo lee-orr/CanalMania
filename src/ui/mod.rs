@@ -32,49 +32,38 @@ impl Plugin for GameUiPlugin {
     }
 }
 
-pub struct UiComponent<'w, 's, 'a, T: WithUiId + Component + Clone, S: InternalUiSpawner<'w, 's>> {
+pub struct UiComponent<'w, 's, 'a, T: Component + Clone, S: InternalUiSpawner<'w, 's>> {
     pub value: T,
+    pub id: Box<dyn FnMut(&'a mut S, T) -> EntityCommands<'w, 's, 'a>>,
     spawner: Option<&'a mut S>,
     phantom: PhantomData<&'w T>,
     phantom_2: PhantomData<&'s T>,
 }
 
-pub struct UiComponentWithId<
-    'w,
-    's,
-    'a,
-    T: WithUiId + Component + Clone,
-    S: InternalUiSpawner<'w, 's>,
-    R: Debug + PartialEq + Eq + Hash + Clone,
-> {
-    pub id: R,
-    pub builder: UiComponent<'w, 's, 'a, T, S>
-}
-
-impl<'w, 's, 'a, T: WithUiId + Component + Clone, S: InternalUiSpawner<'w, 's>>
-    UiComponent<'w, 's, 'a, T, S>
-{
+impl<'w, 's, 'a, T: Component + Clone, S: InternalUiSpawner<'w, 's>> UiComponent<'w, 's, 'a, T, S> {
     pub fn new(value: T, spawner: &'a mut S) -> Self {
         Self {
             value,
+            id: Box::new(|spawner, value: T| spawner.spawn_ui_component(value)),
             spawner: Some(spawner),
             phantom: PhantomData,
             phantom_2: PhantomData,
         }
     }
 
-    pub fn id<R: Debug + PartialEq + Eq + Hash + Clone>(
-        self,
-        id: R,
-    ) -> UiComponentWithId<'w, 's, 'a, T, S, R> {
-        UiComponentWithId {
-            id,
-            builder: self,
-        }
+    pub fn id<R: Debug + PartialEq + Eq + Hash + Clone + Send>(mut self, id: R) -> Self
+    where
+        (T, ui_id::UiId<R>): Bundle,
+    {
+        let id = id;
+        self.id = Box::new(move |spawner, value: T| {
+            spawner.spawn_ui_component_with_id(value, id.clone())
+        });
+        self
     }
 }
 
-pub trait UiComponentSpawner<T: WithUiId + Component + Clone> {
+pub trait UiComponentSpawner<T: Component + Clone> {
     fn update_value<F: FnMut(&mut T) -> &mut T>(self, updator: F) -> Self;
 }
 
@@ -123,9 +112,9 @@ pub trait InternalUiSpawner<'w, 's> {
     {
         UiComponent::new(GameText::new(text), self)
     }
-    fn button<'a, R: Into<String>, T: Into<String>>(
+    fn button<'a, N: Into<String>, T: Into<String>>(
         &'a mut self,
-        name: R,
+        name: N,
         text: T,
     ) -> UiComponent<'w, 's, 'a, GameButton, Self>
     where
@@ -135,7 +124,7 @@ pub trait InternalUiSpawner<'w, 's> {
     }
 }
 
-impl<'w, 's, 'a, T: WithUiId + Component + Clone, S: InternalUiSpawner<'w, 's>> UiComponentSpawner<T>
+impl<'w, 's, 'a, T: Component + Clone, S: InternalUiSpawner<'w, 's>> UiComponentSpawner<T>
     for UiComponent<'w, 's, 'a, T, S>
 {
     fn update_value<F: FnMut(&mut T) -> &mut T>(mut self, mut updator: F) -> Self {
@@ -144,54 +133,12 @@ impl<'w, 's, 'a, T: WithUiId + Component + Clone, S: InternalUiSpawner<'w, 's>> 
     }
 }
 
-impl<'w, 's, 'a, T: WithUiId + Component + Clone, S: InternalUiSpawner<'w, 's>>
+impl<'w, 's, 'a, T: Component + Clone, S: InternalUiSpawner<'w, 's>>
     UiComponentSpawnerActivator<'w, 's, 'a, T, S> for UiComponent<'w, 's, 'a, T, S>
 {
     fn spawn(mut self) -> Option<EntityCommands<'w, 's, 'a>> {
-        let spawner = self.spawner;
-        self.spawner = None;
-        if let Some(mut spawner) = spawner {
-            Some(spawner.spawn_ui_component(self.value.clone()))
-        } else {
-            None
-        }
-    }
-}
-
-impl<
-        'w,
-        's,
-        'a,
-        T: WithUiId + Component + Clone,
-        S: InternalUiSpawner<'w, 's>,
-        R: Debug + PartialEq + Eq + Hash + Clone,
-    > UiComponentSpawner<T> for UiComponentWithId<'w, 's, 'a, T, S, R>
-{
-    fn update_value<F: FnMut(&mut T) -> &mut T>(mut self, mut updator: F) -> Self {
-        self.builder = self.builder.update_value(updator);
-        self
-    }
-}
-
-impl<
-        'w,
-        's,
-        'a,
-        T: WithUiId + Component + Clone,
-        S: InternalUiSpawner<'w, 's>,
-        R: Debug + PartialEq + Eq + Hash + Clone,
-    > UiComponentSpawnerActivator<'w, 's, 'a, T, S> for UiComponentWithId<'w, 's, 'a, T, S, R>
-where
-    (T, ui_id::UiId<R>): Bundle,
-{
-    fn spawn(mut self) -> Option<EntityCommands<'w, 's, 'a>> {
-        let spawner = self.builder.spawner;
-        self.builder.spawner = None;
-        if let Some(mut spawner) = spawner {
-            Some(spawner.spawn_ui_component_with_id(self.builder.value.clone(), self.id.clone()))
-        } else {
-            None
-        }
+        let spawner = self.spawner.take();
+        spawner.map(|spawner| spawner.spawn_ui_component(self.value.clone()))
     }
 }
 
@@ -233,11 +180,12 @@ impl<'w, 's> InternalUiSpawner<'w, 's> for ChildBuilder<'w, 's, '_> {
     }
 }
 
-// impl<'w, 's, 'a, T: WithUiId + Component + Clone, S: InternalUiSpawner<'w, 's>> Drop
-//     for UiComponent<'w, 's, 'a, T, S> {
-//         fn drop(&mut self) {
-//             if let Some(spawner) = self.spawner.as_mut() {
-//                 spawner.spawn_ui_component(self.value.clone());
-//             }
-//         }
-//     }
+impl<'w, 's, 'a, T: Component + Clone, S: InternalUiSpawner<'w, 's>> Drop
+    for UiComponent<'w, 's, 'a, T, S>
+{
+    fn drop(&mut self) {
+        if let Some(spawner) = self.spawner.as_mut() {
+            spawner.spawn_ui_component(self.value.clone());
+        }
+    }
+}

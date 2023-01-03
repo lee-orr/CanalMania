@@ -3,7 +3,6 @@ use iyes_loopless::prelude::AppLooplessStateExt;
 use std::fmt::Debug;
 use std::hash::Hash;
 
-use super::ui_id::WithUiId;
 use super::UiComponentSpawner;
 
 #[derive(Component, Debug, Default, Clone)]
@@ -36,7 +35,6 @@ impl Default for Background {
         Background::Transparent
     }
 }
-impl WithUiId for UiRoot {}
 
 impl UiRoot {
     pub fn new() -> Self {

@@ -16,13 +16,15 @@ impl Plugin for InGameUiPlugin {
 }
 
 fn display_ui(mut commands: Commands, level: Res<Level>) {
-    commands.ui_root().position(Val::Px(0.), Val::Px(0.), Val::Px(0.), Val::Auto)
+    commands
+        .ui_root()
+        .position(Val::Px(0.), Val::Px(0.), Val::Px(0.), Val::Auto)
         .padding(3.)
         .with_children(|parent| {
             if let Some(label) = &level.title {
-                parent.text(label).size(30.).spawn();
+                parent.text(label).size(30.);
             }
-            parent.text("Build a canal connecting the water to the goals").spawn();
+            parent.text("Build a canal connecting the water to the goals");
         });
 
     #[cfg(feature = "dev")]
@@ -30,10 +32,7 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
         .ui_root()
         .position(Val::Auto, Val::Px(0.), Val::Px(0.), Val::Auto)
         .with_children(|parent| {
-            parent
-                .button("editor", "Editor")
-                .style(ButtonStyle::Small)
-                .spawn();
+            parent.button("editor", "Editor").style(ButtonStyle::Small);
         });
 }
 

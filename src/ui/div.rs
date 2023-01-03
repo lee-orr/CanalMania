@@ -2,7 +2,6 @@ use bevy::prelude::*;
 
 use std::fmt::Debug;
 
-use super::ui_id::WithUiId;
 use super::{Background, UiComponentSpawner};
 
 #[derive(Component, Debug, Default, Clone)]
@@ -36,7 +35,6 @@ impl Default for Direction {
         Self::Vertical
     }
 }
-impl WithUiId for Div {}
 
 impl Div {
     pub fn new() -> Self {
@@ -46,51 +44,51 @@ impl Div {
         }
     }
 
-    pub fn opaque( &mut self) ->  &mut Self {
+    pub fn opaque(&mut self) -> &mut Self {
         self.background = Background::Opaque;
         self
     }
 
-    pub fn position( &mut self, left: Val, right: Val, top: Val, bottom: Val) ->  &mut Self {
+    pub fn position(&mut self, left: Val, right: Val, top: Val, bottom: Val) -> &mut Self {
         self.div_type = DivType::Positioned(UiRect::new(left, right, top, bottom));
-            self
+        self
     }
 
-    pub fn horizontal( &mut self) ->  &mut Self {
+    pub fn horizontal(&mut self) -> &mut Self {
         self.direction = Direction::Horizontal;
-            self
+        self
     }
 
-    pub fn padding( &mut self, padding: f32) ->  &mut Self {
+    pub fn padding(&mut self, padding: f32) -> &mut Self {
         self.padding = padding;
-            self
+        self
     }
 }
 
 pub trait DivSpawner {
-    fn position( self, left: Val, right: Val, top: Val, bottom: Val) ->  Self;
+    fn position(self, left: Val, right: Val, top: Val, bottom: Val) -> Self;
 
-    fn padding( self, padding: f32) ->  Self;
+    fn padding(self, padding: f32) -> Self;
 
-    fn horizontal( self) ->  Self;
+    fn horizontal(self) -> Self;
 
-    fn opaque( self) ->  Self;
+    fn opaque(self) -> Self;
 }
 
 impl<T: UiComponentSpawner<Div>> DivSpawner for T {
-    fn position( self, left: Val, right: Val, top: Val, bottom: Val) ->  Self {
+    fn position(self, left: Val, right: Val, top: Val, bottom: Val) -> Self {
         self.update_value(|v| v.position(left, right, top, bottom))
     }
 
-    fn padding( self, padding: f32) ->  Self {
+    fn padding(self, padding: f32) -> Self {
         self.update_value(|v| v.padding(padding))
     }
 
-    fn horizontal( self) ->  Self {
+    fn horizontal(self) -> Self {
         self.update_value(|v| v.horizontal())
     }
 
-    fn opaque( self) ->  Self {
+    fn opaque(self) -> Self {
         self.update_value(|v| v.opaque())
     }
 }
