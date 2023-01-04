@@ -7,17 +7,17 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'mini-jam-intermission'",
+            "name": "Debug executable 'canal-mania'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=mini-jam-intermission",
-                    "--package=mini-jam-intermission",
+                    "--bin=canal-mania",
+                    "--package=canal-mania",
                     "--features=dev"
                 ],
                 "env": {"PATH":"${env:USERPROFILE}/.rustup/toolchains/nightly-x86_64-pc-windows-msvc/bin;${workspaceFolder}/target/debug/deps;"},
                 "filter": {
-                    "name": "mini-jam-intermission",
+                    "name": "canal-mania",
                     "kind": "bin"
                 }
             },
@@ -28,16 +28,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'mini-jam-intermission'",
+            "name": "Debug unit tests in executable 'canal-mania'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=mini-jam-intermission",
-                    "--package=mini-jam-intermission"
+                    "--bin=canal-mania",
+                    "--package=canal-mania"
                 ],
                 "filter": {
-                    "name": "mini-jam-intermission",
+                    "name": "canal-mania",
                     "kind": "bin"
                 }
             },

@@ -14,6 +14,12 @@
     "canal_wet_center": File (path: "models.gltf#Mesh9/Primitive0"),
     "canal_wet_corner": File (path: "models.gltf#Mesh10/Primitive0"),
     "canal_wet_edge": File (path: "models.gltf#Mesh11/Primitive0"),
+    "lock_center": File (path: "models.gltf#Mesh12/Primitive0"),
+    "lock_corner": File (path: "models.gltf#Mesh13/Primitive0"),
+    "lock_edge": File (path: "models.gltf#Mesh14/Primitive0"),
+    "lock_wet_center": File (path: "models.gltf#Mesh15/Primitive0"),
+    "lock_wet_corner": File (path: "models.gltf#Mesh16/Primitive0"),
+    "lock_wet_edge": File (path: "models.gltf#Mesh17/Primitive0"),
     "tile_texture": File (path: "simple_texture.png"),
     "level_list": File (path: "level_list.levels.yml"),
 })

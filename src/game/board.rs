@@ -24,7 +24,9 @@ impl Plugin for BoardPlugin {
             .add_enter_system(AppLoadingState::Loaded, setup_board_materials)
             .add_system(build_board.run_in_state(AppState::InGame))
             .add_system(build_tile.run_in_state(AppState::InGame))
-            .add_system(process_selection_events.run_in_state(AppState::InGame));
+            .add_system(process_selection_events.run_in_state(AppState::InGame))
+            .add_enter_system(GameState::Complete, clear_board)
+            .add_exit_system(AppState::InGame, clear_board);
     }
 }
 
@@ -41,8 +43,47 @@ struct BoardRuntimeAssets {
 
 #[derive(Component, Debug, Default, Reflect)]
 #[reflect(Component)]
-struct Board {
+pub struct Board {
+    pub width: usize,
+    pub height: usize,
     pub children: HashMap<(usize, usize), Entity>,
+}
+
+impl Board {
+    pub fn neighbour_ids(&self, x: usize, y: usize) -> [Option<(usize, usize)>; 8] {
+        let above = y.checked_sub(1);
+        let left = x.checked_sub(1);
+        let center_x = Some(x);
+        let center_y = Some(y);
+        let below = if y + 1 < self.height {
+            Some(y + 1)
+        } else {
+            None
+        };
+        let right = if x + 1 < self.width {
+            Some(x + 1)
+        } else {
+            None
+        };
+
+        [
+            tile_position(left, above),
+            tile_position(center_x, above),
+            tile_position(right, above),
+            tile_position(left, center_y),
+            tile_position(right, center_y),
+            tile_position(left, below),
+            tile_position(center_x, below),
+            tile_position(right, below),
+        ]
+    }
+
+    pub fn neighbours(&self, x: usize, y: usize) -> [Option<Entity>; 8] {
+        self.neighbour_ids(x, y).map(|p| match p {
+            Some(p) => self.children.get(&p).cloned(),
+            None => None,
+        })
+    }
 }
 
 #[derive(Component, Default, Debug, Clone, Reflect, Serialize, Deserialize)]
@@ -64,11 +105,44 @@ pub enum TileType {
     City,
     CanalDry,
     CanalWet,
+    LockDry,
+    LockWet,
 }
 
 impl Default for TileType {
     fn default() -> Self {
         Self::Land
+    }
+}
+
+impl Tile {
+    pub fn get_dig_cost(&self) -> usize {
+        match self.tile_type {
+            TileType::Land => 1,
+            TileType::City => 3,
+            TileType::CanalDry => 0,
+            TileType::CanalWet => 0,
+            TileType::LockDry => 5,
+            TileType::LockWet => 5,
+        }
+    }
+    pub fn get_lock_cost(&self) -> usize {
+        match self.tile_type {
+            TileType::Land => 5,
+            TileType::City => 7,
+            TileType::CanalDry => 5,
+            TileType::CanalWet => 5,
+            TileType::LockDry => 0,
+            TileType::LockWet => 0,
+        }
+    }
+}
+
+fn tile_position(x: Option<usize>, y: Option<usize>) -> Option<(usize, usize)> {
+    if let (Some(x), Some(y)) = (x, y) {
+        Some((x, y))
+    } else {
+        None
     }
 }
 
@@ -143,17 +217,19 @@ fn build_board(
     );
     commands
         .spawn((
-            Board::default(),
+            Board {
+                width: level.width,
+                height: level.height,
+                ..Default::default()
+            },
             SpatialBundle {
                 transform: Transform::from_translation(center),
                 ..Default::default()
             },
         ))
         .with_children(|parent| {
-            let mut x = 0usize;
-            for column in level.tiles.iter() {
-                let mut y = 0usize;
-                for row in column.iter() {
+            for (x, column) in level.tiles.iter().enumerate() {
+                for (y, row) in column.iter().enumerate() {
                     let tile = Tile {
                         x,
                         y,
@@ -162,9 +238,7 @@ fn build_board(
                         is_goal: row.is_goal,
                     };
                     parent.spawn(tile);
-                    y += 1;
                 }
-                x += 1;
             }
         });
 
@@ -219,6 +293,8 @@ fn build_tile(
                     TileType::City => assets.city_center.clone(),
                     TileType::CanalDry => assets.canal_center.clone(),
                     TileType::CanalWet => assets.canal_wet_center.clone(),
+                    TileType::LockDry => assets.lock_center.clone(),
+                    TileType::LockWet => assets.lock_wet_center.clone(),
                 },
                 material: base_material.clone(),
                 ..Default::default()
@@ -230,6 +306,8 @@ fn build_tile(
                         TileType::City => assets.city_corner.clone(),
                         TileType::CanalDry => assets.canal_corner.clone(),
                         TileType::CanalWet => assets.canal_wet_corner.clone(),
+                        TileType::LockDry => assets.lock_corner.clone(),
+                        TileType::LockWet => assets.lock_wet_corner.clone(),
                     },
                     material: base_material.clone(),
                     transform: Transform::from_rotation(Quat::from_rotation_y(
@@ -243,6 +321,8 @@ fn build_tile(
                         TileType::City => assets.city_edge.clone(),
                         TileType::CanalDry => assets.canal_edge.clone(),
                         TileType::CanalWet => assets.canal_wet_edge.clone(),
+                        TileType::LockDry => assets.lock_edge.clone(),
+                        TileType::LockWet => assets.lock_wet_edge.clone(),
                     },
                     material: base_material.clone(),
                     transform: Transform::from_rotation(Quat::from_rotation_y(
@@ -282,5 +362,11 @@ pub(crate) fn process_selection_events(
                 }
             }
         }
+    }
+}
+
+fn clear_board(mut commands: Commands, boards: Query<Entity, With<Board>>) {
+    for board in boards.iter() {
+        commands.entity(board).despawn_recursive();
     }
 }

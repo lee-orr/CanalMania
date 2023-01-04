@@ -34,17 +34,25 @@ impl Plugin for GameUiPlugin {
 
 pub struct UiComponent<'w, 's, 'a, T: Component + Clone, S: InternalUiSpawner<'w, 's>> {
     pub value: T,
-    pub id: Box<dyn FnMut(&'a mut S, T) -> EntityCommands<'w, 's, 'a>>,
+    #[allow(clippy::type_complexity)]
+    pub id_function: Box<dyn Fn(&'a mut S, &T) -> EntityCommands<'w, 's, 'a>>,
+    pub should_have_id: bool,
     spawner: Option<&'a mut S>,
     phantom: PhantomData<&'w T>,
     phantom_2: PhantomData<&'s T>,
 }
 
-impl<'w, 's, 'a, T: Component + Clone, S: InternalUiSpawner<'w, 's>> UiComponent<'w, 's, 'a, T, S> {
+impl<'w, 's, 'a, T: Component + Clone + Debug, S: InternalUiSpawner<'w, 's>>
+    UiComponent<'w, 's, 'a, T, S>
+{
     pub fn new(value: T, spawner: &'a mut S) -> Self {
         Self {
             value,
-            id: Box::new(|spawner, value: T| spawner.spawn_ui_component(value)),
+            id_function: Box::new(|spawner, value| {
+                println!("Spawning without id {value:?}");
+                spawner.spawn_ui_component(value.clone())
+            }),
+            should_have_id: false,
             spawner: Some(spawner),
             phantom: PhantomData,
             phantom_2: PhantomData,
@@ -56,8 +64,10 @@ impl<'w, 's, 'a, T: Component + Clone, S: InternalUiSpawner<'w, 's>> UiComponent
         (T, ui_id::UiId<R>): Bundle,
     {
         let id = id;
-        self.id = Box::new(move |spawner, value: T| {
-            spawner.spawn_ui_component_with_id(value, id.clone())
+        self.should_have_id = true;
+        self.id_function = Box::new(move |spawner, value| {
+            println!("Spawning with id {value:?} {id:?}");
+            spawner.spawn_ui_component_with_id(value.clone(), id.clone())
         });
         self
     }
@@ -138,7 +148,10 @@ impl<'w, 's, 'a, T: Component + Clone, S: InternalUiSpawner<'w, 's>>
 {
     fn spawn(mut self) -> Option<EntityCommands<'w, 's, 'a>> {
         let spawner = self.spawner.take();
-        spawner.map(|spawner| spawner.spawn_ui_component(self.value.clone()))
+        spawner.map(|spawner| {
+            let spawn = self.id_function.as_mut();
+            spawn(spawner, &self.value)
+        })
     }
 }
 
@@ -184,8 +197,9 @@ impl<'w, 's, 'a, T: Component + Clone, S: InternalUiSpawner<'w, 's>> Drop
     for UiComponent<'w, 's, 'a, T, S>
 {
     fn drop(&mut self) {
-        if let Some(spawner) = self.spawner.as_mut() {
-            spawner.spawn_ui_component(self.value.clone());
+        if let Some(spawner) = self.spawner.take() {
+            let spawn = self.id_function.as_mut();
+            spawn(spawner, &self.value);
         }
     }
 }

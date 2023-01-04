@@ -47,6 +47,11 @@ impl GameText {
         self.style = style;
         self
     }
+
+    pub fn text<T: Into<String>>(&mut self, text: T) -> &mut Self {
+        self.text = text.into();
+        self
+    }
 }
 
 pub trait TextSpawner {

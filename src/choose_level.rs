@@ -27,24 +27,30 @@ enum ElId {
 }
 
 fn display_ui(mut commands: Commands, levels: Res<LevelList>) {
-    commands.ui_root().with_children(|parent| {
-        parent
-            .text("Choose Level")
-            .size(100.)
-            .style(FontStyle::Italic)
-            .id(ElId::Text);
+    commands
+        .ui_root()
+        .for_state(AppState::ChooseLevel)
+        .with_children(|parent| {
+            parent
+                .text("Choose Level")
+                .size(100.)
+                .style(FontStyle::Italic)
+                .id(ElId::Text);
 
-        parent
-            .div()
-            .id(ElId::LevelButtonContainer)
-            .with_children(|parent| {
-                for level in levels.levels.iter() {
-                    let file = &level.file;
-                    let name = &level.name;
-                    parent.button(format!("level:{file}"), name);
-                }
+            parent
+                .div()
+                .id(ElId::LevelButtonContainer)
+                .with_children(|parent| {
+                    for level in levels.levels.iter() {
+                        let file = &level.file;
+                        let name = &level.name;
+                        parent.button(format!("level:{file}"), name);
+                    }
+                });
+            parent.div().padding(5.).with_children(|parent| {
+                parent.button("back", "Back").style(ButtonStyle::Small);
             });
-    });
+        });
 }
 
 fn button_pressed(
@@ -68,6 +74,8 @@ fn button_pressed(
                     commands.entity(entity).despawn_recursive();
                 }
             }
+        } else if event.0 == "back" {
+            commands.insert_resource(NextState(AppState::MainMenu));
         }
     }
 }

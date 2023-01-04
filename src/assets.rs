@@ -33,6 +33,18 @@ pub struct CanalManiaAssets {
     pub canal_wet_corner: Handle<Mesh>,
     #[asset(key = "canal_wet_edge")]
     pub canal_wet_edge: Handle<Mesh>,
+    #[asset(key = "lock_center")]
+    pub lock_center: Handle<Mesh>,
+    #[asset(key = "lock_corner")]
+    pub lock_corner: Handle<Mesh>,
+    #[asset(key = "lock_edge")]
+    pub lock_edge: Handle<Mesh>,
+    #[asset(key = "lock_wet_center")]
+    pub lock_wet_center: Handle<Mesh>,
+    #[asset(key = "lock_wet_corner")]
+    pub lock_wet_corner: Handle<Mesh>,
+    #[asset(key = "lock_wet_edge")]
+    pub lock_wet_edge: Handle<Mesh>,
     #[asset(key = "tile_texture")]
     pub tile_texture: Handle<Image>,
     #[asset(key = "level_list")]

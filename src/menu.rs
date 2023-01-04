@@ -17,16 +17,19 @@ impl Plugin for MainMenuPlugin {
 }
 
 fn display_main_menu(mut commands: Commands) {
-    commands.ui_root().with_children(|parent| {
-        parent
-            .text("Canal Mania")
-            .size(100.)
-            .style(FontStyle::Italic);
-        parent.button("start_game", "Start Game");
-        parent
-            .button("credits", "Credits")
-            .style(ButtonStyle::Secondary);
-    });
+    commands
+        .ui_root()
+        .for_state(AppState::MainMenu)
+        .with_children(|parent| {
+            parent
+                .text("Canal Mania")
+                .size(100.)
+                .style(FontStyle::Italic);
+            parent.button("start_game", "Start Game");
+            parent
+                .button("credits", "Credits")
+                .style(ButtonStyle::Secondary);
+        });
 }
 
 fn button_pressed(mut events: EventReader<ButtonClickEvent>, mut commands: Commands) {

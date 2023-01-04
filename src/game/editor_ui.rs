@@ -45,6 +45,7 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
     commands.insert_resource(NextState(EditorOperation::None));
     commands
         .ui_root()
+        .for_state(GameState::Editor)
         .position(Val::Px(0.), Val::Px(0.), Val::Auto, Val::Px(0.))
         .padding(0.)
         .with_children(|parent| {
@@ -62,6 +63,7 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
         });
     commands
         .ui_root()
+        .for_state(GameState::Editor)
         .position(Val::Auto, Val::Px(2.), Val::Px(2.), Val::Auto)
         .with_children(|parent| {
             parent
@@ -141,7 +143,9 @@ fn button_pressed(
                     super::board::TileType::Land => super::board::TileType::City,
                     super::board::TileType::City => super::board::TileType::CanalDry,
                     super::board::TileType::CanalDry => super::board::TileType::CanalWet,
-                    super::board::TileType::CanalWet => super::board::TileType::Land,
+                    super::board::TileType::CanalWet => super::board::TileType::LockDry,
+                    super::board::TileType::LockDry => super::board::TileType::LockWet,
+                    super::board::TileType::LockWet => super::board::TileType::Land,
                 },
                 _ => TileType::Land,
             };

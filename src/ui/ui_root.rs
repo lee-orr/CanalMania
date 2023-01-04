@@ -1,5 +1,6 @@
 use bevy::{ecs::schedule::StateData, prelude::*};
 use iyes_loopless::prelude::AppLooplessStateExt;
+
 use std::fmt::Debug;
 use std::hash::Hash;
 
@@ -10,6 +11,7 @@ pub struct UiRoot {
     pub ui_root_type: UiRootType,
     pub background: Background,
     pub padding: f32,
+    pub state_hash: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -53,12 +55,19 @@ impl UiRoot {
         self.padding = padding;
         self
     }
+
+    pub fn for_state<T: Debug>(&mut self, state: T) -> &mut Self {
+        self.state_hash = Some(format!("{state:?}"));
+        self
+    }
 }
 
 pub trait UiRootSpawner {
     fn position(self, left: Val, right: Val, top: Val, bottom: Val) -> Self;
 
     fn padding(self, padding: f32) -> Self;
+
+    fn for_state<T: Debug + Clone>(self, state: T) -> Self;
 }
 
 impl<T: UiComponentSpawner<UiRoot>> UiRootSpawner for T {
@@ -69,10 +78,15 @@ impl<T: UiComponentSpawner<UiRoot>> UiRootSpawner for T {
     fn padding(self, padding: f32) -> Self {
         self.update_value(|v| v.padding(padding))
     }
+
+    fn for_state<R: Debug + Clone>(self, state: R) -> Self {
+        self.update_value(|v| v.for_state(state.clone()))
+    }
 }
 
-pub fn spawn_ui_root(mut commands: Commands, roots: Query<(Entity, &UiRoot), Added<UiRoot>>) {
+pub fn spawn_ui_root(mut commands: Commands, roots: Query<(Entity, &UiRoot), Changed<UiRoot>>) {
     for (entity, root) in roots.iter() {
+        info!("Spawning Ui Root: {root:?}");
         commands.entity(entity).insert((NodeBundle {
             style: Style {
                 size: match root.ui_root_type {
@@ -108,8 +122,14 @@ pub fn spawn_ui_root(mut commands: Commands, roots: Query<(Entity, &UiRoot), Add
 
 pub struct ClearUi;
 
-fn clear_ui_on_exit(mut commands: Commands, query: Query<Entity, With<UiRoot>>) {
-    for entity in &query {
+fn clear_ui_on_exit(mut commands: Commands, query: Query<(Entity, &UiRoot)>, state_hash: String) {
+    for (entity, root) in &query {
+        if let Some(hash) = &root.state_hash {
+            if hash != &state_hash {
+                continue;
+            }
+        }
+        info!("Clearing Ui Root: {root:?}");
         commands.entity(entity).despawn_recursive();
     }
 }
@@ -131,6 +151,13 @@ pub fn clear_ui_system_set<T: Debug + Clone + Eq + PartialEq + Hash + StateData>
     app: &mut App,
     t: T,
 ) -> &mut App {
-    app.add_exit_system(t, clear_ui_on_exit);
+    let state_hash = format!("{t:?}");
+    app.add_exit_system(
+        t,
+        move |commands: Commands, query: Query<(Entity, &UiRoot)>| {
+            let state_hash = state_hash.clone();
+            clear_ui_on_exit(commands, query, state_hash)
+        },
+    );
     app
 }
