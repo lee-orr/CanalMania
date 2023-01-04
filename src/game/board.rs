@@ -118,20 +118,20 @@ impl Default for TileType {
 impl Tile {
     pub fn get_dig_cost(&self) -> usize {
         match self.tile_type {
-            TileType::Land => 1,
-            TileType::City => 3,
+            TileType::Land => 1000,
+            TileType::City => 3000,
             TileType::CanalDry => 0,
             TileType::CanalWet => 0,
-            TileType::LockDry => 5,
-            TileType::LockWet => 5,
+            TileType::LockDry => 5000,
+            TileType::LockWet => 5000,
         }
     }
     pub fn get_lock_cost(&self) -> usize {
         match self.tile_type {
-            TileType::Land => 5,
-            TileType::City => 7,
-            TileType::CanalDry => 5,
-            TileType::CanalWet => 5,
+            TileType::Land => 5000,
+            TileType::City => 7000,
+            TileType::CanalDry => 5000,
+            TileType::CanalWet => 5000,
             TileType::LockDry => 0,
             TileType::LockWet => 0,
         }
@@ -339,6 +339,7 @@ fn build_tile(
 pub enum TileEvent {
     Clicked(Tile, Entity),
     HoverStarted(Tile, Entity),
+    HoverEnded(Tile, Entity),
 }
 
 pub(crate) fn process_selection_events(
@@ -348,14 +349,19 @@ pub(crate) fn process_selection_events(
 ) {
     for event in events.iter() {
         match event {
-            PickingEvent::Selection(e) => info!("A selection event happened: {:?}", e),
-            PickingEvent::Hover(e) => {
-                if let HoverEvent::JustEntered(e) = e {
+            PickingEvent::Selection(_) => {}
+            PickingEvent::Hover(e) => match e {
+                HoverEvent::JustEntered(e) => {
                     if let Ok(tile) = tiles.get(*e) {
                         out_events.send(TileEvent::HoverStarted(tile.clone(), *e));
                     }
                 }
-            }
+                HoverEvent::JustLeft(e) => {
+                    if let Ok(tile) = tiles.get(*e) {
+                        out_events.send(TileEvent::HoverEnded(tile.clone(), *e));
+                    }
+                }
+            },
             PickingEvent::Clicked(e) => {
                 if let Ok(tile) = tiles.get(*e) {
                     out_events.send(TileEvent::Clicked(tile.clone(), *e));

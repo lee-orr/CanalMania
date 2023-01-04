@@ -48,12 +48,14 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
         .padding(3.)
         .for_state(GameState::InGame)
         .with_children(|parent| {
-            parent
-                .button("dig", "Dig Canal")
-                .style(ButtonStyle::Primary);
-            parent
-                .button("lock", "Construct Lock")
-                .style(ButtonStyle::Primary);
+            parent.div().horizontal().with_children(|parent| {
+                parent
+                    .button("dig", "Dig Canal")
+                    .style(ButtonStyle::Primary);
+                parent
+                    .button("lock", "Construct Lock")
+                    .style(ButtonStyle::Primary);
+            });
         });
 
     commands
@@ -95,7 +97,7 @@ fn update_labels(
     if resources.is_changed() {
         for (mut label, id) in labels.iter_mut() {
             if let GameUiId::CostText = id.val() {
-                label.text(format!("Canal Cost: {}", resources.cost_so_far));
+                label.text(format!("Canal Cost: {} Pounds", resources.cost_so_far));
             }
         }
     }

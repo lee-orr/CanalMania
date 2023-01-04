@@ -25,6 +25,7 @@ impl Plugin for GameUiPlugin {
             .add_event::<ClearUi>()
             .add_system(spawn_text.run_in_state(AppLoadingState::Loaded))
             .add_system(spawn_ui_root.run_in_state(AppLoadingState::Loaded))
+            .add_system(update_world_ui.run_in_state(AppLoadingState::Loaded))
             .add_system(spawn_button.run_in_state(AppLoadingState::Loaded))
             .add_system(spawn_div.run_in_state(AppLoadingState::Loaded))
             .add_system(button_events.run_in_state(AppLoadingState::Loaded))

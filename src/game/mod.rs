@@ -9,6 +9,7 @@ mod dig_lock;
 mod editor_ui;
 mod game_complete_ui;
 mod simulation;
+mod tile_hover_ui;
 
 use bevy::prelude::*;
 use iyes_loopless::{prelude::AppLooplessStateExt, state::NextState};
@@ -23,6 +24,7 @@ use self::{
     game_state::{GameActionMode, GameActions, GameResources, GameState},
     in_game_ui::InGameUiPlugin,
     simulation::SimulationPlugin,
+    tile_hover_ui::TileHoverUi,
 };
 
 pub struct GamePlugin;
@@ -36,6 +38,7 @@ impl Plugin for GamePlugin {
             .add_enter_system(AppState::InGame, prepare_for_setup)
             .add_exit_system(AppState::InGame, prepare_for_setup)
             .add_plugin(BoardPlugin)
+            .add_plugin(TileHoverUi)
             .add_plugin(InGameUiPlugin)
             .add_plugin(GameCompleteUiPlugin)
             .add_plugin(DigCanalPlugin)

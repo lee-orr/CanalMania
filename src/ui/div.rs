@@ -10,6 +10,7 @@ pub struct Div {
     pub background: Background,
     pub direction: Direction,
     pub padding: f32,
+    pub size: Size,
 }
 
 #[derive(Debug, Clone)]
@@ -63,12 +64,18 @@ impl Div {
         self.padding = padding;
         self
     }
+
+    pub fn size(&mut self, size: Size) -> &mut Self {
+        self.size = size;
+        self
+    }
 }
 
 pub trait DivSpawner {
     fn position(self, left: Val, right: Val, top: Val, bottom: Val) -> Self;
 
     fn padding(self, padding: f32) -> Self;
+    fn size(self, size: Size) -> Self;
 
     fn horizontal(self) -> Self;
 
@@ -91,6 +98,10 @@ impl<T: UiComponentSpawner<Div>> DivSpawner for T {
     fn opaque(self) -> Self {
         self.update_value(|v| v.opaque())
     }
+
+    fn size(self, size: Size) -> Self {
+        self.update_value(|v| v.size(size))
+    }
 }
 
 pub fn spawn_div(mut commands: Commands, roots: Query<(Entity, &Div), Added<Div>>) {
@@ -112,6 +123,7 @@ pub fn spawn_div(mut commands: Commands, roots: Query<(Entity, &Div), Added<Div>
                     DivType::Auto => UiRect::default(),
                     DivType::Positioned(rect) => rect,
                 },
+                size: div.size,
                 ..Default::default()
             },
             background_color: match div.background {

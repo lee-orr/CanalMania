@@ -32,7 +32,10 @@ fn display_ui(mut commands: Commands, resource: Res<GameResources>, level: Res<L
                 ))
                 .size(100.)
                 .style(FontStyle::Italic);
-            parent.text(format!("The canal cost you {}", resource.cost_so_far));
+            parent.text(format!(
+                "The canal cost you {} Pounds",
+                resource.cost_so_far
+            ));
             parent.button("level", "Play Another Level");
             parent
                 .button("menu", "Main Menu")

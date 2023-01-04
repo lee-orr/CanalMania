@@ -18,6 +18,7 @@ pub struct UiRoot {
 pub enum UiRootType {
     Fill,
     Positioned(UiRect),
+    World { track: Entity, camera: Entity },
 }
 
 #[derive(Debug, Clone)]
@@ -25,6 +26,9 @@ pub enum Background {
     Transparent,
     Opaque,
 }
+
+#[derive(Component)]
+pub struct WorldUiRoot;
 
 impl Default for UiRootType {
     fn default() -> Self {
@@ -44,6 +48,11 @@ impl UiRoot {
             padding: 10.,
             ..Default::default()
         }
+    }
+
+    pub fn world_position(&mut self, track: Entity, camera: Entity) -> &mut Self {
+        self.ui_root_type = UiRootType::World { track, camera };
+        self
     }
 
     pub fn position(&mut self, left: Val, right: Val, top: Val, bottom: Val) -> &mut Self {
@@ -67,6 +76,8 @@ pub trait UiRootSpawner {
 
     fn padding(self, padding: f32) -> Self;
 
+    fn world_position(self, track: Entity, camera: Entity) -> Self;
+
     fn for_state<T: Debug + Clone>(self, state: T) -> Self;
 }
 
@@ -82,20 +93,60 @@ impl<T: UiComponentSpawner<UiRoot>> UiRootSpawner for T {
     fn for_state<R: Debug + Clone>(self, state: R) -> Self {
         self.update_value(|v| v.for_state(state.clone()))
     }
+
+    fn world_position(self, track: Entity, camera: Entity) -> Self {
+        self.update_value(|v| v.world_position(track, camera))
+    }
 }
 
-pub fn spawn_ui_root(mut commands: Commands, roots: Query<(Entity, &UiRoot), Changed<UiRoot>>) {
+fn get_world_ui_position(
+    entity: Entity,
+    camera: Entity,
+    transformables: &Query<&GlobalTransform>,
+    cameras: &Query<(&Camera, &GlobalTransform)>,
+) -> UiRect {
+    if let Ok(transform) = transformables.get(entity) {
+        if let Ok((camera, camera_transform)) = cameras.get(camera) {
+            if let Some(ndc) = camera.world_to_ndc(camera_transform, transform.translation()) {
+                let ndc = (ndc + 1.) * 50.;
+                return UiRect::new(
+                    Val::Percent(ndc.x),
+                    Val::Auto,
+                    Val::Auto,
+                    Val::Percent(ndc.y),
+                );
+            }
+        }
+    }
+    UiRect::default()
+}
+
+pub fn spawn_ui_root(
+    mut commands: Commands,
+    roots: Query<(Entity, &UiRoot), Changed<UiRoot>>,
+    transformables: Query<&GlobalTransform>,
+    cameras: Query<(&Camera, &GlobalTransform)>,
+) {
     for (entity, root) in roots.iter() {
-        info!("Spawning Ui Root: {root:?}");
-        commands.entity(entity).insert((NodeBundle {
+        info!("Spawning Ui Root: {root:?} {entity:?}");
+        let mut commands = commands.entity(entity);
+        commands.insert((NodeBundle {
             style: Style {
                 size: match root.ui_root_type {
                     UiRootType::Fill => Size::new(Val::Percent(100.), Val::Percent(100.)),
                     UiRootType::Positioned(_) => Size::AUTO,
+                    UiRootType::World {
+                        track: _,
+                        camera: _,
+                    } => Size::UNDEFINED,
                 },
                 max_size: match root.ui_root_type {
                     UiRootType::Fill => Size::new(Val::Percent(100.), Val::Percent(100.)),
                     UiRootType::Positioned(_) => Size::AUTO,
+                    UiRootType::World {
+                        track: _,
+                        camera: _,
+                    } => Size::AUTO,
                 },
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
@@ -103,11 +154,14 @@ pub fn spawn_ui_root(mut commands: Commands, roots: Query<(Entity, &UiRoot), Cha
                 padding: UiRect::all(Val::Px(root.padding)),
                 position_type: match root.ui_root_type {
                     UiRootType::Fill => PositionType::Relative,
-                    UiRootType::Positioned(_) => PositionType::Absolute,
+                    _ => PositionType::Absolute,
                 },
                 position: match root.ui_root_type {
                     UiRootType::Fill => UiRect::default(),
                     UiRootType::Positioned(rect) => rect,
+                    UiRootType::World { track, camera } => {
+                        get_world_ui_position(track, camera, &transformables, &cameras)
+                    }
                 },
                 ..Default::default()
             },
@@ -117,6 +171,27 @@ pub fn spawn_ui_root(mut commands: Commands, roots: Query<(Entity, &UiRoot), Cha
             },
             ..Default::default()
         },));
+        if let UiRootType::World {
+            track: _,
+            camera: _,
+        } = root.ui_root_type
+        {
+            info!("Adding world ui root to entity");
+            commands.insert(WorldUiRoot);
+        }
+    }
+}
+
+pub fn update_world_ui(
+    mut roots: Query<(Entity, &UiRoot, &mut Style), With<WorldUiRoot>>,
+    transformables: Query<&GlobalTransform>,
+    cameras: Query<(&Camera, &GlobalTransform)>,
+) {
+    for (_entity, root, mut style) in roots.iter_mut() {
+        if let UiRootType::World { track, camera } = root.ui_root_type {
+            let position = get_world_ui_position(track, camera, &transformables, &cameras);
+            style.position = position;
+        }
     }
 }
 
