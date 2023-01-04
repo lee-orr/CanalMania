@@ -1,7 +1,7 @@
 use bevy::{prelude::*, reflect::TypeUuid};
 use serde::{Deserialize, Serialize};
 
-use super::board::TileType;
+use super::board::{TileType, TileContents};
 
 #[derive(Resource, Component, Serialize, Deserialize, TypeUuid, Clone)]
 #[uuid = "b9b5565a-a06a-4647-bc62-274f32ba6a5f"]
@@ -26,7 +26,13 @@ pub struct LevelList {
 
 #[derive(Serialize, Deserialize, Clone, Default)]
 pub struct TileInfo {
+    #[serde(default)]
     pub tile_type: TileType,
+    #[serde(default)]
+    pub contents: TileContents,
+    #[serde(default)]
     pub is_goal: bool,
+    #[serde(default)]
+    pub is_wet: bool,
     pub height: usize,
 }

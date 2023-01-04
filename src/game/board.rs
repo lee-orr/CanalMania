@@ -95,19 +95,21 @@ pub struct Tile {
     #[serde(default)]
     pub tile_type: TileType,
     #[serde(default)]
+    pub contents: TileContents,
+    #[serde(default)]
     pub is_goal: bool,
+    #[serde(default)]
+    pub is_wet: bool,
 }
+
+#[derive(Component, Default, Clone)]
+pub struct TileNeighbours([Option<Entity>;8]);
 
 #[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum TileType {
     Land,
     Farm,
-    Road,
     City,
-    CanalDry,
-    CanalWet,
-    LockDry,
-    LockWet,
 }
 
 impl Default for TileType {
@@ -116,30 +118,46 @@ impl Default for TileType {
     }
 }
 
+#[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum TileContents {
+    None,
+    Road,
+    Canal,
+    Lock,
+}
+
+impl Default for TileContents {
+    fn default() -> Self {
+        Self::None
+    }
+}
+
 impl Tile {
     pub fn get_dig_cost(&self) -> usize {
-        match self.tile_type {
+        let type_cost = match self.tile_type {
             TileType::Land => 1000,
             TileType::Farm => 1500,
-            TileType::Road => 1200,
-            TileType::City => 3000,
-            TileType::CanalDry => 0,
-            TileType::CanalWet => 0,
-            TileType::LockDry => 5000,
-            TileType::LockWet => 5000,
-        }
+            TileType::City => 3000
+        };
+        let road_cost = if self.contents ==  TileContents::Road {
+            100usize
+        } else {
+            0
+        };
+        type_cost + road_cost
     }
     pub fn get_lock_cost(&self) -> usize {
-        match self.tile_type {
+        let type_cost = match self.tile_type {
             TileType::Land => 5000,
-            TileType::Road => 5500,
             TileType::Farm => 6000,
-            TileType::City => 7000,
-            TileType::CanalDry => 5000,
-            TileType::CanalWet => 5000,
-            TileType::LockDry => 0,
-            TileType::LockWet => 0,
-        }
+            TileType::City => 7000
+        };
+        let road_cost = if self.contents ==  TileContents::Road {
+            100usize
+        } else {
+            0
+        };
+        type_cost + road_cost
     }
 }
 
@@ -161,13 +179,11 @@ fn setup_board_materials(
     let tile_base_material = tile_materials.add(TileMaterial {
         ink_color: Color::rgb_u8(131, 129, 117),
         symbol_texture: Some(assets.tile_texture.clone()),
-        overlay_texture: Some(assets.paper.clone()),
         ..Default::default()
     });
     let goal_base_material = tile_materials.add(TileMaterial {
         ink_color: Color::rgb_u8(131, 129, 117),
         symbol_texture: Some(assets.tile_texture.clone()),
-        overlay_texture: Some(assets.paper.clone()),
         base_color: Color::rgb(0.7, 0.2, 0.1),
         ..Default::default()
     });
@@ -225,32 +241,34 @@ fn build_board(
         0.,
         -1. * (level.height as f32) / 2.,
     );
+    let mut board = Board {
+        width: level.width,
+        height: level.height,
+        ..Default::default()
+    };
     commands
         .spawn((
-            Board {
-                width: level.width,
-                height: level.height,
-                ..Default::default()
-            },
             SpatialBundle {
                 transform: Transform::from_translation(center),
                 ..Default::default()
             },
-        ))
-        .with_children(|parent| {
-            for (x, column) in level.tiles.iter().enumerate() {
-                for (y, row) in column.iter().enumerate() {
-                    let tile = Tile {
-                        x,
-                        y,
-                        z: row.height,
-                        tile_type: row.tile_type,
-                        is_goal: row.is_goal,
-                    };
-                    parent.spawn(tile);
-                }
+        )).with_children(|parent| {
+        for (x, column) in level.tiles.iter().enumerate() {
+            for (y, row) in column.iter().enumerate() {
+                let tile = Tile {
+                    x,
+                    y,
+                    z: row.height,
+                    tile_type: row.tile_type,
+                    is_goal: row.is_goal,
+                    contents: row.contents,
+                    is_wet: row.is_wet,
+                };
+                let entity = parent.spawn(tile).id();
+                board.children.insert((x,y), entity);
             }
-        });
+        }
+    }).insert(board);
 
     match state.0 {
         GameState::Editor => {}
@@ -264,13 +282,29 @@ fn build_tile(
     mut commands: Commands,
     assets: Res<CanalManiaAssets>,
     materials: Res<BoardRuntimeAssets>,
-    tiles: Query<(Entity, &Tile, &Parent), Changed<Tile>>,
-    mut boards: Query<&mut Board>,
+    tiles: Query<(Entity, &Tile, Option<&TileNeighbours>), Changed<Tile>>,
+    boards: Query<&Board>
 ) {
-    for (entity, tile, parent) in tiles.iter() {
-        if let Ok(mut parent) = boards.get_mut(parent.get()) {
-            parent.children.insert((tile.x, tile.y), entity);
-        }
+    for (entity, tile, neighbours) in tiles.iter() {
+        let neighbours = if let Some(n) = neighbours {
+            n.0.iter().map(|e| if let Some(e) = e {
+                tiles.get(*e).ok()
+        } else {
+            None
+        }).collect::<Vec<_>>()
+        } else {
+            if let Ok(board) = boards.get_single() {
+                let n = board.neighbours(tile.x, tile.y);
+                commands.entity(entity).insert(TileNeighbours(n));
+                n.iter().map(|e| if let Some(e) = e {
+                    tiles.get(*e).ok()
+            } else {
+                None
+            }).collect::<Vec<_>>()
+            } else {
+                (0..8).map(|_| Option::<(Entity, &Tile, Option<&TileNeighbours>)>::None).collect::<Vec<_>>()
+            }
+        };
         let center = Vec3::new(tile.x as f32, (tile.z as f32) / 6., tile.y as f32);
         let mut entity = commands.entity(entity);
 
@@ -299,53 +333,20 @@ fn build_tile(
         entity.with_children(|parent| {
             parent.spawn(MaterialMeshBundle {
                 mesh: match tile.tile_type {
-                    TileType::Land => assets.tile_center.clone(),
-                    TileType::City => assets.city_center.clone(),
-                    TileType::CanalDry => assets.canal_center.clone(),
-                    TileType::CanalWet => assets.canal_wet_center.clone(),
-                    TileType::LockDry => assets.lock_center.clone(),
-                    TileType::LockWet => assets.lock_wet_center.clone(),
-                    TileType::Farm => assets.farm_center.clone(),
-                    TileType::Road => assets.road_center.clone(),
+                    TileType::Land => assets.land_tile.clone(),
+                    TileType::City => assets.city_tile.clone(),
+                    TileType::Farm => assets.farm_tile.clone(),
                 },
                 material: base_material.clone(),
                 ..Default::default()
             });
-            for i in 0..4 {
-                parent.spawn(MaterialMeshBundle {
-                    mesh: match tile.tile_type {
-                        TileType::Land => assets.tile_corner.clone(),
-                        TileType::City => assets.city_corner.clone(),
-                        TileType::CanalDry => assets.canal_corner.clone(),
-                        TileType::CanalWet => assets.canal_wet_corner.clone(),
-                        TileType::LockDry => assets.lock_corner.clone(),
-                        TileType::LockWet => assets.lock_wet_corner.clone(),
-                        TileType::Farm => assets.farm_corner.clone(),
-                        TileType::Road => assets.road_corner.clone(),
-                    },
-                    material: base_material.clone(),
-                    transform: Transform::from_rotation(Quat::from_rotation_y(
-                        ((i as f32) * 90.).to_radians(),
-                    )),
-                    ..Default::default()
-                });
-                parent.spawn(MaterialMeshBundle {
-                    mesh: match tile.tile_type {
-                        TileType::Land => assets.tile_edge.clone(),
-                        TileType::City => assets.city_edge.clone(),
-                        TileType::CanalDry => assets.canal_edge.clone(),
-                        TileType::CanalWet => assets.canal_wet_edge.clone(),
-                        TileType::LockDry => assets.lock_edge.clone(),
-                        TileType::LockWet => assets.lock_wet_edge.clone(),
-                        TileType::Farm => assets.farm_edge.clone(),
-                        TileType::Road => assets.road_edge.clone(),
-                    },
-                    material: base_material.clone(),
-                    transform: Transform::from_rotation(Quat::from_rotation_y(
-                        ((i as f32) * 90.).to_radians(),
-                    )),
-                    ..Default::default()
-                });
+
+            match tile.contents {
+                TileContents::None => {},
+                TileContents::Road => {
+                },
+                TileContents::Canal => {},
+                TileContents::Lock => {},
             }
         });
     }

@@ -34,15 +34,14 @@ fn dig_lock(
     if let Ok(board) = board.get_single() {
         for event in event_reader.iter() {
             if let GameActions::ConstructLock(tile) = event {
-                if matches!(
-                    tile.tile_type,
-                    TileType::Land | TileType::City | TileType::CanalDry | TileType::CanalWet
+                if !matches!(
+                    tile.contents, TileContents::Lock
                 ) {
                     let my_position = (tile.x, tile.y);
                     if let Some(entity) = board.children.get(&my_position) {
                         if let Ok(mut tile) = tiles.get_mut(*entity) {
                             resources.cost_so_far += tile.get_lock_cost();
-                            tile.tile_type = TileType::LockDry;
+                            tile.contents = TileContents::Lock;
                         }
                     }
                 }

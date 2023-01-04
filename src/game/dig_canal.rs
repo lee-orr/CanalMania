@@ -35,14 +35,14 @@ fn dig_canal(
         for event in event_reader.iter() {
             if let GameActions::DigCanal(tile) = event {
                 if !matches!(
-                    tile.tile_type,
-                    TileType::LockDry | TileType::CanalDry | TileType::LockWet | TileType::CanalWet
+                    tile.contents,
+                    TileContents::Canal | TileContents::Lock
                 ) {
                     let my_position = (tile.x, tile.y);
                     if let Some(entity) = board.children.get(&my_position) {
                         if let Ok(mut tile) = tiles.get_mut(*entity) {
                             resources.cost_so_far += tile.get_dig_cost();
-                            tile.tile_type = TileType::CanalDry;
+                            tile.contents = TileContents::Canal;
                         }
                     }
                 }

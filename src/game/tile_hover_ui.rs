@@ -60,14 +60,14 @@ fn update_tile_hover_ui(
                     let (tile_type, display_dig, display_lock) = match tile.tile_type {
                         super::board::TileType::Land => ("A Plot of Land", true, true),
                         super::board::TileType::City => ("A Constructed Area", true, true),
-                        super::board::TileType::CanalDry => ("A Dry Canal", false, true),
-                        super::board::TileType::CanalWet => {
-                            ("A Functioning Waterway", false, false)
-                        }
-                        super::board::TileType::LockDry => ("A Dry Lock", false, false),
-                        super::board::TileType::LockWet => ("An Active Lock", false, false),
+                        // super::board::TileType::CanalDry => ("A Dry Canal", false, true),
+                        // super::board::TileType::CanalWet => {
+                        //     ("A Functioning Waterway", false, false)
+                        // }
+                        // super::board::TileType::LockDry => ("A Dry Lock", false, false),
+                        // super::board::TileType::LockWet => ("An Active Lock", false, false),
                         super::board::TileType::Farm => ("Farmland", true, true),
-                        super::board::TileType::Road => ("A Road", true, true),
+                        // super::board::TileType::Road => ("A Road", true, true),
                     };
 
                     let cost_to_dig = if display_dig {

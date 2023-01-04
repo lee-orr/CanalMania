@@ -1,12 +1,12 @@
 use std::io::Write;
 
-use bevy::{asset::FileAssetIo, prelude::*};
+use bevy::{asset::FileAssetIo, prelude::{*, system_adapter::new}};
 use iyes_loopless::prelude::*;
 
 use crate::ui::*;
 
 use super::{
-    board::{Tile, TileEvent, TileType},
+    board::{Tile, TileEvent, TileType, TileContents},
     game_state::GameState,
     level::{Level, TileInfo},
 };
@@ -31,6 +31,8 @@ enum EditorOperation {
     RaiseHeight,
     LowerHeight,
     ToggleType(TileType),
+    ToggleConstruction(TileContents),
+    ToggleWetness,
     SetGoal,
 }
 
@@ -107,6 +109,8 @@ fn update_labels(
                         EditorOperation::LowerHeight => "Lower Height".to_string(),
                         EditorOperation::ToggleType(t) => format!("Set to {t:?}"),
                         EditorOperation::SetGoal => "Set Goals".to_string(),
+                        EditorOperation::ToggleConstruction(t) => format!("Build {t:?} on tiles"),
+                        EditorOperation::ToggleWetness => "Adjust Water Status".to_string(),
                     }
                 }
                 EditorUiElement::Width => {
@@ -141,13 +145,8 @@ fn button_pressed(
             let next = match operation.0 {
                 EditorOperation::ToggleType(t) => match t {
                     super::board::TileType::Land => super::board::TileType::Farm,
-                    super::board::TileType::Farm => super::board::TileType::Road,
-                    super::board::TileType::Road => super::board::TileType::City,
-                    super::board::TileType::City => super::board::TileType::CanalDry,
-                    super::board::TileType::CanalDry => super::board::TileType::CanalWet,
-                    super::board::TileType::CanalWet => super::board::TileType::LockDry,
-                    super::board::TileType::LockDry => super::board::TileType::LockWet,
-                    super::board::TileType::LockWet => super::board::TileType::Land,
+                    super::board::TileType::Farm => super::board::TileType::City,
+                    super::board::TileType::City => super::board::TileType::Land
                 },
                 _ => TileType::Land,
             };
@@ -219,6 +218,13 @@ fn tile_clicked(
                     EditorOperation::SetGoal => {
                         new_tile.is_goal = !new_tile.is_goal;
                     }
+                    EditorOperation::ToggleConstruction(t) => {
+                        new_tile.is_wet = matches!(t, TileContents::Canal | TileContents::Lock);
+                        new_tile.contents = t;
+                    },
+                    EditorOperation::ToggleWetness => {
+                        new_tile.is_wet = !new_tile.is_wet;
+                    },
                 }
             }
         }
@@ -244,6 +250,20 @@ fn tile_hovered_set(
                 }
             }
         }
+    } else if let EditorOperation::ToggleConstruction(t) = operation.0 {
+        if buttons.pressed(MouseButton::Left) {
+            for event in events.iter() {
+                if let TileEvent::HoverStarted(old_tile, entity) = event {
+                    if old_tile.contents == t {
+                        continue;
+                    }
+                    if let Ok(mut new_tile) = tiles.get_mut(*entity) {
+                        new_tile.is_wet = matches!(t, TileContents::Canal | TileContents::Lock);
+                        new_tile.contents = t;
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -262,6 +282,8 @@ fn tiles_to_tile_info<'a, T: Iterator<Item = &'a Tile>>(
                 info.height = tile.z;
                 info.is_goal = tile.is_goal;
                 info.tile_type = tile.tile_type;
+                info.contents = tile.contents;
+                info.is_wet = tile.is_wet;
             }
         }
     }

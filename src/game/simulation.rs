@@ -19,12 +19,12 @@ fn run_water_simulation(
 ) {
     if let Ok(board) = board.get_single() {
         for (entity, tile) in tiles.iter() {
-            if tile.tile_type == TileType::CanalDry {
+            if tile.contents == TileContents::Canal && !tile.is_wet {
                 let neighbours = board.neighbours(tile.x, tile.y);
                 let has_water_neighbour = neighbours.iter().find(|neighbour| match neighbour {
                     Some(entity) => {
                         if let Ok((_, neighbour)) = tiles.get(*entity) {
-                            if neighbour.tile_type == TileType::CanalWet
+                            if neighbour.is_wet
                                 && tile.z <= neighbour.z
                                 && tile.z.abs_diff(neighbour.z) < 2
                             {
@@ -37,15 +37,15 @@ fn run_water_simulation(
                 });
                 if has_water_neighbour.is_some() {
                     let mut tile = tile.clone();
-                    tile.tile_type = TileType::CanalWet;
+                    tile.is_wet = true;
                     commands.entity(entity).insert(tile);
                 }
-            } else if tile.tile_type == TileType::LockDry {
+            } else if tile.contents == TileContents::Lock && !tile.is_wet {
                 let neighbours = board.neighbours(tile.x, tile.y);
                 let has_water_neighbour = neighbours.iter().find(|neighbour| match neighbour {
                     Some(entity) => {
                         if let Ok((_, neighbour)) = tiles.get(*entity) {
-                            if neighbour.tile_type == TileType::CanalWet
+                            if neighbour.is_wet
                                 && tile.z <= neighbour.z
                                 && tile.z.abs_diff(neighbour.z) < 5
                             {
@@ -58,7 +58,7 @@ fn run_water_simulation(
                 });
                 if has_water_neighbour.is_some() {
                     let mut tile = tile.clone();
-                    tile.tile_type = TileType::CanalWet;
+                    tile.is_wet = true;
                     commands.entity(entity).insert(tile);
                 }
             }
@@ -76,7 +76,7 @@ fn check_goals_for_sucess(tiles: Query<&Tile>, board: Query<&Board>, mut command
                 let has_water_neighbour = neighbours.iter().find(|neighbour| match neighbour {
                     Some(entity) => {
                         if let Ok(neighbour) = tiles.get(*entity) {
-                            if neighbour.tile_type == TileType::CanalWet
+                            if neighbour.is_wet
                                 && tile.z <= neighbour.z
                                 && tile.z.abs_diff(neighbour.z) < 2
                             {

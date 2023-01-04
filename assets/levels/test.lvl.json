@@ -25,14 +25,14 @@
       { "tile_type": "Land", "is_goal": false, "height": 0 },
       { "tile_type": "Land", "is_goal": false, "height": 0 },
       { "tile_type": "Land", "is_goal": false, "height": 1 },
-      { "tile_type": "CanalWet", "is_goal": false, "height": 2 },
-      { "tile_type": "CanalWet", "is_goal": false, "height": 2 }
+      { "tile_type": "Land", "contents": "Canal", "is_wet": true, "is_goal": false, "height": 2 },
+      { "tile_type": "Land", "contents": "Canal", "is_wet": true, "is_goal": false, "height": 2 }
     ],
     [
-      { "tile_type": "CanalWet", "is_goal": false, "height": 1 },
-      { "tile_type": "CanalWet", "is_goal": false, "height": 1 },
-      { "tile_type": "CanalWet", "is_goal": false, "height": 2 },
-      { "tile_type": "CanalWet", "is_goal": false, "height": 2 },
+      { "tile_type": "Land", "contents": "Canal", "is_wet": true, "is_goal": false, "height": 1 },
+      { "tile_type": "Land", "contents": "Canal", "is_wet": true, "is_goal": false, "height": 1 },
+      { "tile_type": "Land", "contents": "Canal", "is_wet": true, "is_goal": false, "height": 2 },
+      { "tile_type": "Land", "contents": "Canal", "is_wet": true, "is_goal": false, "height": 2 },
       { "tile_type": "Land", "is_goal": false, "height": 3 }
     ]
   ],

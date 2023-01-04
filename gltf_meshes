@@ -1,0 +1,153 @@
+{
+            "mesh" : 0,
+            "name" : "LandTile"
+        },
+        {
+            "mesh" : 1,
+            "name" : "FarmTile"
+        },
+        {
+            "mesh" : 2,
+            "name" : "CityTile"
+        },
+        {
+            "mesh" : 3,
+            "name" : "Tree1",
+            "scale" : [
+                0.09296977519989014,
+                0.09296977519989014,
+                0.09296977519989014
+            ]
+        },
+        {
+            "mesh" : 4,
+            "name" : "Tree4",
+            "scale" : [
+                0.09296977519989014,
+                0.09296977519989014,
+                0.09296977519989014
+            ]
+        },
+        {
+            "mesh" : 5,
+            "name" : "Tree3",
+            "scale" : [
+                0.09296977519989014,
+                0.09296977519989014,
+                0.09296977519989014
+            ]
+        },
+        {
+            "mesh" : 6,
+            "name" : "Tree2",
+            "scale" : [
+                0.09296977519989014,
+                0.09296977519989014,
+                0.09296977519989014
+            ]
+        },
+        {
+            "mesh" : 7,
+            "name" : "House",
+            "scale" : [
+                0.09296977519989014,
+                0.09296977519989014,
+                0.09296977519989014
+            ]
+        },
+        {
+            "mesh" : 8,
+            "name" : "House2",
+            "scale" : [
+                0.09296977519989014,
+                0.09296977519989014,
+                0.09296977519989014
+            ]
+        },
+        {
+            "mesh" : 9,
+            "name" : "House3",
+            "scale" : [
+                0.09296977519989014,
+                0.09296977519989014,
+                0.09296977519989014
+            ]
+        },
+        {
+            "mesh" : 10,
+            "name" : "House4",
+            "scale" : [
+                0.09296977519989014,
+                0.09296977519989014,
+                0.09296977519989014
+            ]
+        },
+        {
+            "name" : "CanalCrossing"
+        },
+        {
+            "name" : "CanalT"
+        },
+        {
+            "name" : "CanalCorner"
+        },
+        {
+            "name" : "CanalLine"
+        },
+        {
+            "name" : "CanalEnd"
+        },
+        {
+            "name" : "CanalCenter"
+        },
+        {
+            "name" : "LockCrossing"
+        },
+        {
+            "name" : "LockCorner"
+        },
+        {
+            "name" : "LockEnd"
+        },
+        {
+            "name" : "LockLine"
+        },
+        {
+            "name" : "LockT"
+        },
+        {
+            "name" : "CanalDryCrossing"
+        },
+        {
+            "name" : "CanalDryT"
+        },
+        {
+            "name" : "CanalDryCorner"
+        },
+        {
+            "name" : "CanadlDryLine"
+        },
+        {
+            "name" : "CanalDryEnd"
+        },
+        {
+            "name" : "CanalDryCenter"
+        },
+        {
+            "name" : "RoadCorner"
+        },
+        {
+            "name" : "RoadCrossing"
+        },
+        {
+            "name" : "RoadT"
+        },
+        {
+            "name" : "RoadLine"
+        },
+        {
+            "name" : "RoadEnd"
+        },
+        {
+            "name" : "RoadCenter"
+        }
