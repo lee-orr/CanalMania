@@ -25,6 +25,7 @@ use iyes_loopless::prelude::*;
 
 use app_state::*;
 use menu::MainMenuPlugin;
+use noisy_bevy::NoisyShaderPlugin;
 use smooth_bevy_cameras::{
     controllers::orbit::{OrbitCameraBundle, OrbitCameraController, OrbitCameraPlugin},
     *,
@@ -61,6 +62,7 @@ fn main() {
                     },
                 }),
         )
+        .add_plugin(NoisyShaderPlugin)
         .add_plugins(DefaultPickingPlugins)
         .add_plugin(LookTransformPlugin)
         .add_plugin(OrbitCameraPlugin::default())
