@@ -59,6 +59,8 @@ pub struct CanalManiaAssets {
     pub lock_wet_edge: Handle<Mesh>,
     #[asset(key = "tile_texture")]
     pub tile_texture: Handle<Image>,
+    #[asset(key = "paper")]
+    pub paper: Handle<Image>,
     #[asset(key = "level_list")]
     pub level_list: Handle<LevelList>,
 }

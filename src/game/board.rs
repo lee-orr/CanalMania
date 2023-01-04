@@ -11,7 +11,7 @@ use crate::{
     assets::CanalManiaAssets,
 };
 
-use super::{game_state::GameState, level::Level};
+use super::{game_state::GameState, level::Level, tile_shader::TileMaterial};
 
 pub struct BoardPlugin;
 
@@ -31,8 +31,8 @@ impl Plugin for BoardPlugin {
 
 #[derive(Resource)]
 struct BoardRuntimeAssets {
-    pub tile_base_material: Handle<StandardMaterial>,
-    pub goal_base_material: Handle<StandardMaterial>,
+    pub tile_base_material: Handle<TileMaterial>,
+    pub goal_base_material: Handle<TileMaterial>,
     pub selector: Handle<Mesh>,
     pub selector_base: Handle<StandardMaterial>,
     pub selector_hovered: Handle<StandardMaterial>,
@@ -155,14 +155,19 @@ fn setup_board_materials(
     mut commands: Commands,
     assets: Res<CanalManiaAssets>,
     mut materials: ResMut<Assets<StandardMaterial>>,
+    mut tile_materials: ResMut<Assets<TileMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
-    let tile_base_material = materials.add(StandardMaterial {
-        base_color_texture: Some(assets.tile_texture.clone()),
+    let tile_base_material = tile_materials.add(TileMaterial {
+        ink_color: Color::rgb_u8(131, 129, 117),
+        symbol_texture: Some(assets.tile_texture.clone()),
+        overlay_texture: Some(assets.paper.clone()),
         ..Default::default()
     });
-    let goal_base_material = materials.add(StandardMaterial {
-        base_color_texture: Some(assets.tile_texture.clone()),
+    let goal_base_material = tile_materials.add(TileMaterial {
+        ink_color: Color::rgb_u8(131, 129, 117),
+        symbol_texture: Some(assets.tile_texture.clone()),
+        overlay_texture: Some(assets.paper.clone()),
         base_color: Color::rgb(0.7, 0.2, 0.1),
         ..Default::default()
     });
@@ -292,7 +297,7 @@ fn build_tile(
         ));
         entity.despawn_descendants();
         entity.with_children(|parent| {
-            parent.spawn(PbrBundle {
+            parent.spawn(MaterialMeshBundle {
                 mesh: match tile.tile_type {
                     TileType::Land => assets.tile_center.clone(),
                     TileType::City => assets.city_center.clone(),
@@ -307,7 +312,7 @@ fn build_tile(
                 ..Default::default()
             });
             for i in 0..4 {
-                parent.spawn(PbrBundle {
+                parent.spawn(MaterialMeshBundle {
                     mesh: match tile.tile_type {
                         TileType::Land => assets.tile_corner.clone(),
                         TileType::City => assets.city_corner.clone(),
@@ -324,7 +329,7 @@ fn build_tile(
                     )),
                     ..Default::default()
                 });
-                parent.spawn(PbrBundle {
+                parent.spawn(MaterialMeshBundle {
                     mesh: match tile.tile_type {
                         TileType::Land => assets.tile_edge.clone(),
                         TileType::City => assets.city_edge.clone(),

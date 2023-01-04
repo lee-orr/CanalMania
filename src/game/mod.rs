@@ -10,6 +10,7 @@ mod editor_ui;
 mod game_complete_ui;
 mod simulation;
 mod tile_hover_ui;
+mod tile_shader;
 
 use bevy::prelude::*;
 use iyes_loopless::{prelude::AppLooplessStateExt, state::NextState};
@@ -25,6 +26,7 @@ use self::{
     in_game_ui::InGameUiPlugin,
     simulation::SimulationPlugin,
     tile_hover_ui::TileHoverUi,
+    tile_shader::TileMaterial,
 };
 
 pub struct GamePlugin;
@@ -43,7 +45,8 @@ impl Plugin for GamePlugin {
             .add_plugin(GameCompleteUiPlugin)
             .add_plugin(DigCanalPlugin)
             .add_plugin(DigLockPlugin)
-            .add_plugin(SimulationPlugin);
+            .add_plugin(SimulationPlugin)
+            .add_plugin(MaterialPlugin::<TileMaterial>::default());
         #[cfg(not(target_family = "wasm"))]
         app.add_plugin(self::editor_ui::EditorUiPlugin);
     }
