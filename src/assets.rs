@@ -15,6 +15,18 @@ pub struct CanalManiaAssets {
     pub tile_corner: Handle<Mesh>,
     #[asset(key = "tile_edge")]
     pub tile_edge: Handle<Mesh>,
+    #[asset(key = "farm_center")]
+    pub farm_center: Handle<Mesh>,
+    #[asset(key = "farm_corner")]
+    pub farm_corner: Handle<Mesh>,
+    #[asset(key = "farm_edge")]
+    pub farm_edge: Handle<Mesh>,
+    #[asset(key = "road_center")]
+    pub road_center: Handle<Mesh>,
+    #[asset(key = "road_corner")]
+    pub road_corner: Handle<Mesh>,
+    #[asset(key = "road_edge")]
+    pub road_edge: Handle<Mesh>,
     #[asset(key = "city_center")]
     pub city_center: Handle<Mesh>,
     #[asset(key = "city_corner")]

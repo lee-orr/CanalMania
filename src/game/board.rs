@@ -25,7 +25,6 @@ impl Plugin for BoardPlugin {
             .add_system(build_board.run_in_state(AppState::InGame))
             .add_system(build_tile.run_in_state(AppState::InGame))
             .add_system(process_selection_events.run_in_state(AppState::InGame))
-            .add_enter_system(GameState::Complete, clear_board)
             .add_exit_system(AppState::InGame, clear_board);
     }
 }
@@ -102,6 +101,8 @@ pub struct Tile {
 #[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum TileType {
     Land,
+    Farm,
+    Road,
     City,
     CanalDry,
     CanalWet,
@@ -119,6 +120,8 @@ impl Tile {
     pub fn get_dig_cost(&self) -> usize {
         match self.tile_type {
             TileType::Land => 1000,
+            TileType::Farm => 1500,
+            TileType::Road => 1200,
             TileType::City => 3000,
             TileType::CanalDry => 0,
             TileType::CanalWet => 0,
@@ -129,6 +132,8 @@ impl Tile {
     pub fn get_lock_cost(&self) -> usize {
         match self.tile_type {
             TileType::Land => 5000,
+            TileType::Road => 5500,
+            TileType::Farm => 6000,
             TileType::City => 7000,
             TileType::CanalDry => 5000,
             TileType::CanalWet => 5000,
@@ -295,6 +300,8 @@ fn build_tile(
                     TileType::CanalWet => assets.canal_wet_center.clone(),
                     TileType::LockDry => assets.lock_center.clone(),
                     TileType::LockWet => assets.lock_wet_center.clone(),
+                    TileType::Farm => assets.farm_center.clone(),
+                    TileType::Road => assets.road_center.clone(),
                 },
                 material: base_material.clone(),
                 ..Default::default()
@@ -308,6 +315,8 @@ fn build_tile(
                         TileType::CanalWet => assets.canal_wet_corner.clone(),
                         TileType::LockDry => assets.lock_corner.clone(),
                         TileType::LockWet => assets.lock_wet_corner.clone(),
+                        TileType::Farm => assets.farm_corner.clone(),
+                        TileType::Road => assets.road_corner.clone(),
                     },
                     material: base_material.clone(),
                     transform: Transform::from_rotation(Quat::from_rotation_y(
@@ -323,6 +332,8 @@ fn build_tile(
                         TileType::CanalWet => assets.canal_wet_edge.clone(),
                         TileType::LockDry => assets.lock_edge.clone(),
                         TileType::LockWet => assets.lock_wet_edge.clone(),
+                        TileType::Farm => assets.farm_edge.clone(),
+                        TileType::Road => assets.road_edge.clone(),
                     },
                     material: base_material.clone(),
                     transform: Transform::from_rotation(Quat::from_rotation_y(

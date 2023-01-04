@@ -66,6 +66,8 @@ fn update_tile_hover_ui(
                         }
                         super::board::TileType::LockDry => ("A Dry Lock", false, false),
                         super::board::TileType::LockWet => ("An Active Lock", false, false),
+                        super::board::TileType::Farm => ("Farmland", true, true),
+                        super::board::TileType::Road => ("A Road", true, true),
                     };
 
                     let cost_to_dig = if display_dig {

@@ -140,7 +140,9 @@ fn button_pressed(
         } else if event.0 == "toggle" {
             let next = match operation.0 {
                 EditorOperation::ToggleType(t) => match t {
-                    super::board::TileType::Land => super::board::TileType::City,
+                    super::board::TileType::Land => super::board::TileType::Farm,
+                    super::board::TileType::Farm => super::board::TileType::Road,
+                    super::board::TileType::Road => super::board::TileType::City,
                     super::board::TileType::City => super::board::TileType::CanalDry,
                     super::board::TileType::CanalDry => super::board::TileType::CanalWet,
                     super::board::TileType::CanalWet => super::board::TileType::LockDry,

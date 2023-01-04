@@ -34,7 +34,10 @@ fn dig_canal(
     if let Ok(board) = board.get_single() {
         for event in event_reader.iter() {
             if let GameActions::DigCanal(tile) = event {
-                if matches!(tile.tile_type, TileType::Land | TileType::City) {
+                if !matches!(
+                    tile.tile_type,
+                    TileType::LockDry | TileType::CanalDry | TileType::LockWet | TileType::CanalWet
+                ) {
                     let my_position = (tile.x, tile.y);
                     if let Some(entity) = board.children.get(&my_position) {
                         if let Ok(mut tile) = tiles.get_mut(*entity) {

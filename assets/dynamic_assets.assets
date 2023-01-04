@@ -20,6 +20,12 @@
     "lock_wet_center": File (path: "models.gltf#Mesh15/Primitive0"),
     "lock_wet_corner": File (path: "models.gltf#Mesh16/Primitive0"),
     "lock_wet_edge": File (path: "models.gltf#Mesh17/Primitive0"),
+    "farm_center": File (path: "models.gltf#Mesh18/Primitive0"),
+    "farm_corner": File (path: "models.gltf#Mesh19/Primitive0"),
+    "farm_edge": File (path: "models.gltf#Mesh20/Primitive0"),
+    "road_center": File (path: "models.gltf#Mesh21/Primitive0"),
+    "road_corner": File (path: "models.gltf#Mesh22/Primitive0"),
+    "road_edge": File (path: "models.gltf#Mesh23/Primitive0"),
     "tile_texture": File (path: "simple_texture.png"),
     "level_list": File (path: "level_list.levels.yml"),
 })

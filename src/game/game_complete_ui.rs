@@ -23,23 +23,34 @@ impl Plugin for GameCompleteUiPlugin {
 fn display_ui(mut commands: Commands, resource: Res<GameResources>, level: Res<Level>) {
     commands
         .ui_root()
+        .position(Val::Px(0.), Val::Px(0.), Val::Px(0.), Val::Auto)
         .for_state(GameState::Complete)
         .with_children(|parent| {
-            parent
-                .text(format!(
-                    "{} Complete!",
-                    level.title.as_ref().unwrap_or(&"Level".into())
-                ))
-                .size(100.)
-                .style(FontStyle::Italic);
-            parent.text(format!(
-                "The canal cost you {} Pounds",
-                resource.cost_so_far
-            ));
-            parent.button("level", "Play Another Level");
-            parent
-                .button("menu", "Main Menu")
-                .style(ButtonStyle::Secondary);
+            parent.div().opaque().with_children(|parent| {
+                parent
+                    .text(format!(
+                        "{} Complete!",
+                        level.title.as_ref().unwrap_or(&"Level".into())
+                    ))
+                    .size(100.)
+                    .style(FontStyle::Italic);
+                parent.text(format!(
+                    "The canal cost you {} Pounds",
+                    resource.cost_so_far
+                ));
+            });
+        });
+    commands
+        .ui_root()
+        .position(Val::Px(0.), Val::Px(0.), Val::Auto, Val::Px(0.))
+        .for_state(GameState::Complete)
+        .with_children(|parent| {
+            parent.div().opaque().with_children(|parent| {
+                parent.button("level", "Play Another Level");
+                parent
+                    .button("menu", "Main Menu")
+                    .style(ButtonStyle::Secondary);
+            });
         });
 }
 
