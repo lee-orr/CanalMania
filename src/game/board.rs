@@ -342,8 +342,7 @@ fn setup_board_materials(
     let tile_base_material = tile_materials.add(TileMaterial::default());
     let decoration_material = tile_materials.add(TileMaterial {
         settings: InkSettings {
-            vertex_color_strength: 0.7,
-            world_darkening: 0.,
+            added_params: Vec4::new(0., 0.7, 0.5, 0.1),
             ..Default::default()
         },
     });

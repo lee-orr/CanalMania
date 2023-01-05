@@ -12,10 +12,7 @@ struct InkSettings {
     parchment_base: vec4<f32>,
     parchment_burn: vec4<f32>,
     parchment_dark: vec4<f32>,
-    world_darkening: f32,
-    vertex_color_strength: f32,
-    parchment_low_mix: f32,
-    parchment_high_mix: f32,
+    params: vec4<f32>
 }
 
 @group(1) @binding(0)
@@ -69,11 +66,11 @@ fn fragment(
         overlay_3 = mix(overlay_3, val, 0.8);
     }
 
-    let overlay_mixer = mix(mix(overlay_1, overlay_2, settings.parchment_low_mix), overlay_3, settings.parchment_high_mix);
+    let overlay_mixer = mix(mix(overlay_1, overlay_2, settings.params.z), overlay_3, settings.params.w);
 
     let overlay_color = mix(parchment_base, parchment_burn, overlay_mixer);
 
-    let init_bg = mix(vertex_color * overlay_color, overlay_color, 1. - settings.vertex_color_strength);
+    let init_bg = mix(vertex_color * overlay_color, overlay_color, 1. - settings.params.y);
     let bg = mix(init_bg, init_bg * settings.base_color , 0.3);
 
     let depth = clamp(mix(-0.3, 1.2, clamp(in.world_position.y + 1., 0., 1.)), 0., 1.);
@@ -103,7 +100,7 @@ fn fragment(
             darkening = 0.5;
     }
 
-    let ink = mix(vec4<f32>(1., 1., 1., 1.), mix(settings.ink_color, vec4<f32>(1., 1., 1., 1.), darkening), settings.world_darkening);
+    let ink = mix(vec4<f32>(1., 1., 1., 1.), mix(settings.ink_color, vec4<f32>(1., 1., 1., 1.), darkening), settings.params.x);
 
     let color = mix(bg * ink , bg  * parchment_dark, 1. - depth);
 
