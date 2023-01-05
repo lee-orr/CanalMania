@@ -12,7 +12,11 @@ use crate::{
     assets::CanalManiaAssets,
 };
 
-use super::{game_state::GameState, level::Level, tile_shader::{TileMaterial, InkSettings}};
+use super::{
+    game_state::GameState,
+    level::Level,
+    tile_shader::{InkSettings, TileMaterial},
+};
 
 pub struct BoardPlugin;
 
@@ -28,9 +32,12 @@ impl Plugin for BoardPlugin {
             .add_system(process_selection_events.run_in_state(AppState::InGame))
             .add_exit_system(AppState::InGame, clear_board);
         #[cfg(feature = "dev")]
-        app
-            .add_plugin(bevy_inspector_egui::quick::AssetInspectorPlugin::<TileMaterial>::default())
-            .add_plugin( bevy_inspector_egui::quick::ResourceInspectorPlugin::<BoardRuntimeAssets>::default());
+        app.add_plugin(bevy_inspector_egui::quick::AssetInspectorPlugin::<
+            TileMaterial,
+        >::default())
+            .add_plugin(bevy_inspector_egui::quick::ResourceInspectorPlugin::<
+                BoardRuntimeAssets,
+            >::default());
     }
 }
 
@@ -338,13 +345,13 @@ fn setup_board_materials(
             vertex_color_strength: 0.7,
             world_darkening: 0.,
             ..Default::default()
-        }
+        },
     });
     let goal_base_material = tile_materials.add(TileMaterial {
         settings: InkSettings {
             base_color: Color::rgb(0.7, 0.2, 0.1),
             ..Default::default()
-        }
+        },
     });
     let selector = meshes.add(shape::Box::new(1., 0.1, 1.).into());
 
