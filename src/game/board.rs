@@ -32,10 +32,10 @@ impl Plugin for BoardPlugin {
             .add_system(animate_goal.run_in_state(AppState::InGame))
             .add_system(process_selection_events.run_in_state(AppState::InGame))
             .add_exit_system(AppState::InGame, clear_board);
-        #[cfg(feature = "dev")]
-        app.add_plugin(bevy_inspector_egui::quick::AssetInspectorPlugin::<
-            TileMaterial,
-        >::default());
+        // #[cfg(feature = "dev")]
+        // app.add_plugin(bevy_inspector_egui::quick::AssetInspectorPlugin::<
+        //     TileMaterial,
+        // >::default());
         // .add_plugin(bevy_inspector_egui::quick::ResourceInspectorPlugin::<
         //     BoardRuntimeAssets,
         // >::default());
@@ -45,6 +45,9 @@ impl Plugin for BoardPlugin {
 #[derive(Resource, Reflect)]
 struct BoardRuntimeAssets {
     pub tile_base_material: Handle<TileMaterial>,
+    pub tile_offset_w_material: Handle<TileMaterial>,
+    pub tile_offset_h_material: Handle<TileMaterial>,
+    pub tile_offset_wh_material: Handle<TileMaterial>,
     pub decoration_material: Handle<TileMaterial>,
     pub selector: Handle<Mesh>,
     pub selector_base: Handle<StandardMaterial>,
@@ -407,6 +410,15 @@ fn setup_board_materials(
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
     let tile_base_material = tile_materials.add(TileMaterial::default());
+    let tile_offset_w_material = tile_materials.add(TileMaterial {
+        settings: InkSettings { world_offset: Vec4::new(0.5, 0., 0., 0.), ..Default::default() }
+    });
+    let tile_offset_h_material = tile_materials.add(TileMaterial {
+        settings: InkSettings { world_offset: Vec4::new(0., 0.5, 0., 0.), ..Default::default() }
+    });
+    let tile_offset_wh_material = tile_materials.add(TileMaterial {
+        settings: InkSettings { world_offset: Vec4::new(0.5, 0.5, 0., 0.), ..Default::default() }
+    });
     let decoration_material = tile_materials.add(TileMaterial {
         settings: InkSettings {
             added_params: Vec4::new(0., 0.7, 0.5, 0.1),
@@ -442,6 +454,9 @@ fn setup_board_materials(
 
     commands.insert_resource(BoardRuntimeAssets {
         tile_base_material,
+        tile_offset_w_material,
+        tile_offset_h_material,
+        tile_offset_wh_material,
         decoration_material,
         selector,
         selector_base,
@@ -513,6 +528,11 @@ fn build_tile(
     neighbour_tiles: Query<(Entity, &Tile, Option<&TileNeighbours>)>,
     boards: Query<&Board>,
 ) {
+    let (offset_x, offset_y) = if let Ok(board) = boards.get_single() {
+     (board.width % 2 == 0, board.height % 2 == 0)
+    } else {
+        (false, false)
+    };
     for (entity, tile, neighbours) in tiles.iter() {
         update_tile(
             &neighbours,
@@ -524,6 +544,8 @@ fn build_tile(
             &materials,
             &assets,
             true,
+            offset_x, 
+            offset_y
         );
     }
 }
@@ -541,6 +563,8 @@ fn update_tile(
     materials: &BoardRuntimeAssets,
     assets: &CanalManiaAssets,
     primary: bool,
+    offset_x: bool,
+    offset_y: bool
 ) {
     let neighbours = if let Some(n) = neighbours {
         n.0.iter()
@@ -571,7 +595,12 @@ fn update_tile(
     };
     let center = Vec3::new(tile.x as f32, (tile.z as f32) / 6., tile.y as f32);
     let mut entity = commands.entity(entity);
-    let base_material = materials.tile_base_material.clone();
+    let base_material = match (offset_x, offset_y) {
+        (true, true) => materials.tile_offset_wh_material.clone(),
+        (true, false) => materials.tile_offset_w_material.clone(),
+        (false, true) => materials.tile_offset_h_material.clone(),
+        (false, false) => materials.tile_base_material.clone(),
+    };
     entity.insert((
         PickableBundle::default(),
         Highlighting {
@@ -676,6 +705,8 @@ fn update_tile(
                 materials,
                 assets,
                 false,
+                offset_x,
+                offset_y
             );
         }
     };

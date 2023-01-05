@@ -31,9 +31,9 @@ impl Default for InkSettings {
         Self {
             base_color: Color::WHITE,
             ink_color: Color::rgb_u8(130, 127, 106),
-            parchment_base: Color::rgb_u8(203, 172, 113),
-            parchment_burn: Color::rgba_u8(146, 90, 45, 255),
-            parchment_dark: Color::rgba_u8(56, 25, 25, 255),
+            parchment_base: Color::rgb_u8(253, 231, 192),
+            parchment_burn: Color::rgb_u8(180, 156, 93),
+            parchment_dark: Color::rgb_u8(110, 67, 49),
             added_params: Vec4::new(1., 0.7, 0.5, 0.1),
             world_offset: Vec4::ZERO,
         }

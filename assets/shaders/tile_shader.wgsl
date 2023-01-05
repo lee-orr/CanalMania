@@ -41,7 +41,7 @@ fn fragment(
 
     let vertex_color = in.color;
 
-    let world_position = in.world_position + settings.world_offset;
+    let world_position = in.world_position + settings.world_offset.xzyw;
     var test_position : vec3<f32> = world_position.xyz * 0.3;
     var overlay_1: f32 = simplex_noise_3d(test_position);
 
@@ -75,7 +75,7 @@ fn fragment(
     let bg = mix(init_bg, init_bg * settings.base_color , 0.3);
 
     let depth = clamp(mix(-0.3, 1.2, clamp(world_position.y + 1., 0., 1.)), 0., 1.);
-    var darkening : f32 = clamp(sin(max(0., world_position.y * 12. * 3.14159)), 0., 1.);
+    var darkening : f32 = clamp(sin(max(0., (world_position.y + 0.0537) * 12. * 3.14159)), 0., 1.);
 
     if darkening > 0.95 {
         darkening = 1. - 0.95;
