@@ -11,7 +11,6 @@ pub struct CanalManiaAssets {
     pub font_italic: Handle<Font>,
     #[asset(key = "level_list")]
     pub level_list: Handle<LevelList>,
-
     #[asset(key = "land_tile")]
     pub land_tile: Handle<Mesh>,
 
@@ -65,6 +64,42 @@ pub struct CanalManiaAssets {
 
     #[asset(key = "canal_center")]
     pub canal_center: Handle<Mesh>,
+
+    #[asset(key = "aquaduct_crossing")]
+    pub aquaduct_crossing: Handle<Mesh>,
+
+    #[asset(key = "aquaduct_t")]
+    pub aquaduct_t: Handle<Mesh>,
+
+    #[asset(key = "aquaduct_corner")]
+    pub aquaduct_corner: Handle<Mesh>,
+
+    #[asset(key = "aquaduct_line")]
+    pub aquaduct_line: Handle<Mesh>,
+
+    #[asset(key = "aquaduct_end")]
+    pub aquaduct_end: Handle<Mesh>,
+
+    #[asset(key = "aquaduct_center")]
+    pub aquaduct_center: Handle<Mesh>,
+
+    #[asset(key = "aquaducts_dry_crossing")]
+    pub aquaducts_dry_crossing: Handle<Mesh>,
+
+    #[asset(key = "aquaducts_dry_t")]
+    pub aquaducts_dry_t: Handle<Mesh>,
+
+    #[asset(key = "aquaducts_dry_corner")]
+    pub aquaducts_dry_corner: Handle<Mesh>,
+
+    #[asset(key = "aquaducts_dry_line")]
+    pub aquaducts_dry_line: Handle<Mesh>,
+
+    #[asset(key = "aquaducts_dry_end")]
+    pub aquaducts_dry_end: Handle<Mesh>,
+
+    #[asset(key = "aquaducts_dry_center")]
+    pub aquaducts_dry_center: Handle<Mesh>,
 
     #[asset(key = "lock_crossing")]
     pub lock_crossing: Handle<Mesh>,

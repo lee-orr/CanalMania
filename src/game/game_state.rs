@@ -15,6 +15,8 @@ pub enum GameActionMode {
     None,
     DigCanal,
     ConstructLock,
+    BuildAquaduct,
+    Demolish,
 }
 
 #[derive(Resource, Debug, Default, Clone)]
@@ -26,4 +28,6 @@ pub struct GameResources {
 pub enum GameActions {
     DigCanal(Tile),
     ConstructLock(Tile),
+    BuildAquaduct(Tile, usize),
+    Demolish(Tile),
 }

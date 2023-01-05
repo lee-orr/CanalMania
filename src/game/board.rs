@@ -137,6 +137,7 @@ pub enum TileContents {
     Road,
     Canal,
     Lock,
+    Aquaduct(usize),
 }
 
 impl Default for TileContents {
@@ -158,6 +159,13 @@ impl TileContents {
                 }
             }
             TileContents::Lock => Handle::default(),
+            TileContents::Aquaduct(_) => {
+                if is_dry {
+                    assets.aquaducts_dry_center.clone()
+                } else {
+                    assets.aquaduct_center.clone()
+                }
+            }
         }
     }
     fn corner(&self, assets: &CanalManiaAssets, is_dry: bool) -> Handle<Mesh> {
@@ -172,6 +180,13 @@ impl TileContents {
                 }
             }
             TileContents::Lock => assets.lock_corner.clone(),
+            TileContents::Aquaduct(_) => {
+                if is_dry {
+                    assets.aquaducts_dry_corner.clone()
+                } else {
+                    assets.aquaduct_corner.clone()
+                }
+            }
         }
     }
     fn crossing(&self, assets: &CanalManiaAssets, is_dry: bool) -> Handle<Mesh> {
@@ -192,6 +207,13 @@ impl TileContents {
                 }
             }
             TileContents::Lock => assets.lock_crossing.clone(),
+            TileContents::Aquaduct(_) => {
+                if is_dry {
+                    assets.aquaducts_dry_crossing.clone()
+                } else {
+                    assets.aquaduct_crossing.clone()
+                }
+            }
         }
     }
     fn t(&self, assets: &CanalManiaAssets, is_dry: bool) -> Handle<Mesh> {
@@ -206,6 +228,13 @@ impl TileContents {
                 }
             }
             TileContents::Lock => assets.lock_t.clone(),
+            TileContents::Aquaduct(_) => {
+                if is_dry {
+                    assets.aquaducts_dry_t.clone()
+                } else {
+                    assets.aquaduct_t.clone()
+                }
+            }
         }
     }
     fn line(&self, assets: &CanalManiaAssets, is_dry: bool) -> Handle<Mesh> {
@@ -220,6 +249,13 @@ impl TileContents {
                 }
             }
             TileContents::Lock => assets.lock_line.clone(),
+            TileContents::Aquaduct(_) => {
+                if is_dry {
+                    assets.aquaducts_dry_line.clone()
+                } else {
+                    assets.aquaduct_line.clone()
+                }
+            }
         }
     }
     fn end(&self, assets: &CanalManiaAssets, is_dry: bool) -> Handle<Mesh> {
@@ -234,6 +270,13 @@ impl TileContents {
                 }
             }
             TileContents::Lock => assets.lock_end.clone(),
+            TileContents::Aquaduct(_) => {
+                if is_dry {
+                    assets.aquaducts_dry_end.clone()
+                } else {
+                    assets.aquaduct_end.clone()
+                }
+            }
         }
     }
 }
@@ -264,6 +307,30 @@ impl Tile {
             0
         };
         type_cost + road_cost
+    }
+
+    pub fn get_aquaduct_cost(&self) -> usize {
+        match self.tile_type {
+            TileType::Land => 8000,
+            TileType::Farm => 8000,
+            TileType::City => 9000,
+        }
+    }
+
+    pub fn get_demolish_cost(&self) -> usize {
+        let construction_cost = match self.contents {
+            TileContents::None => 0,
+            TileContents::Road => 100,
+            TileContents::Canal => 300,
+            TileContents::Lock => 400,
+            TileContents::Aquaduct(h) => 500 * h,
+        };
+        let type_multiplier = match self.tile_type {
+            TileType::Land => 1,
+            TileType::Farm => 2,
+            TileType::City => 3,
+        };
+        construction_cost * type_multiplier
     }
 
     pub fn get_decorations(&self, assets: &CanalManiaAssets) -> Vec<Handle<Mesh>> {
@@ -649,6 +716,11 @@ fn spawn_content(
             let neighbours = check_neighbours(neighbours, |t| {
                 matches!(t.contents, TileContents::Canal) && tile.z.abs_diff(t.z) < 2
                     || matches!(t.contents, TileContents::Lock) && tile.z.abs_diff(t.z) < 5
+                    || if let TileContents::Aquaduct(h) = t.contents {
+                        tile.z == h + t.z
+                    } else {
+                        false
+                    }
             });
 
             let n = neighbours[1];
@@ -673,6 +745,11 @@ fn spawn_content(
             let neighbours = check_neighbours(neighbours, |t| {
                 matches!(t.contents, TileContents::Canal | TileContents::Lock)
                     && tile.z.abs_diff(t.z) < 5
+                    || if let TileContents::Aquaduct(h) = t.contents {
+                        tile.z == h + t.z
+                    } else {
+                        false
+                    }
             });
 
             let n = neighbours[1];
@@ -693,6 +770,35 @@ fn spawn_content(
             );
             spawn_variant(
                 TileContents::Lock,
+                !tile.is_wet,
+                assets,
+                n,
+                w,
+                e,
+                s,
+                parent,
+                base_material,
+            );
+        }
+        TileContents::Aquaduct(h) => {
+            println!("Setting up aquaduct {h:?}");
+            let z = tile.z + h;
+            let neighbours = check_neighbours(neighbours, |t| {
+                matches!(t.contents, TileContents::Canal | TileContents::Lock) && z == t.z
+                    || if let TileContents::Aquaduct(h) = t.contents {
+                        z == h + t.z
+                    } else {
+                        false
+                    }
+            });
+
+            let n = neighbours[1];
+            let w = neighbours[3];
+            let e = neighbours[4];
+            let s = neighbours[6];
+
+            spawn_variant(
+                TileContents::Aquaduct(h),
                 !tile.is_wet,
                 assets,
                 n,
@@ -752,10 +858,15 @@ fn spawn_variant<T: Material>(
     };
 
     println!("Spawning {content_type:?}");
+    let position = match content_type {
+        TileContents::Aquaduct(u) => Vec3::Y * (u as f32 - 1.) / 6.,
+        _ => Vec3::ZERO,
+    };
     parent.spawn(MaterialMeshBundle {
         mesh,
         material,
-        transform: Transform::from_rotation(Quat::from_rotation_y(rotation.to_radians())),
+        transform: Transform::from_rotation(Quat::from_rotation_y(rotation.to_radians()))
+            .with_translation(position),
         ..Default::default()
     });
 }

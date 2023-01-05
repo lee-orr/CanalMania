@@ -55,6 +55,12 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
                 parent
                     .button("lock", "Construct Lock")
                     .style(ButtonStyle::Primary);
+                parent
+                    .button("aquaduct", "Construct Aquaduct")
+                    .style(ButtonStyle::Primary);
+                parent
+                    .button("demolish", "Demolish")
+                    .style(ButtonStyle::Primary);
             });
         });
 
@@ -90,6 +96,8 @@ fn update_labels(
                     GameActionMode::None => "Choose An Action",
                     GameActionMode::DigCanal => "Dig Canal Tiles",
                     GameActionMode::ConstructLock => "Construct Lock Tiles",
+                    GameActionMode::BuildAquaduct => "Build Aquaducts",
+                    GameActionMode::Demolish => "Demolish Existing Construction",
                 });
             }
         }
@@ -111,6 +119,10 @@ fn button_pressed(mut events: EventReader<ButtonClickEvent>, mut commands: Comma
             commands.insert_resource(NextState(GameActionMode::DigCanal));
         } else if event.0 == "lock" {
             commands.insert_resource(NextState(GameActionMode::ConstructLock));
+        } else if event.0 == "aquaduct" {
+            commands.insert_resource(NextState(GameActionMode::BuildAquaduct));
+        } else if event.0 == "demolish" {
+            commands.insert_resource(NextState(GameActionMode::Demolish));
         } else if event.0 == "choose-level" {
             commands.insert_resource(NextState(AppState::ChooseLevel));
         }

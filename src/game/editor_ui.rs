@@ -161,7 +161,8 @@ fn button_pressed(
                     TileContents::None => TileContents::Road,
                     TileContents::Road => TileContents::Canal,
                     TileContents::Canal => TileContents::Lock,
-                    TileContents::Lock => TileContents::None,
+                    TileContents::Lock => TileContents::Aquaduct(1),
+                    TileContents::Aquaduct(_) => TileContents::None,
                 },
                 _ => TileContents::Road,
             };
@@ -212,6 +213,7 @@ fn reset_tile_dimensions(width: usize, height: usize, mut level: &mut Level, til
 }
 
 fn tile_clicked(
+    mut commands: Commands,
     mut events: EventReader<TileEvent>,
     mut tiles: Query<&mut Tile>,
     operation: Res<CurrentState<EditorOperation>>,
@@ -234,8 +236,20 @@ fn tile_clicked(
                         new_tile.is_goal = !new_tile.is_goal;
                     }
                     EditorOperation::ToggleConstruction(t) => {
-                        new_tile.is_wet = matches!(t, TileContents::Canal | TileContents::Lock);
-                        new_tile.contents = t;
+                        new_tile.is_wet = matches!(
+                            t,
+                            TileContents::Canal | TileContents::Lock | TileContents::Aquaduct(_)
+                        );
+                        if let (TileContents::Aquaduct(_), TileContents::Aquaduct(o)) =
+                            (t, new_tile.contents)
+                        {
+                            new_tile.contents = TileContents::Aquaduct(o + 1);
+                            commands.insert_resource(NextState(
+                                EditorOperation::ToggleConstruction(TileContents::Aquaduct(o + 1)),
+                            ));
+                        } else {
+                            new_tile.contents = t;
+                        }
                     }
                     EditorOperation::ToggleWetness => {
                         new_tile.is_wet = !new_tile.is_wet;
@@ -273,8 +287,13 @@ fn tile_hovered_set(
                         continue;
                     }
                     if let Ok(mut new_tile) = tiles.get_mut(*entity) {
-                        new_tile.is_wet = matches!(t, TileContents::Canal | TileContents::Lock);
-                        new_tile.contents = t;
+                        new_tile.is_wet = matches!(
+                            t,
+                            TileContents::Canal | TileContents::Lock | TileContents::Aquaduct(_)
+                        );
+                        if !matches!(new_tile.contents, TileContents::Aquaduct(_)) {
+                            new_tile.contents = t;
+                        }
                     }
                 }
             }

@@ -3,6 +3,8 @@ mod game_state;
 mod in_game_ui;
 pub mod level;
 
+mod build_aquaduct;
+mod demolish;
 mod dig_canal;
 mod dig_lock;
 #[cfg(not(target_family = "wasm"))]
@@ -19,6 +21,8 @@ use crate::app_state::AppState;
 
 use self::{
     board::BoardPlugin,
+    build_aquaduct::BuildAquaductPlugin,
+    demolish::DemolishPlugin,
     dig_canal::DigCanalPlugin,
     dig_lock::DigLockPlugin,
     game_complete_ui::GameCompleteUiPlugin,
@@ -45,6 +49,8 @@ impl Plugin for GamePlugin {
             .add_plugin(GameCompleteUiPlugin)
             .add_plugin(DigCanalPlugin)
             .add_plugin(DigLockPlugin)
+            .add_plugin(DemolishPlugin)
+            .add_plugin(BuildAquaductPlugin)
             .add_plugin(SimulationPlugin)
             .add_plugin(MaterialPlugin::<TileMaterial>::default());
         #[cfg(not(target_family = "wasm"))]

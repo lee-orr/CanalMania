@@ -29,35 +29,67 @@ fn run_water_simulation(
                 }
             })
             .collect::<Vec<_>>();
-        if tile.contents == TileContents::Canal && !tile.is_wet {
-            let neighbours = check_neighbours(&neighbours, |neighbour| {
-                neighbour.is_wet && tile.z <= neighbour.z && tile.z.abs_diff(neighbour.z) < 2
-            });
+        if !tile.is_wet {
+            if tile.contents == TileContents::Canal {
+                let z = tile.z;
+                let neighbours = check_neighbours(&neighbours, |neighbour| {
+                    let (nz, diff) = match neighbour.contents {
+                        TileContents::Aquaduct(h) => (h + neighbour.z, 1),
+                        _ => (neighbour.z, 2),
+                    };
+                    neighbour.is_wet && z <= nz && z.abs_diff(nz) < diff
+                });
 
-            let n = neighbours[1];
-            let w = neighbours[3];
-            let e = neighbours[4];
-            let s = neighbours[6];
+                let n = neighbours[1];
+                let w = neighbours[3];
+                let e = neighbours[4];
+                let s = neighbours[6];
 
-            if n || w || s || e {
-                let mut tile = tile.clone();
-                tile.is_wet = true;
-                commands.entity(entity).insert(tile);
-            }
-        } else if tile.contents == TileContents::Lock && !tile.is_wet {
-            let neighbours = check_neighbours(&neighbours, |neighbour| {
-                neighbour.is_wet && tile.z <= neighbour.z && tile.z.abs_diff(neighbour.z) < 5
-            });
+                if n || w || s || e {
+                    let mut tile = tile.clone();
+                    tile.is_wet = true;
+                    commands.entity(entity).insert(tile);
+                }
+            } else if tile.contents == TileContents::Lock {
+                let z = tile.z;
+                let neighbours = check_neighbours(&neighbours, |neighbour| {
+                    let (nz, diff) = match neighbour.contents {
+                        TileContents::Aquaduct(h) => (h + neighbour.z, 1),
+                        _ => (neighbour.z, 5),
+                    };
+                    neighbour.is_wet && z <= nz && z.abs_diff(nz) < diff
+                });
 
-            let n = neighbours[1];
-            let w = neighbours[3];
-            let e = neighbours[4];
-            let s = neighbours[6];
+                let n = neighbours[1];
+                let w = neighbours[3];
+                let e = neighbours[4];
+                let s = neighbours[6];
 
-            if n || w || s || e {
-                let mut tile = tile.clone();
-                tile.is_wet = true;
-                commands.entity(entity).insert(tile);
+                if n || w || s || e {
+                    let mut tile = tile.clone();
+                    tile.is_wet = true;
+                    commands.entity(entity).insert(tile);
+                }
+            } else if let TileContents::Aquaduct(h) = tile.contents {
+                let z = tile.z + h;
+                let neighbours = check_neighbours(&neighbours, |neighbour| {
+                    let nz = match neighbour.contents {
+                        TileContents::Aquaduct(h) => h + neighbour.z,
+                        _ => neighbour.z,
+                    };
+                    neighbour.is_wet && z == nz
+                });
+
+                let n = neighbours[1];
+                let w = neighbours[3];
+                let e = neighbours[4];
+                let s = neighbours[6];
+
+                if n || w || s || e {
+                    let mut tile = tile.clone();
+                    tile.is_wet = true;
+                    commands.entity(entity).insert(tile);
+                }
             }
         }
     }
