@@ -67,9 +67,26 @@ fn fragment(
 
     if darkening > 0.95 {
         darkening = 1. - 0.95;
-        darkening = mix(0., 1., darkening * 0.05);
+        darkening = mix(0.3, 1., darkening * 0.05);
     } else {
         darkening = 1.;
+    }
+
+    let xmod = abs(abs(in.world_position.x) % 1. - 0.5);
+    let ymod = abs(abs(in.world_position.z) % 1. - 0.5);
+    let xmod_2 = xmod * 10. % 1.;
+    let ymod_2 = ymod * 10. % 1.;
+
+    var darken : bool = false;
+
+    if xmod > 0.49 && ymod_2 < 0.3 {
+        darken = true;
+    } else if ymod > 0.49 && xmod_2 < 0.3 {
+        darken = true;
+    }
+
+    if in.world_normal.y > 0.9 && darken && darkening > 0.7{
+            darkening = 0.5;
     }
 
     let ink = mix(ink_color.color, vec4<f32>(1., 1., 1., 1.), darkening);
