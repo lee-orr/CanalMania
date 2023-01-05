@@ -60,6 +60,7 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
                     parent.button("lower", "Lower Height");
                     parent.button("toggle", "Toggle Type");
                     parent.button("goal", "Set Goals");
+                    parent.button("construct", "Set Construction");
                 });
             });
         });
@@ -151,6 +152,17 @@ fn button_pressed(
                 _ => TileType::Land,
             };
             commands.insert_resource(NextState(EditorOperation::ToggleType(next)));
+        } else if event.0 == "construct" {
+            let next = match operation.0 {
+                EditorOperation::ToggleConstruction(t) => match t {
+                    TileContents::None => TileContents::Road,
+                    TileContents::Road => TileContents::Canal,
+                    TileContents::Canal => TileContents::Lock,
+                    TileContents::Lock => TileContents::None
+                },
+                _ => TileContents::Road,
+            };
+            commands.insert_resource(NextState(EditorOperation::ToggleConstruction(next)));
         } else if event.0 == "save" {
             save(&tiles, &level);
         } else if event.0 == "new" {
