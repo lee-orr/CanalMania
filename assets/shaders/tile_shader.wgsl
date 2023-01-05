@@ -49,7 +49,7 @@ fn fragment(
 
     let overlay_color = mix(parchment_base, parchment_burn, overlay_mixer);
 
-    let init_bg = mix(vertex_color * overlay_color, overlay_color, 0.3);
+    let init_bg = mix(vertex_color * overlay_color, overlay_color, 0.);
     let bg = mix(init_bg, init_bg * base_color.color , 0.3);
 //    let ink = mix(ink_color.color,vec4<f32>(1., 1., 1., 1.), symbol_color);
     let depth = clamp(mix(-0.3, 1.2, clamp(world_position.y + 1., 0., 1.)), 0., 1.);

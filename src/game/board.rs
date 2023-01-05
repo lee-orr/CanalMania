@@ -103,7 +103,7 @@ pub struct Tile {
 }
 
 #[derive(Component, Default, Clone, Debug)]
-pub struct TileNeighbours([Option<Entity>;8]);
+pub struct TileNeighbours(pub [Option<Entity>;8]);
 
 #[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum TileType {
@@ -388,111 +388,131 @@ fn build_tile(
     assets: Res<CanalManiaAssets>,
     materials: Res<BoardRuntimeAssets>,
     tiles: Query<(Entity, &Tile, Option<&TileNeighbours>), Changed<Tile>>,
-    neighbour_tiles: Query<&Tile>,
+    neighbour_tiles: Query<(Entity, &Tile, Option<&TileNeighbours>)>,
     boards: Query<&Board>
 ) {
     for (entity, tile, neighbours) in tiles.iter() {
-        let neighbours = if let Some(n) = neighbours {
-            n.0.iter().map(|e| if let Some(e) = e {
+        update_tile(&neighbours, &neighbour_tiles, &boards, tile, &mut commands, entity, &materials, &assets, true);
+    }
+}
+
+fn update_tile(neighbours: &Option<&TileNeighbours>, neighbour_tiles: &Query<(Entity, &Tile, Option<&TileNeighbours>)>, boards: &Query<&Board>, tile: &Tile, commands: &mut Commands, entity: Entity, materials: &BoardRuntimeAssets, assets: &CanalManiaAssets, primary: bool) {
+    let neighbours = if let Some(n) = neighbours {
+        n.0.iter().map(|e| if let Some(e) = e {
+            neighbour_tiles.get(*e).ok()
+    } else {
+        None
+    }).collect::<Vec<_>>()
+    } else {
+        if let Ok(board) = boards.get_single() {
+            let n = board.neighbours(tile.x, tile.y);
+            commands.entity(entity).insert(TileNeighbours(n));
+            n.iter().map(|e| if let Some(e) = e {
                 neighbour_tiles.get(*e).ok()
         } else {
             None
         }).collect::<Vec<_>>()
         } else {
-            if let Ok(board) = boards.get_single() {
-                let n = board.neighbours(tile.x, tile.y);
-                commands.entity(entity).insert(TileNeighbours(n));
-                n.iter().map(|e| if let Some(e) = e {
-                    neighbour_tiles.get(*e).ok()
-            } else {
-                None
-            }).collect::<Vec<_>>()
-            } else {
-                (0..8).map(|_| Option::<&Tile>::None).collect::<Vec<_>>()
-            }
-        };
-        let center = Vec3::new(tile.x as f32, (tile.z as f32) / 6., tile.y as f32);
-        let mut entity = commands.entity(entity);
-
-        let base_material = if tile.is_goal {
-            materials.goal_base_material.clone()
-        } else {
-            materials.tile_base_material.clone()
-        };
-
-        entity.insert((
-            PickableBundle::default(),
-            Highlighting {
-                initial: materials.selector_base.clone(),
-                hovered: Some(materials.selector_hovered.clone()),
-                pressed: Some(materials.selector_pressed.clone()),
-                selected: Some(materials.selector_selected.clone()),
+            (0..8).map(|_| Option::<(Entity, &Tile, Option<&TileNeighbours>)>::None).collect::<Vec<_>>()
+        }
+    };
+    let center = Vec3::new(tile.x as f32, (tile.z as f32) / 6., tile.y as f32);
+    let mut entity = commands.entity(entity);
+    let base_material = if tile.is_goal {
+        materials.goal_base_material.clone()
+    } else {
+        materials.tile_base_material.clone()
+    };
+    entity.insert((
+        PickableBundle::default(),
+        Highlighting {
+            initial: materials.selector_base.clone(),
+            hovered: Some(materials.selector_hovered.clone()),
+            pressed: Some(materials.selector_pressed.clone()),
+            selected: Some(materials.selector_selected.clone()),
+        },
+        PbrBundle {
+            mesh: materials.selector.clone(),
+            material: materials.selector_base.clone(),
+            transform: Transform::from_translation(center),
+            ..Default::default()
+        },
+    ));
+    entity.despawn_descendants();
+    entity.with_children(|parent| {
+        parent.spawn(MaterialMeshBundle {
+            mesh: match tile.tile_type {
+                TileType::Land => assets.land_tile.clone(),
+                TileType::City => assets.city_tile.clone(),
+                TileType::Farm => assets.farm_tile.clone(),
             },
-            PbrBundle {
-                mesh: materials.selector.clone(),
-                material: materials.selector_base.clone(),
-                transform: Transform::from_translation(center),
-                ..Default::default()
-            },
-        ));
-        entity.despawn_descendants();
-        entity.with_children(|parent| {
-            parent.spawn(MaterialMeshBundle {
-                mesh: match tile.tile_type {
-                    TileType::Land => assets.land_tile.clone(),
-                    TileType::City => assets.city_tile.clone(),
-                    TileType::Farm => assets.farm_tile.clone(),
-                },
-                material: base_material.clone(),
-                ..Default::default()
-            });
-
-            match tile.contents {
-                TileContents::None => {},
-                TileContents::Road => {
-                    println!("Setting up road!");
-                    let neighbours = check_neighbours(&neighbours, |t| t.contents == TileContents::Road);
-
-                    let n = neighbours[1];
-                    let w = neighbours[3];
-                    let e = neighbours[4];
-                    let s = neighbours[6];
-
-                    spawn_variant(TileContents::Road, !tile.is_wet, &assets, n, w, e, s, parent, base_material.clone());
-                },
-                TileContents::Canal => {
-                    println!("Setting up canal!");
-                    let neighbours = check_neighbours(&neighbours, |t| matches!(t.contents , TileContents::Canal | TileContents::Lock));
-
-                    let n = neighbours[1];
-                    let w = neighbours[3];
-                    let e = neighbours[4];
-                    let s = neighbours[6];
-
-                    spawn_variant(TileContents::Canal, !tile.is_wet, &assets, n, w, e, s, parent, base_material.clone());
-                },
-                TileContents::Lock => {
-                    println!("Setting up lock!");
-                    let neighbours = check_neighbours(&neighbours, |t|matches!(t.contents , TileContents::Canal | TileContents::Lock));
-
-                    let n = neighbours[1];
-                    let w = neighbours[3];
-                    let e = neighbours[4];
-                    let s = neighbours[6];
-
-                    spawn_variant(TileContents::Canal, !tile.is_wet, &assets, n, w, e, s, parent, base_material.clone());
-                    spawn_variant(TileContents::Lock, !tile.is_wet, &assets, n, w, e, s, parent, base_material.clone());
-                },
-            }
+            material: base_material.clone(),
+            ..Default::default()
         });
+
+        spawn_content(tile, &neighbours, assets, parent, base_material.clone());
+    });
+    
+    if primary {
+        for neighbour in neighbours.iter() {
+            if let Some((entity, tile, neighbours)) = neighbour {
+                update_tile(neighbours, neighbour_tiles, boards, tile, commands, *entity, materials, assets, false);
+            }
+        }
+    };
+}
+
+fn spawn_content(tile: &Tile, neighbours: &[Option<(Entity, &Tile, Option<&TileNeighbours>)>], assets: &CanalManiaAssets, parent: &mut ChildBuilder, base_material: Handle<TileMaterial>) {
+    match tile.contents {
+        TileContents::None => {},
+        TileContents::Road => {
+            println!("Setting up road!");
+            let neighbours = check_neighbours(&neighbours, |t| t.contents == TileContents::Road);
+
+            let n = neighbours[1];
+            let w = neighbours[3];
+            let e = neighbours[4];
+            let s = neighbours[6];
+
+            spawn_variant(TileContents::Road, !tile.is_wet, &assets, n, w, e, s, parent, base_material.clone());
+        },
+        TileContents::Canal => {
+            println!("Setting up canal!");
+            let neighbours = check_neighbours(&neighbours, |t| {
+                matches!(t.contents , TileContents::Canal)
+                && tile.z.abs_diff(t.z) < 2  || 
+                matches!(t.contents , TileContents::Lock)
+                && tile.z.abs_diff(t.z) < 5
+        });
+
+            let n = neighbours[1];
+            let w = neighbours[3];
+            let e = neighbours[4];
+            let s = neighbours[6];
+
+            spawn_variant(TileContents::Canal, !tile.is_wet, &assets, n, w, e, s, parent, base_material.clone());
+        },
+        TileContents::Lock => {
+            println!("Setting up lock!");
+            let neighbours = check_neighbours(&neighbours, |t| matches!(t.contents , TileContents::Canal | TileContents::Lock)
+            && tile.z.abs_diff(t.z) < 5);
+
+            let n = neighbours[1];
+            let w = neighbours[3];
+            let e = neighbours[4];
+            let s = neighbours[6];
+
+            spawn_variant(TileContents::Canal, !tile.is_wet, &assets, n, w, e, s, parent, base_material.clone());
+            spawn_variant(TileContents::Lock, !tile.is_wet, &assets, n, w, e, s, parent, base_material.clone());
+        },
     }
 }
 
-fn check_neighbours<F: Fn(&Tile) -> bool>(neighbours: &[Option<&Tile>], checked: F) -> [bool;8] {
+pub fn check_neighbours<F: Fn(&Tile) -> bool, R>(neighbours: &[Option<(Entity, &Tile, R)>], checked: F) -> [bool;8] {
     let mut result = [false;8];
 
     for i in 0..8{
-        if let Some(Some(neighbour)) = neighbours.get(i) {
+        if let Some(Some((_,neighbour, _))) = neighbours.get(i) {
             result[i] = checked(*neighbour);
         }
     }

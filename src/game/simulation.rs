@@ -14,86 +14,66 @@ impl Plugin for SimulationPlugin {
 
 fn run_water_simulation(
     mut commands: Commands,
-    tiles: Query<(Entity, &Tile)>,
+    tiles: Query<(Entity, &Tile, &TileNeighbours)>,
     board: Query<&Board>,
 ) {
-    if let Ok(board) = board.get_single() {
-        for (entity, tile) in tiles.iter() {
-            if tile.contents == TileContents::Canal && !tile.is_wet {
-                let neighbours = board.neighbours(tile.x, tile.y);
-                let has_water_neighbour = neighbours.iter().find(|neighbour| match neighbour {
-                    Some(entity) => {
-                        if let Ok((_, neighbour)) = tiles.get(*entity) {
-                            if neighbour.is_wet
-                                && tile.z <= neighbour.z
-                                && tile.z.abs_diff(neighbour.z) < 2
-                            {
-                                return true;
-                            }
-                        }
-                        false
-                    }
-                    None => false,
-                });
-                if has_water_neighbour.is_some() {
-                    let mut tile = tile.clone();
-                    tile.is_wet = true;
-                    commands.entity(entity).insert(tile);
+    for (entity, tile, neighbours) in tiles.iter() {
+        let neighbours = neighbours
+            .0
+            .iter()
+            .map(|e| {
+                if let Some(e) = e {
+                    tiles.get(*e).ok()
+                } else {
+                    None
                 }
-            } else if tile.contents == TileContents::Lock && !tile.is_wet {
-                let neighbours = board.neighbours(tile.x, tile.y);
-                let has_water_neighbour = neighbours.iter().find(|neighbour| match neighbour {
-                    Some(entity) => {
-                        if let Ok((_, neighbour)) = tiles.get(*entity) {
-                            if neighbour.is_wet
-                                && tile.z <= neighbour.z
-                                && tile.z.abs_diff(neighbour.z) < 5
-                            {
-                                return true;
-                            }
-                        }
-                        false
-                    }
-                    None => false,
-                });
-                if has_water_neighbour.is_some() {
-                    let mut tile = tile.clone();
-                    tile.is_wet = true;
-                    commands.entity(entity).insert(tile);
-                }
+            })
+            .collect::<Vec<_>>();
+        if tile.contents == TileContents::Canal && !tile.is_wet {
+            let neighbours = check_neighbours(&neighbours, |neighbour| {
+                neighbour.is_wet && tile.z <= neighbour.z && tile.z.abs_diff(neighbour.z) < 2
+            });
+
+            let n = neighbours[1];
+            let w = neighbours[3];
+            let e = neighbours[4];
+            let s = neighbours[6];
+
+            if n || w || s || e {
+                let mut tile = tile.clone();
+                tile.is_wet = true;
+                commands.entity(entity).insert(tile);
+            }
+        } else if tile.contents == TileContents::Lock && !tile.is_wet {
+            let neighbours = check_neighbours(&neighbours, |neighbour| {
+                neighbour.is_wet && tile.z <= neighbour.z && tile.z.abs_diff(neighbour.z) < 5
+            });
+
+            let n = neighbours[1];
+            let w = neighbours[3];
+            let e = neighbours[4];
+            let s = neighbours[6];
+
+            if n || w || s || e {
+                let mut tile = tile.clone();
+                tile.is_wet = true;
+                commands.entity(entity).insert(tile);
             }
         }
     }
 }
 
-fn check_goals_for_sucess(tiles: Query<&Tile>, board: Query<&Board>, mut commands: Commands) {
-    if let Ok(board) = board.get_single() {
-        let mut found_goal = false;
-        for tile in tiles.iter() {
-            if tile.is_goal {
-                found_goal = true;
-                let neighbours = board.neighbours(tile.x, tile.y);
-                let has_water_neighbour = neighbours.iter().find(|neighbour| match neighbour {
-                    Some(entity) => {
-                        if let Ok(neighbour) = tiles.get(*entity) {
-                            if neighbour.is_wet
-                                && tile.z <= neighbour.z
-                                && tile.z.abs_diff(neighbour.z) < 2
-                            {
-                                return true;
-                            }
-                        }
-                        false
-                    }
-                    None => false,
-                });
-                if has_water_neighbour.is_none() {
-                    return;
-                }
+fn check_goals_for_sucess(tiles: Query<&Tile>, mut commands: Commands) {
+    let mut found_goal = false;
+    for tile in tiles.iter() {
+        if tile.is_goal {
+            found_goal = true;
+            if !tile.is_wet {
+                return;
             }
         }
-        if found_goal {
-            commands.insert_resource(NextState(GameState::Complete));
-        }
+    }
+    if found_goal {
+        commands.insert_resource(NextState(GameState::Complete));
     }
 }
