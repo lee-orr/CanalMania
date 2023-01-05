@@ -411,13 +411,22 @@ fn setup_board_materials(
 ) {
     let tile_base_material = tile_materials.add(TileMaterial::default());
     let tile_offset_w_material = tile_materials.add(TileMaterial {
-        settings: InkSettings { world_offset: Vec4::new(0.5, 0., 0., 0.), ..Default::default() }
+        settings: InkSettings {
+            world_offset: Vec4::new(0.5, 0., 0., 0.),
+            ..Default::default()
+        },
     });
     let tile_offset_h_material = tile_materials.add(TileMaterial {
-        settings: InkSettings { world_offset: Vec4::new(0., 0.5, 0., 0.), ..Default::default() }
+        settings: InkSettings {
+            world_offset: Vec4::new(0., 0.5, 0., 0.),
+            ..Default::default()
+        },
     });
     let tile_offset_wh_material = tile_materials.add(TileMaterial {
-        settings: InkSettings { world_offset: Vec4::new(0.5, 0.5, 0., 0.), ..Default::default() }
+        settings: InkSettings {
+            world_offset: Vec4::new(0.5, 0.5, 0., 0.),
+            ..Default::default()
+        },
     });
     let decoration_material = tile_materials.add(TileMaterial {
         settings: InkSettings {
@@ -529,7 +538,7 @@ fn build_tile(
     boards: Query<&Board>,
 ) {
     let (offset_x, offset_y) = if let Ok(board) = boards.get_single() {
-     (board.width % 2 == 0, board.height % 2 == 0)
+        (board.width % 2 == 0, board.height % 2 == 0)
     } else {
         (false, false)
     };
@@ -544,8 +553,8 @@ fn build_tile(
             &materials,
             &assets,
             true,
-            offset_x, 
-            offset_y
+            offset_x,
+            offset_y,
         );
     }
 }
@@ -564,7 +573,7 @@ fn update_tile(
     assets: &CanalManiaAssets,
     primary: bool,
     offset_x: bool,
-    offset_y: bool
+    offset_y: bool,
 ) {
     let neighbours = if let Some(n) = neighbours {
         n.0.iter()
@@ -706,7 +715,7 @@ fn update_tile(
                 assets,
                 false,
                 offset_x,
-                offset_y
+                offset_y,
             );
         }
     };
