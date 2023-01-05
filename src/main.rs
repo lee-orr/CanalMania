@@ -90,8 +90,8 @@ fn main() {
         .add_startup_system(setup)
         .add_enter_system(AppLoadingState::Loaded, on_loaded);
 
-    #[cfg(feature = "dev")]
-    app.add_plugin(bevy_inspector_egui::quick::WorldInspectorPlugin);
+    // #[cfg(feature = "dev")]
+    // app.add_plugin(bevy_inspector_egui::quick::WorldInspectorPlugin);
 
     app.run();
 }

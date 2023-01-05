@@ -13,166 +13,129 @@
         },
         {
             "mesh" : 3,
-            "name" : "Tree1",
-            "scale" : [
-                0.09296977519989014,
-                0.09296977519989014,
-                0.09296977519989014
-            ]
+            "name" : "Tree1"
         },
         {
             "mesh" : 4,
-            "name" : "Tree4",
-            "scale" : [
-                0.09296977519989014,
-                0.09296977519989014,
-                0.09296977519989014
-            ]
+            "name" : "Tree4"
         },
         {
             "mesh" : 5,
-            "name" : "Tree3",
-            "scale" : [
-                0.09296977519989014,
-                0.09296977519989014,
-                0.09296977519989014
-            ]
+            "name" : "Tree3"
         },
         {
             "mesh" : 6,
-            "name" : "Tree2",
-            "scale" : [
-                0.09296977519989014,
-                0.09296977519989014,
-                0.09296977519989014
-            ]
+            "name" : "Tree2"
         },
         {
             "mesh" : 7,
-            "name" : "House",
-            "scale" : [
-                0.09296977519989014,
-                0.09296977519989014,
-                0.09296977519989014
-            ]
+            "name" : "House"
         },
         {
             "mesh" : 8,
-            "name" : "House2",
-            "scale" : [
-                0.09296977519989014,
-                0.09296977519989014,
-                0.09296977519989014
-            ]
+            "name" : "House2"
         },
         {
             "mesh" : 9,
-            "name" : "House3",
-            "scale" : [
-                0.09296977519989014,
-                0.09296977519989014,
-                0.09296977519989014
-            ]
+            "name" : "House3"
         },
         {
             "mesh" : 10,
-            "name" : "House4",
-            "scale" : [
-                0.09296977519989014,
-                0.09296977519989014,
-                0.09296977519989014
-            ]
+            "name" : "House4"
         },
         {
             "mesh" : 11,
-            "name" : "CanalCrossing"
+            "name" : "Goal"
         },
         {
             "mesh" : 12,
-            "name" : "CanalT"
+            "name" : "CanalCrossing"
         },
         {
             "mesh" : 13,
-            "name" : "CanalCorner"
+            "name" : "CanalT"
         },
         {
             "mesh" : 14,
-            "name" : "CanalLine"
+            "name" : "CanalCorner"
         },
         {
             "mesh" : 15,
-            "name" : "CanalEnd"
+            "name" : "CanalLine"
         },
         {
             "mesh" : 16,
-            "name" : "CanalCenter"
+            "name" : "CanalEnd"
         },
         {
             "mesh" : 17,
-            "name" : "LockCrossing"
+            "name" : "CanalCenter"
         },
         {
             "mesh" : 18,
-            "name" : "LockCorner"
+            "name" : "LockCrossing"
         },
         {
             "mesh" : 19,
-            "name" : "LockEnd"
+            "name" : "LockCorner"
         },
         {
             "mesh" : 20,
-            "name" : "LockLine"
+            "name" : "LockEnd"
         },
         {
             "mesh" : 21,
-            "name" : "LockT"
+            "name" : "LockLine"
         },
         {
             "mesh" : 22,
-            "name" : "CanalDryCrossing"
+            "name" : "LockT"
         },
         {
             "mesh" : 23,
-            "name" : "CanalDryT"
+            "name" : "CanalDryCrossing"
         },
         {
             "mesh" : 24,
-            "name" : "CanalDryCorner"
+            "name" : "CanalDryT"
         },
         {
             "mesh" : 25,
-            "name" : "CanalDryLine"
+            "name" : "CanalDryCorner"
         },
         {
             "mesh" : 26,
-            "name" : "CanalDryEnd"
+            "name" : "CanalDryLine"
         },
         {
             "mesh" : 27,
-            "name" : "CanalDryCenter"
+            "name" : "CanalDryEnd"
         },
         {
             "mesh" : 28,
-            "name" : "RoadCorner"
+            "name" : "CanalDryCenter"
         },
         {
             "mesh" : 29,
-            "name" : "RoadCrossing"
+            "name" : "RoadCorner"
         },
         {
             "mesh" : 30,
-            "name" : "RoadT"
+            "name" : "RoadCrossing"
         },
         {
             "mesh" : 31,
-            "name" : "RoadLine"
+            "name" : "RoadT"
         },
         {
             "mesh" : 32,
-            "name" : "RoadEnd"
+            "name" : "RoadLine"
         },
         {
             "mesh" : 33,
+            "name" : "RoadEnd"
+        },
+        {
+            "mesh" : 34,
             "name" : "RoadCenter"
         }
-   

@@ -23,6 +23,7 @@ pub struct InkSettings {
     pub parchment_dark: Color,
     /// Params: world_darkening, vertex_color_strength, parchment_low_mix, parchment_high_mix
     pub added_params: Vec4,
+    pub world_offset: Vec4,
 }
 
 impl Default for InkSettings {
@@ -33,7 +34,8 @@ impl Default for InkSettings {
             parchment_base: Color::rgb_u8(203, 172, 113),
             parchment_burn: Color::rgba_u8(146, 90, 45, 255),
             parchment_dark: Color::rgba_u8(56, 25, 25, 255),
-            added_params: Vec4::new(1., 1., 0.5, 0.1),
+            added_params: Vec4::new(1., 0.7, 0.5, 0.1),
+            world_offset: Vec4::ZERO,
         }
     }
 }

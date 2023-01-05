@@ -11,7 +11,7 @@ pub struct CanalManiaAssets {
     pub font_italic: Handle<Font>,
     #[asset(key = "level_list")]
     pub level_list: Handle<LevelList>,
-    #[asset(key = "land_tile")]
+
     #[asset(key = "land_tile")]
     pub land_tile: Handle<Mesh>,
 
@@ -44,6 +44,9 @@ pub struct CanalManiaAssets {
 
     #[asset(key = "house4")]
     pub house4: Handle<Mesh>,
+
+    #[asset(key = "goal")]
+    pub goal: Handle<Mesh>,
 
     #[asset(key = "canal_crossing")]
     pub canal_crossing: Handle<Mesh>,

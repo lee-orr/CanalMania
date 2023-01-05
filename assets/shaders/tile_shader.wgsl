@@ -12,7 +12,8 @@ struct InkSettings {
     parchment_base: vec4<f32>,
     parchment_burn: vec4<f32>,
     parchment_dark: vec4<f32>,
-    params: vec4<f32>
+    params: vec4<f32>,
+    world_offset: vec4<f32>
 }
 
 @group(1) @binding(0)
@@ -40,8 +41,8 @@ fn fragment(
 
     let vertex_color = in.color;
 
-
-    var test_position : vec3<f32> = in.world_position.xyz * 0.3;
+    let world_position = in.world_position + settings.world_offset;
+    var test_position : vec3<f32> = world_position.xyz * 0.3;
     var overlay_1: f32 = simplex_noise_3d(test_position);
 
     for(var i: f32 = 1.; i < 5.; i += 1.) {
@@ -50,7 +51,7 @@ fn fragment(
         overlay_1 = mix(overlay_1, val, 0.2);
     }
 
-    test_position = in.world_position.xyz * 1.5;
+    test_position = world_position.xyz * 1.5;
     var overlay_2: f32 = simplex_noise_3d(test_position);
     for(var i: f32 = 1.; i < 6.; i += 1.) {
         let position = test_position * 3. * i;
@@ -58,7 +59,7 @@ fn fragment(
         overlay_2 = mix(overlay_2, val, 0.4);
     }
 
-    test_position = in.world_position.xyz * 1.5;
+    test_position = world_position.xyz * 1.5;
     var overlay_3: f32 = simplex_noise_3d(test_position);
     for(var i: f32 = 1.; i < 8.; i += 1.) {
         let position = test_position * 3. * i;
@@ -73,8 +74,8 @@ fn fragment(
     let init_bg = mix(vertex_color * overlay_color, overlay_color, 1. - settings.params.y);
     let bg = mix(init_bg, init_bg * settings.base_color , 0.3);
 
-    let depth = clamp(mix(-0.3, 1.2, clamp(in.world_position.y + 1., 0., 1.)), 0., 1.);
-    var darkening : f32 = clamp(sin(max(0., in.world_position.y * 12. * 3.14159)), 0., 1.);
+    let depth = clamp(mix(-0.3, 1.2, clamp(world_position.y + 1., 0., 1.)), 0., 1.);
+    var darkening : f32 = clamp(sin(max(0., world_position.y * 12. * 3.14159)), 0., 1.);
 
     if darkening > 0.95 {
         darkening = 1. - 0.95;
@@ -83,8 +84,8 @@ fn fragment(
         darkening = 1.;
     }
 
-    let xmod = abs(abs(in.world_position.x) % 1. - 0.5);
-    let ymod = abs(abs(in.world_position.z) % 1. - 0.5);
+    let xmod = abs(abs(world_position.x) % 1. - 0.5);
+    let ymod = abs(abs(world_position.z) % 1. - 0.5);
     let xmod_2 = xmod * 10. % 1.;
     let ymod_2 = ymod * 10. % 1.;
 

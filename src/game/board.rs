@@ -29,22 +29,22 @@ impl Plugin for BoardPlugin {
             .add_enter_system(AppLoadingState::Loaded, setup_board_materials)
             .add_system(build_board.run_in_state(AppState::InGame))
             .add_system(build_tile.run_in_state(AppState::InGame))
+            .add_system(animate_goal.run_in_state(AppState::InGame))
             .add_system(process_selection_events.run_in_state(AppState::InGame))
             .add_exit_system(AppState::InGame, clear_board);
         #[cfg(feature = "dev")]
         app.add_plugin(bevy_inspector_egui::quick::AssetInspectorPlugin::<
             TileMaterial,
-        >::default())
-            .add_plugin(bevy_inspector_egui::quick::ResourceInspectorPlugin::<
-                BoardRuntimeAssets,
-            >::default());
+        >::default());
+        // .add_plugin(bevy_inspector_egui::quick::ResourceInspectorPlugin::<
+        //     BoardRuntimeAssets,
+        // >::default());
     }
 }
 
 #[derive(Resource, Reflect)]
 struct BoardRuntimeAssets {
     pub tile_base_material: Handle<TileMaterial>,
-    pub goal_base_material: Handle<TileMaterial>,
     pub decoration_material: Handle<TileMaterial>,
     pub selector: Handle<Mesh>,
     pub selector_base: Handle<StandardMaterial>,
@@ -346,12 +346,7 @@ fn setup_board_materials(
             ..Default::default()
         },
     });
-    let goal_base_material = tile_materials.add(TileMaterial {
-        settings: InkSettings {
-            base_color: Color::rgb(0.7, 0.2, 0.1),
-            ..Default::default()
-        },
-    });
+
     let selector = meshes.add(shape::Box::new(1., 0.1, 1.).into());
 
     let selector_base = materials.add(StandardMaterial {
@@ -380,7 +375,6 @@ fn setup_board_materials(
 
     commands.insert_resource(BoardRuntimeAssets {
         tile_base_material,
-        goal_base_material,
         decoration_material,
         selector,
         selector_base,
@@ -467,6 +461,9 @@ fn build_tile(
     }
 }
 
+#[derive(Component)]
+pub struct Goal;
+
 fn update_tile(
     neighbours: &Option<&TileNeighbours>,
     neighbour_tiles: &Query<(Entity, &Tile, Option<&TileNeighbours>)>,
@@ -507,11 +504,7 @@ fn update_tile(
     };
     let center = Vec3::new(tile.x as f32, (tile.z as f32) / 6., tile.y as f32);
     let mut entity = commands.entity(entity);
-    let base_material = if tile.is_goal {
-        materials.goal_base_material.clone()
-    } else {
-        materials.tile_base_material.clone()
-    };
+    let base_material = materials.tile_base_material.clone();
     entity.insert((
         PickableBundle::default(),
         Highlighting {
@@ -538,6 +531,17 @@ fn update_tile(
             material: base_material.clone(),
             ..Default::default()
         });
+
+        if tile.is_goal {
+            parent.spawn((
+                Goal,
+                MaterialMeshBundle {
+                    mesh: assets.goal.clone(),
+                    material: materials.decoration_material.clone(),
+                    ..Default::default()
+                },
+            ));
+        }
 
         let decorations = tile.get_decorations(assets);
 
@@ -795,5 +799,13 @@ pub(crate) fn process_selection_events(
 fn clear_board(mut commands: Commands, boards: Query<Entity, With<Board>>) {
     for board in boards.iter() {
         commands.entity(board).despawn_recursive();
+    }
+}
+
+fn animate_goal(mut goals: Query<&mut Transform, With<Goal>>, time: Res<Time>) {
+    for (i, mut goal) in goals.iter_mut().enumerate() {
+        let y = (time.elapsed_seconds_f64() * std::f64::consts::PI / 2. + (i as f64)).sin() as f32;
+        let y = y * 0.3 + 0.3;
+        goal.translation = Vec3::new(0., y, 0.);
     }
 }
