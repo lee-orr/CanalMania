@@ -6,10 +6,6 @@ struct Color {
 var<uniform> base_color: Color;
 @group(1) @binding(1)
 var<uniform> ink_color: Color;
-@group(1) @binding(2)
-var symbol_texture: texture_2d<f32>;
-@group(1) @binding(3)
-var symbol_sampler: sampler;
 
 #import noisy_bevy::prelude
 
@@ -22,7 +18,6 @@ fn fragment(
     var parchment_dark : vec4<f32> = vec4<f32>(0.22, 0.1, 0.1, 1.);
 
     let vertex_color = color;
-    let symbol_color = textureSample(symbol_texture, symbol_sampler, uv);
 
 
     var test_position : vec3<f32> = world_position.xyz * 0.3;
@@ -54,10 +49,10 @@ fn fragment(
 
     let overlay_color = mix(parchment_base, parchment_burn, overlay_mixer);
 
-    let init_bg = mix(vertex_color * overlay_color, overlay_color, 0.4);
-    let bg = mix(init_bg, init_bg * base_color.color , 0.7);
-    let ink = mix(ink_color.color,vec4<f32>(1., 1., 1., 1.), symbol_color);
+    let init_bg = mix(vertex_color * overlay_color, overlay_color, 0.3);
+    let bg = mix(init_bg, init_bg * base_color.color , 0.3);
+//    let ink = mix(ink_color.color,vec4<f32>(1., 1., 1., 1.), symbol_color);
     let depth = clamp(mix(-0.3, 1.2, clamp(world_position.y + 1., 0., 1.)), 0., 1.);
-    let color = mix(bg * ink, bg * ink * parchment_dark, 1. - depth);
+    let color = mix(bg , bg  * parchment_dark, 1. - depth);
     return color;
 }

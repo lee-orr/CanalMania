@@ -1,4 +1,5 @@
-{
+
+        {
             "mesh" : 0,
             "name" : "LandTile"
         },
@@ -83,71 +84,95 @@
             ]
         },
         {
+            "mesh" : 11,
             "name" : "CanalCrossing"
         },
         {
+            "mesh" : 12,
             "name" : "CanalT"
         },
         {
+            "mesh" : 13,
             "name" : "CanalCorner"
         },
         {
+            "mesh" : 14,
             "name" : "CanalLine"
         },
         {
+            "mesh" : 15,
             "name" : "CanalEnd"
         },
         {
+            "mesh" : 16,
             "name" : "CanalCenter"
         },
         {
+            "mesh" : 17,
             "name" : "LockCrossing"
         },
         {
+            "mesh" : 18,
             "name" : "LockCorner"
         },
         {
+            "mesh" : 19,
             "name" : "LockEnd"
         },
         {
+            "mesh" : 20,
             "name" : "LockLine"
         },
         {
+            "mesh" : 21,
             "name" : "LockT"
         },
         {
+            "mesh" : 22,
             "name" : "CanalDryCrossing"
         },
         {
+            "mesh" : 23,
             "name" : "CanalDryT"
         },
         {
+            "mesh" : 24,
             "name" : "CanalDryCorner"
         },
         {
-            "name" : "CanadlDryLine"
+            "mesh" : 25,
+            "name" : "CanalDryLine"
         },
         {
+            "mesh" : 26,
             "name" : "CanalDryEnd"
         },
         {
+            "mesh" : 27,
             "name" : "CanalDryCenter"
         },
         {
+            "mesh" : 28,
             "name" : "RoadCorner"
         },
         {
+            "mesh" : 29,
             "name" : "RoadCrossing"
         },
         {
+            "mesh" : 30,
             "name" : "RoadT"
         },
         {
+            "mesh" : 31,
             "name" : "RoadLine"
         },
         {
+            "mesh" : 32,
             "name" : "RoadEnd"
         },
         {
+            "mesh" : 33,
             "name" : "RoadCenter"
         }
+   

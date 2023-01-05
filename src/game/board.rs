@@ -102,7 +102,7 @@ pub struct Tile {
     pub is_wet: bool,
 }
 
-#[derive(Component, Default, Clone)]
+#[derive(Component, Default, Clone, Debug)]
 pub struct TileNeighbours([Option<Entity>;8]);
 
 #[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -129,6 +129,111 @@ pub enum TileContents {
 impl Default for TileContents {
     fn default() -> Self {
         Self::None
+    }
+}
+
+impl TileContents {
+    fn center(&self, assets: &CanalManiaAssets, is_dry: bool) -> Handle<Mesh> {
+        match self {
+            TileContents::None => Handle::default(),
+            TileContents::Road => assets.road_center.clone(),
+            TileContents::Canal => {
+                if is_dry {
+                    assets.canal_dry_center.clone()
+                } else {
+                    assets.canal_center.clone()
+                }
+            },
+            TileContents::Lock => {
+                Handle::default()
+            },
+        }
+    }
+    fn corner(&self, assets: &CanalManiaAssets, is_dry: bool) -> Handle<Mesh> {
+        match self {
+            TileContents::None => Handle::default(),
+            TileContents::Road => assets.road_corner.clone(),
+            TileContents::Canal => {
+                if is_dry {
+                    assets.canal_dry_corner.clone()
+                } else {
+                    assets.canal_corner.clone()
+                }
+            },
+            TileContents::Lock => {
+                assets.lock_corner.clone()
+            },
+        }
+    }
+    fn crossing(&self, assets: &CanalManiaAssets, is_dry: bool) -> Handle<Mesh> {
+        info!("Checking {self:?}");
+        match self {
+            TileContents::None => {
+                info!("Providing default handle...");
+                Handle::default()
+            },
+            TileContents::Road => assets.road_crossing.clone(),
+            TileContents::Canal => {
+                if is_dry {
+                    info!("Found Dry Canal Mesh");
+                    assets.canal_dry_crossing.clone()
+                } else {
+                    info!("Found Canal Mesh");
+                    assets.canal_crossing.clone()
+                }
+            },
+            TileContents::Lock => {
+                assets.lock_crossing.clone()
+            },
+        }
+    }
+    fn t(&self, assets: &CanalManiaAssets, is_dry: bool) -> Handle<Mesh> {
+        match self {
+            TileContents::None => Handle::default(),
+            TileContents::Road => assets.road_t.clone(),
+            TileContents::Canal => {
+                if is_dry {
+                    assets.canal_dry_t.clone()
+                } else {
+                    assets.canal_t.clone()
+                }
+            },
+            TileContents::Lock => {
+                assets.lock_t.clone()
+            },
+        }
+    }
+    fn line(&self, assets: &CanalManiaAssets, is_dry: bool) -> Handle<Mesh> {
+        match self {
+            TileContents::None => Handle::default(),
+            TileContents::Road => assets.road_line.clone(),
+            TileContents::Canal => {
+                if is_dry {
+                    assets.canal_dry_line.clone()
+                } else {
+                    assets.canal_line.clone()
+                }
+            },
+            TileContents::Lock => {
+                assets.lock_line.clone()
+            },
+        }
+    }
+    fn end(&self, assets: &CanalManiaAssets, is_dry: bool) -> Handle<Mesh> {
+        match self {
+            TileContents::None => Handle::default(),
+            TileContents::Road => assets.road_end.clone(),
+            TileContents::Canal => {
+                if is_dry {
+                    assets.canal_dry_end.clone()
+                } else {
+                    assets.canal_end.clone()
+                }
+            },
+            TileContents::Lock => {
+                assets.lock_end.clone()
+            },
+        }
     }
 }
 
@@ -283,12 +388,13 @@ fn build_tile(
     assets: Res<CanalManiaAssets>,
     materials: Res<BoardRuntimeAssets>,
     tiles: Query<(Entity, &Tile, Option<&TileNeighbours>), Changed<Tile>>,
+    neighbour_tiles: Query<&Tile>,
     boards: Query<&Board>
 ) {
     for (entity, tile, neighbours) in tiles.iter() {
         let neighbours = if let Some(n) = neighbours {
             n.0.iter().map(|e| if let Some(e) = e {
-                tiles.get(*e).ok()
+                neighbour_tiles.get(*e).ok()
         } else {
             None
         }).collect::<Vec<_>>()
@@ -297,12 +403,12 @@ fn build_tile(
                 let n = board.neighbours(tile.x, tile.y);
                 commands.entity(entity).insert(TileNeighbours(n));
                 n.iter().map(|e| if let Some(e) = e {
-                    tiles.get(*e).ok()
+                    neighbour_tiles.get(*e).ok()
             } else {
                 None
             }).collect::<Vec<_>>()
             } else {
-                (0..8).map(|_| Option::<(Entity, &Tile, Option<&TileNeighbours>)>::None).collect::<Vec<_>>()
+                (0..8).map(|_| Option::<&Tile>::None).collect::<Vec<_>>()
             }
         };
         let center = Vec3::new(tile.x as f32, (tile.z as f32) / 6., tile.y as f32);
@@ -344,12 +450,82 @@ fn build_tile(
             match tile.contents {
                 TileContents::None => {},
                 TileContents::Road => {
+                    println!("Setting up road!");
+                    let neighbours = check_neighbours(&neighbours, |t| t.contents == TileContents::Road);
+
+                    let n = neighbours[1];
+                    let w = neighbours[3];
+                    let e = neighbours[4];
+                    let s = neighbours[6];
+
+                    spawn_variant(TileContents::Road, !tile.is_wet, &assets, n, w, e, s, parent, base_material.clone());
                 },
-                TileContents::Canal => {},
-                TileContents::Lock => {},
+                TileContents::Canal => {
+                    println!("Setting up canal!");
+                    let neighbours = check_neighbours(&neighbours, |t| matches!(t.contents , TileContents::Canal | TileContents::Lock));
+
+                    let n = neighbours[1];
+                    let w = neighbours[3];
+                    let e = neighbours[4];
+                    let s = neighbours[6];
+
+                    spawn_variant(TileContents::Canal, !tile.is_wet, &assets, n, w, e, s, parent, base_material.clone());
+                },
+                TileContents::Lock => {
+                    println!("Setting up lock!");
+                    let neighbours = check_neighbours(&neighbours, |t|matches!(t.contents , TileContents::Canal | TileContents::Lock));
+
+                    let n = neighbours[1];
+                    let w = neighbours[3];
+                    let e = neighbours[4];
+                    let s = neighbours[6];
+
+                    spawn_variant(TileContents::Canal, !tile.is_wet, &assets, n, w, e, s, parent, base_material.clone());
+                    spawn_variant(TileContents::Lock, !tile.is_wet, &assets, n, w, e, s, parent, base_material.clone());
+                },
             }
         });
     }
+}
+
+fn check_neighbours<F: Fn(&Tile) -> bool>(neighbours: &[Option<&Tile>], checked: F) -> [bool;8] {
+    let mut result = [false;8];
+
+    for i in 0..8{
+        if let Some(Some(neighbour)) = neighbours.get(i) {
+            result[i] = checked(*neighbour);
+        }
+    }
+    result
+}
+
+fn spawn_variant<T: Material>(content_type: TileContents, is_dry: bool, assets: &CanalManiaAssets, n: bool, w: bool, e: bool, s: bool, parent: &mut ChildBuilder, material: Handle<T>) {
+    let (mesh, rotation) = match (n,w,e,s) {
+        (true, true, true, true) => (content_type.crossing(assets, is_dry), 0f32),
+        (true, true, true, false) => (content_type.t(assets, is_dry), 180.),
+        (true, true, false, true) => (content_type.t(assets, is_dry), 270.),
+        (true, true, false, false) => (content_type.corner(assets, is_dry), 180.),
+        (true, false, true, true) => (content_type.t(assets, is_dry), 90.),
+        (true, false, true, false) => (content_type.corner(assets, is_dry), 90.),
+        (true, false, false, true) => (content_type.line(assets, is_dry), 0.),
+        (true, false, false, false) => (content_type.end(assets, is_dry), 180.),
+        (false, true, true, true) => (content_type.t(assets, is_dry), 0.),
+        (false, true, true, false) => (content_type.line(assets, is_dry), 90.),
+        (false, true, false, true) => (content_type.corner(assets, is_dry), 270.),
+        (false, true, false, false) => (content_type.end(assets, is_dry), 270.),
+        (false, false, true, true) =>(content_type.corner(assets, is_dry), 0.),
+        (false, false, true, false) => (content_type.end(assets, is_dry), 90.),
+        (false, false, false, true) => (content_type.end(assets, is_dry), 0.),
+        (false, false, false, false) => (content_type.center(assets, is_dry), 0.),
+    };
+
+    println!("Spawning {content_type:?}");
+    parent.spawn(MaterialMeshBundle {
+        mesh,
+        material,
+        transform: Transform::from_rotation(Quat::from_rotation_y(rotation.to_radians())),
+        ..Default::default()
+    });
 }
 
 #[derive(Clone)]
