@@ -345,7 +345,6 @@ fn setup_board_materials(
         base_color: Color::rgb(0.7, 0.2, 0.1),
         vertex_color_strength: 1.,
         world_darkening: 1.,
-        ..Default::default()
     });
     let goal_base_material = tile_materials.add(TileMaterial {
         ink_color: Color::rgb_u8(131, 129, 117),
@@ -594,20 +593,18 @@ fn update_tile(
     });
 
     if primary {
-        for neighbour in neighbours.iter() {
-            if let Some((entity, tile, neighbours)) = neighbour {
-                update_tile(
-                    neighbours,
-                    neighbour_tiles,
-                    boards,
-                    tile,
-                    commands,
-                    *entity,
-                    materials,
-                    assets,
-                    false,
-                );
-            }
+        for (entity, tile, neighbours) in neighbours.iter().flatten() {
+            update_tile(
+                neighbours,
+                neighbour_tiles,
+                boards,
+                tile,
+                commands,
+                *entity,
+                materials,
+                assets,
+                false,
+            );
         }
     };
 }
@@ -710,6 +707,7 @@ pub fn check_neighbours<F: Fn(&Tile) -> bool, R>(
 ) -> [bool; 8] {
     let mut result = [false; 8];
 
+    #[allow(clippy::needless_range_loop)]
     for i in 0..8 {
         if let Some(Some((_, neighbour, _))) = neighbours.get(i) {
             result[i] = checked(neighbour);

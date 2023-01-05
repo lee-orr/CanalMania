@@ -61,6 +61,7 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
                     parent.button("toggle", "Toggle Type");
                     parent.button("goal", "Set Goals");
                     parent.button("construct", "Set Construction");
+                    parent.button("water", "Adjust Water");
                 });
             });
         });
@@ -142,6 +143,8 @@ fn button_pressed(
             commands.insert_resource(NextState(EditorOperation::LowerHeight));
         } else if event.0 == "goal" {
             commands.insert_resource(NextState(EditorOperation::SetGoal));
+        } else if event.0 == "water" {
+            commands.insert_resource(NextState(EditorOperation::ToggleWetness));
         } else if event.0 == "toggle" {
             let next = match operation.0 {
                 EditorOperation::ToggleType(t) => match t {
