@@ -12,7 +12,7 @@ mod editor_ui;
 mod game_complete_ui;
 mod simulation;
 mod tile_hover_ui;
-mod tile_shader;
+pub mod tile_shader;
 
 use bevy::prelude::*;
 use iyes_loopless::{prelude::AppLooplessStateExt, state::NextState};
