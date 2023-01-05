@@ -12,7 +12,7 @@ use crate::{
     assets::CanalManiaAssets,
 };
 
-use super::{game_state::GameState, level::Level, tile_shader::TileMaterial};
+use super::{game_state::GameState, level::Level, tile_shader::{TileMaterial, InkSettings}};
 
 pub struct BoardPlugin;
 
@@ -27,10 +27,14 @@ impl Plugin for BoardPlugin {
             .add_system(build_tile.run_in_state(AppState::InGame))
             .add_system(process_selection_events.run_in_state(AppState::InGame))
             .add_exit_system(AppState::InGame, clear_board);
+        #[cfg(feature = "dev")]
+        app
+            .add_plugin(bevy_inspector_egui::quick::AssetInspectorPlugin::<TileMaterial>::default())
+            .add_plugin( bevy_inspector_egui::quick::ResourceInspectorPlugin::<BoardRuntimeAssets>::default());
     }
 }
 
-#[derive(Resource)]
+#[derive(Resource, Reflect)]
 struct BoardRuntimeAssets {
     pub tile_base_material: Handle<TileMaterial>,
     pub goal_base_material: Handle<TileMaterial>,
@@ -328,28 +332,19 @@ fn setup_board_materials(
     mut tile_materials: ResMut<Assets<TileMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
-    let tile_base_material = tile_materials.add(TileMaterial {
-        ink_color: Color::rgb_u8(131, 129, 117),
-        vertex_color_strength: 1.,
-        world_darkening: 1.,
-        ..Default::default()
-    });
+    let tile_base_material = tile_materials.add(TileMaterial::default());
     let decoration_material = tile_materials.add(TileMaterial {
-        ink_color: Color::rgb_u8(131, 129, 117),
-        vertex_color_strength: 0.7,
-        world_darkening: 0.,
-        ..Default::default()
-    });
-    let _goal_base_material = tile_materials.add(TileMaterial {
-        ink_color: Color::rgb_u8(131, 129, 117),
-        base_color: Color::rgb(0.7, 0.2, 0.1),
-        vertex_color_strength: 1.,
-        world_darkening: 1.,
+        settings: InkSettings {
+            vertex_color_strength: 0.7,
+            world_darkening: 0.,
+            ..Default::default()
+        }
     });
     let goal_base_material = tile_materials.add(TileMaterial {
-        ink_color: Color::rgb_u8(131, 129, 117),
-        base_color: Color::rgb(0.7, 0.2, 0.1),
-        ..Default::default()
+        settings: InkSettings {
+            base_color: Color::rgb(0.7, 0.2, 0.1),
+            ..Default::default()
+        }
     });
     let selector = meshes.add(shape::Box::new(1., 0.1, 1.).into());
 

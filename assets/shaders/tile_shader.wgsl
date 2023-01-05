@@ -3,17 +3,23 @@ struct Color {
 };
 
 struct Value {
-    value: f32
+    value: vec4<f32>
 };
 
+struct InkSettings {
+    base_color: vec4<f32>,
+    ink_color: vec4<f32>,
+    parchment_base: vec4<f32>,
+    parchment_burn: vec4<f32>,
+    parchment_dark: vec4<f32>,
+    world_darkening: f32,
+    vertex_color_strength: f32,
+    parchment_low_mix: f32,
+    parchment_high_mix: f32,
+}
+
 @group(1) @binding(0)
-var<uniform> base_color: Color;
-@group(1) @binding(1)
-var<uniform> ink_color: Color;
-@group(1) @binding(2)
-var<uniform> world_darkening: Value;
-@group(1) @binding(3)
-var<uniform> vertex_color_strength: Value;
+var<uniform> settings: InkSettings;
 
 #import noisy_bevy::prelude
 #import bevy_pbr::mesh_bindings
@@ -31,9 +37,9 @@ struct FragmentInput {
 fn fragment(
     in: FragmentInput
 ) -> @location(0) vec4<f32> {
-    var parchment_base : vec4<f32> = vec4<f32>(0.775822, 0.637597, 0.351533, 1.);
-    var parchment_burn : vec4<f32> = vec4<f32>(0.423268, 0.246201, 0.076185, 1.);
-    var parchment_dark : vec4<f32> = vec4<f32>(0.22, 0.1, 0.1, 1.);
+    var parchment_base : vec4<f32> = settings.parchment_base;
+    var parchment_burn : vec4<f32> = settings.parchment_burn;
+    var parchment_dark : vec4<f32> = settings.parchment_dark;
 
     let vertex_color = in.color;
 
@@ -63,12 +69,12 @@ fn fragment(
         overlay_3 = mix(overlay_3, val, 0.8);
     }
 
-    let overlay_mixer = mix(mix(overlay_1, overlay_2, 0.3), overlay_3, 0.3);
+    let overlay_mixer = mix(mix(overlay_1, overlay_2, settings.parchment_low_mix), overlay_3, settings.parchment_high_mix);
 
     let overlay_color = mix(parchment_base, parchment_burn, overlay_mixer);
 
-    let init_bg = mix(vertex_color * overlay_color, overlay_color, 1. - vertex_color_strength.value);
-    let bg = mix(init_bg, init_bg * base_color.color , 0.3);
+    let init_bg = mix(vertex_color * overlay_color, overlay_color, 1. - settings.vertex_color_strength);
+    let bg = mix(init_bg, init_bg * settings.base_color , 0.3);
 
     let depth = clamp(mix(-0.3, 1.2, clamp(in.world_position.y + 1., 0., 1.)), 0., 1.);
     var darkening : f32 = clamp(sin(max(0., in.world_position.y * 12. * 3.14159)), 0., 1.);
@@ -97,7 +103,7 @@ fn fragment(
             darkening = 0.5;
     }
 
-    let ink = mix(vec4<f32>(1., 1., 1., 1.), mix(ink_color.color, vec4<f32>(1., 1., 1., 1.), darkening), world_darkening.value);
+    let ink = mix(vec4<f32>(1., 1., 1., 1.), mix(settings.ink_color, vec4<f32>(1., 1., 1., 1.), darkening), settings.world_darkening);
 
     let color = mix(bg * ink , bg  * parchment_dark, 1. - depth);
 

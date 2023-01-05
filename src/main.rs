@@ -91,7 +91,7 @@ fn main() {
         .add_enter_system(AppLoadingState::Loaded, on_loaded);
 
     #[cfg(feature = "dev")]
-    app.add_plugin(bevy_inspector_egui::WorldInspectorPlugin::default());
+    app.add_plugin(bevy_inspector_egui::quick::WorldInspectorPlugin);
 
     app.run();
 }

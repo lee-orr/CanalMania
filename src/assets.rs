@@ -9,8 +9,6 @@ pub struct CanalManiaAssets {
     pub font: Handle<Font>,
     #[asset(key = "font_italic")]
     pub font_italic: Handle<Font>,
-    #[asset(key = "tile_texture")]
-    pub tile_texture: Handle<Image>,
     #[asset(key = "level_list")]
     pub level_list: Handle<LevelList>,
     #[asset(key = "land_tile")]
