@@ -4,6 +4,7 @@ use iyes_loopless::{
     prelude::{AppLooplessStateExt, IntoConditionalSystem},
     state::{CurrentState, NextState},
 };
+use noisy_bevy::{simplex_noise_2d, simplex_noise_3d};
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -264,6 +265,65 @@ impl Tile {
         };
         type_cost + road_cost
     }
+
+    pub fn get_decorations(&self, assets: &CanalManiaAssets) -> Vec<Handle<Mesh>> {
+        let count = match self.contents {
+            TileContents::None => {
+                match self.tile_type {
+                    TileType::Land => 3.,
+                    TileType::Farm => 3.,
+                    TileType::City => 8.,
+                }
+            },
+            _ => {
+                match self.tile_type {
+                    TileType::Land => 1.,
+                    TileType::Farm => 1.,
+                    TileType::City => 4.,
+                }
+            },
+        };
+
+        let mut pos = Vec3::new(self.x as f32, self.y as f32, self.z as f32);
+
+        let amount = (simplex_noise_3d(pos).abs() * (count + 1.)).floor() as usize;
+
+        (0..amount).map(|i| {
+            let i = i as f32;
+            pos = Vec3::new(-1. * i, 2. * i, 0.24 * i ) * pos;
+            match self.tile_type {
+                TileType::Land => {
+                    let index = (simplex_noise_3d(pos).abs() * 4.).floor() as usize;
+                    match index {
+                        1 => assets.tree2.clone(),
+                        2 => assets.tree3.clone(),
+                        3 => assets.tree4.clone(),
+                        _ => assets.tree1.clone()
+                    }
+                },
+                TileType::Farm => {
+                    let index = (simplex_noise_3d(pos).abs() * 6.).floor() as usize;
+                    match index {
+                        1 => assets.house2.clone(),
+                        2 => assets.house3.clone(),
+                        3 => assets.house4.clone(),
+                        4 => assets.tree2.clone(),
+                        5 => assets.tree3.clone(),
+                        _ => assets.house.clone()
+                    }
+                },
+                TileType::City => {
+                    let index = (simplex_noise_3d(pos).abs() * 4.).floor() as usize;
+                    match index {
+                        1 => assets.house2.clone(),
+                        2 => assets.house3.clone(),
+                        3 => assets.house4.clone(),
+                        _ => assets.house.clone()
+                    }
+                },
+            }
+        }).collect()
+    }
 }
 
 fn tile_position(x: Option<usize>, y: Option<usize>) -> Option<(usize, usize)> {
@@ -450,6 +510,57 @@ fn update_tile(neighbours: &Option<&TileNeighbours>, neighbour_tiles: &Query<(En
             ..Default::default()
         });
 
+        
+        let decorations = tile.get_decorations(&assets);
+        
+
+        let mut pos = Vec3::new(tile.x as f32, tile.y as f32, tile.z as f32);
+        pos = pos * 4295.;
+        for (i, decoration) in decorations.into_iter().enumerate() {
+            let i = i as f32;
+
+            pos = Vec3::new(i * 235., -141.5 * i, 9998. * i) + pos;
+
+            let x = simplex_noise_3d(pos);
+            pos = pos / 325.;
+
+            let y = simplex_noise_3d(pos);
+
+            pos = pos / 213. + 5935.;
+            let rot = simplex_noise_3d(pos) * 360.;
+
+            let position = match tile.contents {
+                TileContents::None => {
+                    let x = x.clamp(0.1, 0.9);
+                    let y = y.clamp(0.1, 0.9);
+                    let x = x - 0.5;
+                    let y = y - 0.5;
+                    Vec3::new(x, 0., y)
+                },
+                _ => {
+                    let x = if x > 0.5 {
+                        x.clamp(0.75, 0.9)
+                    } else {
+                        x.clamp(0.1, 0.25)
+                    };
+                    let y = if y > 0.5 {
+                        y.clamp(0.75, 0.9)
+                    } else {
+                        y.clamp(0.1, 0.25)
+                    };
+                    let x = x - 0.5;
+                    let y = y - 0.5;
+                    Vec3::new(x, 0., y)
+                }
+            };
+            parent.spawn(MaterialMeshBundle {
+                mesh: decoration,
+                material: base_material.clone(),
+                transform: Transform::from_translation(position).with_rotation(Quat::from_rotation_y(rot.to_radians())).with_scale(Vec3::new(0.3,0.3, 0.3)),
+                ..Default::default()
+            });
+        }
+
         spawn_content(tile, &neighbours, assets, parent, base_material.clone());
     });
     
@@ -589,3 +700,4 @@ fn clear_board(mut commands: Commands, boards: Query<Entity, With<Board>>) {
         commands.entity(board).despawn_recursive();
     }
 }
+
