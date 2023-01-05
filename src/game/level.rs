@@ -1,7 +1,7 @@
 use bevy::{prelude::*, reflect::TypeUuid};
 use serde::{Deserialize, Serialize};
 
-use super::board::{TileType, TileContents};
+use super::board::{TileContents, TileType};
 
 #[derive(Resource, Component, Serialize, Deserialize, TypeUuid, Clone)]
 #[uuid = "b9b5565a-a06a-4647-bc62-274f32ba6a5f"]

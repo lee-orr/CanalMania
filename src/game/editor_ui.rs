@@ -1,12 +1,12 @@
 use std::io::Write;
 
-use bevy::{asset::FileAssetIo, prelude::{*, system_adapter::new}};
+use bevy::{asset::FileAssetIo, prelude::*};
 use iyes_loopless::prelude::*;
 
 use crate::ui::*;
 
 use super::{
-    board::{Tile, TileEvent, TileType, TileContents},
+    board::{Tile, TileContents, TileEvent, TileType},
     game_state::GameState,
     level::{Level, TileInfo},
 };
@@ -147,7 +147,7 @@ fn button_pressed(
                 EditorOperation::ToggleType(t) => match t {
                     super::board::TileType::Land => super::board::TileType::Farm,
                     super::board::TileType::Farm => super::board::TileType::City,
-                    super::board::TileType::City => super::board::TileType::Land
+                    super::board::TileType::City => super::board::TileType::Land,
                 },
                 _ => TileType::Land,
             };
@@ -158,7 +158,7 @@ fn button_pressed(
                     TileContents::None => TileContents::Road,
                     TileContents::Road => TileContents::Canal,
                     TileContents::Canal => TileContents::Lock,
-                    TileContents::Lock => TileContents::None
+                    TileContents::Lock => TileContents::None,
                 },
                 _ => TileContents::Road,
             };
@@ -233,10 +233,10 @@ fn tile_clicked(
                     EditorOperation::ToggleConstruction(t) => {
                         new_tile.is_wet = matches!(t, TileContents::Canal | TileContents::Lock);
                         new_tile.contents = t;
-                    },
+                    }
                     EditorOperation::ToggleWetness => {
                         new_tile.is_wet = !new_tile.is_wet;
-                    },
+                    }
                 }
             }
         }

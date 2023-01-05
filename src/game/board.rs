@@ -4,7 +4,7 @@ use iyes_loopless::{
     prelude::{AppLooplessStateExt, IntoConditionalSystem},
     state::{CurrentState, NextState},
 };
-use noisy_bevy::{simplex_noise_2d, simplex_noise_3d};
+use noisy_bevy::simplex_noise_3d;
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -34,6 +34,7 @@ impl Plugin for BoardPlugin {
 struct BoardRuntimeAssets {
     pub tile_base_material: Handle<TileMaterial>,
     pub goal_base_material: Handle<TileMaterial>,
+    pub decoration_material: Handle<TileMaterial>,
     pub selector: Handle<Mesh>,
     pub selector_base: Handle<StandardMaterial>,
     pub selector_hovered: Handle<StandardMaterial>,
@@ -104,7 +105,7 @@ pub struct Tile {
 }
 
 #[derive(Component, Default, Clone, Debug)]
-pub struct TileNeighbours(pub [Option<Entity>;8]);
+pub struct TileNeighbours(pub [Option<Entity>; 8]);
 
 #[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum TileType {
@@ -144,10 +145,8 @@ impl TileContents {
                 } else {
                     assets.canal_center.clone()
                 }
-            },
-            TileContents::Lock => {
-                Handle::default()
-            },
+            }
+            TileContents::Lock => Handle::default(),
         }
     }
     fn corner(&self, assets: &CanalManiaAssets, is_dry: bool) -> Handle<Mesh> {
@@ -160,10 +159,8 @@ impl TileContents {
                 } else {
                     assets.canal_corner.clone()
                 }
-            },
-            TileContents::Lock => {
-                assets.lock_corner.clone()
-            },
+            }
+            TileContents::Lock => assets.lock_corner.clone(),
         }
     }
     fn crossing(&self, assets: &CanalManiaAssets, is_dry: bool) -> Handle<Mesh> {
@@ -172,7 +169,7 @@ impl TileContents {
             TileContents::None => {
                 info!("Providing default handle...");
                 Handle::default()
-            },
+            }
             TileContents::Road => assets.road_crossing.clone(),
             TileContents::Canal => {
                 if is_dry {
@@ -182,10 +179,8 @@ impl TileContents {
                     info!("Found Canal Mesh");
                     assets.canal_crossing.clone()
                 }
-            },
-            TileContents::Lock => {
-                assets.lock_crossing.clone()
-            },
+            }
+            TileContents::Lock => assets.lock_crossing.clone(),
         }
     }
     fn t(&self, assets: &CanalManiaAssets, is_dry: bool) -> Handle<Mesh> {
@@ -198,10 +193,8 @@ impl TileContents {
                 } else {
                     assets.canal_t.clone()
                 }
-            },
-            TileContents::Lock => {
-                assets.lock_t.clone()
-            },
+            }
+            TileContents::Lock => assets.lock_t.clone(),
         }
     }
     fn line(&self, assets: &CanalManiaAssets, is_dry: bool) -> Handle<Mesh> {
@@ -214,10 +207,8 @@ impl TileContents {
                 } else {
                     assets.canal_line.clone()
                 }
-            },
-            TileContents::Lock => {
-                assets.lock_line.clone()
-            },
+            }
+            TileContents::Lock => assets.lock_line.clone(),
         }
     }
     fn end(&self, assets: &CanalManiaAssets, is_dry: bool) -> Handle<Mesh> {
@@ -230,10 +221,8 @@ impl TileContents {
                 } else {
                     assets.canal_end.clone()
                 }
-            },
-            TileContents::Lock => {
-                assets.lock_end.clone()
-            },
+            }
+            TileContents::Lock => assets.lock_end.clone(),
         }
     }
 }
@@ -243,9 +232,9 @@ impl Tile {
         let type_cost = match self.tile_type {
             TileType::Land => 1000,
             TileType::Farm => 1500,
-            TileType::City => 3000
+            TileType::City => 3000,
         };
-        let road_cost = if self.contents ==  TileContents::Road {
+        let road_cost = if self.contents == TileContents::Road {
             100usize
         } else {
             0
@@ -256,9 +245,9 @@ impl Tile {
         let type_cost = match self.tile_type {
             TileType::Land => 5000,
             TileType::Farm => 6000,
-            TileType::City => 7000
+            TileType::City => 7000,
         };
-        let road_cost = if self.contents ==  TileContents::Road {
+        let road_cost = if self.contents == TileContents::Road {
             100usize
         } else {
             0
@@ -268,19 +257,15 @@ impl Tile {
 
     pub fn get_decorations(&self, assets: &CanalManiaAssets) -> Vec<Handle<Mesh>> {
         let count = match self.contents {
-            TileContents::None => {
-                match self.tile_type {
-                    TileType::Land => 3.,
-                    TileType::Farm => 3.,
-                    TileType::City => 8.,
-                }
+            TileContents::None => match self.tile_type {
+                TileType::Land => 3.,
+                TileType::Farm => 3.,
+                TileType::City => 8.,
             },
-            _ => {
-                match self.tile_type {
-                    TileType::Land => 1.,
-                    TileType::Farm => 1.,
-                    TileType::City => 4.,
-                }
+            _ => match self.tile_type {
+                TileType::Land => 1.,
+                TileType::Farm => 1.,
+                TileType::City => 4.,
             },
         };
 
@@ -288,41 +273,43 @@ impl Tile {
 
         let amount = (simplex_noise_3d(pos).abs() * (count + 1.)).floor() as usize;
 
-        (0..amount).map(|i| {
-            let i = i as f32;
-            pos = Vec3::new(-1. * i, 2. * i, 0.24 * i ) * pos;
-            match self.tile_type {
-                TileType::Land => {
-                    let index = (simplex_noise_3d(pos).abs() * 4.).floor() as usize;
-                    match index {
-                        1 => assets.tree2.clone(),
-                        2 => assets.tree3.clone(),
-                        3 => assets.tree4.clone(),
-                        _ => assets.tree1.clone()
+        (0..amount)
+            .map(|i| {
+                let i = i as f32;
+                pos = Vec3::new(-1. * i, 2. * i, 0.24 * i) * pos;
+                match self.tile_type {
+                    TileType::Land => {
+                        let index = (simplex_noise_3d(pos).abs() * 4.).floor() as usize;
+                        match index {
+                            1 => assets.tree2.clone(),
+                            2 => assets.tree3.clone(),
+                            3 => assets.tree4.clone(),
+                            _ => assets.tree1.clone(),
+                        }
                     }
-                },
-                TileType::Farm => {
-                    let index = (simplex_noise_3d(pos).abs() * 6.).floor() as usize;
-                    match index {
-                        1 => assets.house2.clone(),
-                        2 => assets.house3.clone(),
-                        3 => assets.house4.clone(),
-                        4 => assets.tree2.clone(),
-                        5 => assets.tree3.clone(),
-                        _ => assets.house.clone()
+                    TileType::Farm => {
+                        let index = (simplex_noise_3d(pos).abs() * 6.).floor() as usize;
+                        match index {
+                            1 => assets.house2.clone(),
+                            2 => assets.house3.clone(),
+                            3 => assets.house4.clone(),
+                            4 => assets.tree2.clone(),
+                            5 => assets.tree3.clone(),
+                            _ => assets.house.clone(),
+                        }
                     }
-                },
-                TileType::City => {
-                    let index = (simplex_noise_3d(pos).abs() * 4.).floor() as usize;
-                    match index {
-                        1 => assets.house2.clone(),
-                        2 => assets.house3.clone(),
-                        3 => assets.house4.clone(),
-                        _ => assets.house.clone()
+                    TileType::City => {
+                        let index = (simplex_noise_3d(pos).abs() * 4.).floor() as usize;
+                        match index {
+                            1 => assets.house2.clone(),
+                            2 => assets.house3.clone(),
+                            3 => assets.house4.clone(),
+                            _ => assets.house.clone(),
+                        }
                     }
-                },
-            }
-        }).collect()
+                }
+            })
+            .collect()
     }
 }
 
@@ -336,19 +323,32 @@ fn tile_position(x: Option<usize>, y: Option<usize>) -> Option<(usize, usize)> {
 
 fn setup_board_materials(
     mut commands: Commands,
-    assets: Res<CanalManiaAssets>,
+    _assets: Res<CanalManiaAssets>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut tile_materials: ResMut<Assets<TileMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
     let tile_base_material = tile_materials.add(TileMaterial {
         ink_color: Color::rgb_u8(131, 129, 117),
-        symbol_texture: Some(assets.tile_texture.clone()),
+        vertex_color_strength: 1.,
+        world_darkening: 1.,
+        ..Default::default()
+    });
+    let decoration_material = tile_materials.add(TileMaterial {
+        ink_color: Color::rgb_u8(131, 129, 117),
+        vertex_color_strength: 0.7,
+        world_darkening: 0.,
+        ..Default::default()
+    });
+    let _goal_base_material = tile_materials.add(TileMaterial {
+        ink_color: Color::rgb_u8(131, 129, 117),
+        base_color: Color::rgb(0.7, 0.2, 0.1),
+        vertex_color_strength: 1.,
+        world_darkening: 1.,
         ..Default::default()
     });
     let goal_base_material = tile_materials.add(TileMaterial {
         ink_color: Color::rgb_u8(131, 129, 117),
-        symbol_texture: Some(assets.tile_texture.clone()),
         base_color: Color::rgb(0.7, 0.2, 0.1),
         ..Default::default()
     });
@@ -381,6 +381,7 @@ fn setup_board_materials(
     commands.insert_resource(BoardRuntimeAssets {
         tile_base_material,
         goal_base_material,
+        decoration_material,
         selector,
         selector_base,
         selector_hovered,
@@ -412,28 +413,28 @@ fn build_board(
         ..Default::default()
     };
     commands
-        .spawn((
-            SpatialBundle {
-                transform: Transform::from_translation(center),
-                ..Default::default()
-            },
-        )).with_children(|parent| {
-        for (x, column) in level.tiles.iter().enumerate() {
-            for (y, row) in column.iter().enumerate() {
-                let tile = Tile {
-                    x,
-                    y,
-                    z: row.height,
-                    tile_type: row.tile_type,
-                    is_goal: row.is_goal,
-                    contents: row.contents,
-                    is_wet: row.is_wet,
-                };
-                let entity = parent.spawn(tile).id();
-                board.children.insert((x,y), entity);
+        .spawn((SpatialBundle {
+            transform: Transform::from_translation(center),
+            ..Default::default()
+        },))
+        .with_children(|parent| {
+            for (x, column) in level.tiles.iter().enumerate() {
+                for (y, row) in column.iter().enumerate() {
+                    let tile = Tile {
+                        x,
+                        y,
+                        z: row.height,
+                        tile_type: row.tile_type,
+                        is_goal: row.is_goal,
+                        contents: row.contents,
+                        is_wet: row.is_wet,
+                    };
+                    let entity = parent.spawn(tile).id();
+                    board.children.insert((x, y), entity);
+                }
             }
-        }
-    }).insert(board);
+        })
+        .insert(board);
 
     match state.0 {
         GameState::Editor => {}
@@ -449,32 +450,60 @@ fn build_tile(
     materials: Res<BoardRuntimeAssets>,
     tiles: Query<(Entity, &Tile, Option<&TileNeighbours>), Changed<Tile>>,
     neighbour_tiles: Query<(Entity, &Tile, Option<&TileNeighbours>)>,
-    boards: Query<&Board>
+    boards: Query<&Board>,
 ) {
     for (entity, tile, neighbours) in tiles.iter() {
-        update_tile(&neighbours, &neighbour_tiles, &boards, tile, &mut commands, entity, &materials, &assets, true);
+        update_tile(
+            &neighbours,
+            &neighbour_tiles,
+            &boards,
+            tile,
+            &mut commands,
+            entity,
+            &materials,
+            &assets,
+            true,
+        );
     }
 }
 
-fn update_tile(neighbours: &Option<&TileNeighbours>, neighbour_tiles: &Query<(Entity, &Tile, Option<&TileNeighbours>)>, boards: &Query<&Board>, tile: &Tile, commands: &mut Commands, entity: Entity, materials: &BoardRuntimeAssets, assets: &CanalManiaAssets, primary: bool) {
+fn update_tile(
+    neighbours: &Option<&TileNeighbours>,
+    neighbour_tiles: &Query<(Entity, &Tile, Option<&TileNeighbours>)>,
+    boards: &Query<&Board>,
+    tile: &Tile,
+    commands: &mut Commands,
+    entity: Entity,
+    materials: &BoardRuntimeAssets,
+    assets: &CanalManiaAssets,
+    primary: bool,
+) {
     let neighbours = if let Some(n) = neighbours {
-        n.0.iter().map(|e| if let Some(e) = e {
-            neighbour_tiles.get(*e).ok()
+        n.0.iter()
+            .map(|e| {
+                if let Some(e) = e {
+                    neighbour_tiles.get(*e).ok()
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<_>>()
+    } else if let Ok(board) = boards.get_single() {
+        let n = board.neighbours(tile.x, tile.y);
+        commands.entity(entity).insert(TileNeighbours(n));
+        n.iter()
+            .map(|e| {
+                if let Some(e) = e {
+                    neighbour_tiles.get(*e).ok()
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<_>>()
     } else {
-        None
-    }).collect::<Vec<_>>()
-    } else {
-        if let Ok(board) = boards.get_single() {
-            let n = board.neighbours(tile.x, tile.y);
-            commands.entity(entity).insert(TileNeighbours(n));
-            n.iter().map(|e| if let Some(e) = e {
-                neighbour_tiles.get(*e).ok()
-        } else {
-            None
-        }).collect::<Vec<_>>()
-        } else {
-            (0..8).map(|_| Option::<(Entity, &Tile, Option<&TileNeighbours>)>::None).collect::<Vec<_>>()
-        }
+        (0..8)
+            .map(|_| Option::<(Entity, &Tile, Option<&TileNeighbours>)>::None)
+            .collect::<Vec<_>>()
     };
     let center = Vec3::new(tile.x as f32, (tile.z as f32) / 6., tile.y as f32);
     let mut entity = commands.entity(entity);
@@ -510,19 +539,17 @@ fn update_tile(neighbours: &Option<&TileNeighbours>, neighbour_tiles: &Query<(En
             ..Default::default()
         });
 
-        
-        let decorations = tile.get_decorations(&assets);
-        
+        let decorations = tile.get_decorations(assets);
 
         let mut pos = Vec3::new(tile.x as f32, tile.y as f32, tile.z as f32);
-        pos = pos * 4295.;
+        pos *= 4295.;
         for (i, decoration) in decorations.into_iter().enumerate() {
             let i = i as f32;
 
             pos = Vec3::new(i * 235., -141.5 * i, 9998. * i) + pos;
 
             let x = simplex_noise_3d(pos);
-            pos = pos / 325.;
+            pos /= 325.;
 
             let y = simplex_noise_3d(pos);
 
@@ -536,7 +563,7 @@ fn update_tile(neighbours: &Option<&TileNeighbours>, neighbour_tiles: &Query<(En
                     let x = x - 0.5;
                     let y = y - 0.5;
                     Vec3::new(x, 0., y)
-                },
+                }
                 _ => {
                     let x = if x > 0.5 {
                         x.clamp(0.75, 0.9)
@@ -555,83 +582,154 @@ fn update_tile(neighbours: &Option<&TileNeighbours>, neighbour_tiles: &Query<(En
             };
             parent.spawn(MaterialMeshBundle {
                 mesh: decoration,
-                material: base_material.clone(),
-                transform: Transform::from_translation(position).with_rotation(Quat::from_rotation_y(rot.to_radians())).with_scale(Vec3::new(0.3,0.3, 0.3)),
+                material: materials.decoration_material.clone(),
+                transform: Transform::from_translation(position)
+                    .with_rotation(Quat::from_rotation_y(rot.to_radians()))
+                    .with_scale(Vec3::new(0.3, 0.3, 0.3)),
                 ..Default::default()
             });
         }
 
         spawn_content(tile, &neighbours, assets, parent, base_material.clone());
     });
-    
+
     if primary {
         for neighbour in neighbours.iter() {
             if let Some((entity, tile, neighbours)) = neighbour {
-                update_tile(neighbours, neighbour_tiles, boards, tile, commands, *entity, materials, assets, false);
+                update_tile(
+                    neighbours,
+                    neighbour_tiles,
+                    boards,
+                    tile,
+                    commands,
+                    *entity,
+                    materials,
+                    assets,
+                    false,
+                );
             }
         }
     };
 }
 
-fn spawn_content(tile: &Tile, neighbours: &[Option<(Entity, &Tile, Option<&TileNeighbours>)>], assets: &CanalManiaAssets, parent: &mut ChildBuilder, base_material: Handle<TileMaterial>) {
+fn spawn_content(
+    tile: &Tile,
+    neighbours: &[Option<(Entity, &Tile, Option<&TileNeighbours>)>],
+    assets: &CanalManiaAssets,
+    parent: &mut ChildBuilder,
+    base_material: Handle<TileMaterial>,
+) {
     match tile.contents {
-        TileContents::None => {},
+        TileContents::None => {}
         TileContents::Road => {
             println!("Setting up road!");
-            let neighbours = check_neighbours(&neighbours, |t| t.contents == TileContents::Road);
+            let neighbours = check_neighbours(neighbours, |t| t.contents == TileContents::Road);
 
             let n = neighbours[1];
             let w = neighbours[3];
             let e = neighbours[4];
             let s = neighbours[6];
 
-            spawn_variant(TileContents::Road, !tile.is_wet, &assets, n, w, e, s, parent, base_material.clone());
-        },
+            spawn_variant(
+                TileContents::Road,
+                !tile.is_wet,
+                assets,
+                n,
+                w,
+                e,
+                s,
+                parent,
+                base_material,
+            );
+        }
         TileContents::Canal => {
             println!("Setting up canal!");
-            let neighbours = check_neighbours(&neighbours, |t| {
-                matches!(t.contents , TileContents::Canal)
-                && tile.z.abs_diff(t.z) < 2  || 
-                matches!(t.contents , TileContents::Lock)
-                && tile.z.abs_diff(t.z) < 5
-        });
+            let neighbours = check_neighbours(neighbours, |t| {
+                matches!(t.contents, TileContents::Canal) && tile.z.abs_diff(t.z) < 2
+                    || matches!(t.contents, TileContents::Lock) && tile.z.abs_diff(t.z) < 5
+            });
 
             let n = neighbours[1];
             let w = neighbours[3];
             let e = neighbours[4];
             let s = neighbours[6];
 
-            spawn_variant(TileContents::Canal, !tile.is_wet, &assets, n, w, e, s, parent, base_material.clone());
-        },
+            spawn_variant(
+                TileContents::Canal,
+                !tile.is_wet,
+                assets,
+                n,
+                w,
+                e,
+                s,
+                parent,
+                base_material,
+            );
+        }
         TileContents::Lock => {
             println!("Setting up lock!");
-            let neighbours = check_neighbours(&neighbours, |t| matches!(t.contents , TileContents::Canal | TileContents::Lock)
-            && tile.z.abs_diff(t.z) < 5);
+            let neighbours = check_neighbours(neighbours, |t| {
+                matches!(t.contents, TileContents::Canal | TileContents::Lock)
+                    && tile.z.abs_diff(t.z) < 5
+            });
 
             let n = neighbours[1];
             let w = neighbours[3];
             let e = neighbours[4];
             let s = neighbours[6];
 
-            spawn_variant(TileContents::Canal, !tile.is_wet, &assets, n, w, e, s, parent, base_material.clone());
-            spawn_variant(TileContents::Lock, !tile.is_wet, &assets, n, w, e, s, parent, base_material.clone());
-        },
+            spawn_variant(
+                TileContents::Canal,
+                !tile.is_wet,
+                assets,
+                n,
+                w,
+                e,
+                s,
+                parent,
+                base_material.clone(),
+            );
+            spawn_variant(
+                TileContents::Lock,
+                !tile.is_wet,
+                assets,
+                n,
+                w,
+                e,
+                s,
+                parent,
+                base_material,
+            );
+        }
     }
 }
 
-pub fn check_neighbours<F: Fn(&Tile) -> bool, R>(neighbours: &[Option<(Entity, &Tile, R)>], checked: F) -> [bool;8] {
-    let mut result = [false;8];
+pub fn check_neighbours<F: Fn(&Tile) -> bool, R>(
+    neighbours: &[Option<(Entity, &Tile, R)>],
+    checked: F,
+) -> [bool; 8] {
+    let mut result = [false; 8];
 
-    for i in 0..8{
-        if let Some(Some((_,neighbour, _))) = neighbours.get(i) {
-            result[i] = checked(*neighbour);
+    for i in 0..8 {
+        if let Some(Some((_, neighbour, _))) = neighbours.get(i) {
+            result[i] = checked(neighbour);
         }
     }
     result
 }
 
-fn spawn_variant<T: Material>(content_type: TileContents, is_dry: bool, assets: &CanalManiaAssets, n: bool, w: bool, e: bool, s: bool, parent: &mut ChildBuilder, material: Handle<T>) {
-    let (mesh, rotation) = match (n,w,e,s) {
+fn spawn_variant<T: Material>(
+    content_type: TileContents,
+    is_dry: bool,
+    assets: &CanalManiaAssets,
+    n: bool,
+    w: bool,
+    e: bool,
+    s: bool,
+    parent: &mut ChildBuilder,
+    material: Handle<T>,
+) {
+    let (mesh, rotation) = match (n, w, e, s) {
         (true, true, true, true) => (content_type.crossing(assets, is_dry), 0f32),
         (true, true, true, false) => (content_type.t(assets, is_dry), 180.),
         (true, true, false, true) => (content_type.t(assets, is_dry), 270.),
@@ -644,7 +742,7 @@ fn spawn_variant<T: Material>(content_type: TileContents, is_dry: bool, assets: 
         (false, true, true, false) => (content_type.line(assets, is_dry), 90.),
         (false, true, false, true) => (content_type.corner(assets, is_dry), 270.),
         (false, true, false, false) => (content_type.end(assets, is_dry), 270.),
-        (false, false, true, true) =>(content_type.corner(assets, is_dry), 0.),
+        (false, false, true, true) => (content_type.corner(assets, is_dry), 0.),
         (false, false, true, false) => (content_type.end(assets, is_dry), 90.),
         (false, false, false, true) => (content_type.end(assets, is_dry), 0.),
         (false, false, false, false) => (content_type.center(assets, is_dry), 0.),
@@ -700,4 +798,3 @@ fn clear_board(mut commands: Commands, boards: Query<Entity, With<Board>>) {
         commands.entity(board).despawn_recursive();
     }
 }
-

@@ -1,11 +1,19 @@
 struct Color {
-    color: vec4<f32>,
+    color: vec4<f32>
+};
+
+struct Value {
+    value: f32
 };
 
 @group(1) @binding(0)
 var<uniform> base_color: Color;
 @group(1) @binding(1)
 var<uniform> ink_color: Color;
+@group(1) @binding(2)
+var<uniform> world_darkening: Value;
+@group(1) @binding(3)
+var<uniform> vertex_color_strength: Value;
 
 #import noisy_bevy::prelude
 #import bevy_pbr::mesh_bindings
@@ -59,7 +67,7 @@ fn fragment(
 
     let overlay_color = mix(parchment_base, parchment_burn, overlay_mixer);
 
-    let init_bg = mix(vertex_color * overlay_color, overlay_color, 0.);
+    let init_bg = mix(vertex_color * overlay_color, overlay_color, 1. - vertex_color_strength.value);
     let bg = mix(init_bg, init_bg * base_color.color , 0.3);
 
     let depth = clamp(mix(-0.3, 1.2, clamp(in.world_position.y + 1., 0., 1.)), 0., 1.);
@@ -89,7 +97,7 @@ fn fragment(
             darkening = 0.5;
     }
 
-    let ink = mix(ink_color.color, vec4<f32>(1., 1., 1., 1.), darkening);
+    let ink = mix(vec4<f32>(1., 1., 1., 1.), mix(ink_color.color, vec4<f32>(1., 1., 1., 1.), darkening), world_darkening.value);
 
     let color = mix(bg * ink , bg  * parchment_dark, 1. - depth);
 

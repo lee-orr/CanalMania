@@ -15,7 +15,7 @@ impl Plugin for SimulationPlugin {
 fn run_water_simulation(
     mut commands: Commands,
     tiles: Query<(Entity, &Tile, &TileNeighbours)>,
-    board: Query<&Board>,
+    _board: Query<&Board>,
 ) {
     for (entity, tile, neighbours) in tiles.iter() {
         let neighbours = neighbours

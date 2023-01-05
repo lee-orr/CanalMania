@@ -13,7 +13,7 @@ use bevy::{
 };
 use bevy_asset_loader::prelude::*;
 use bevy_common_assets::{json::JsonAssetPlugin, yaml::YamlAssetPlugin};
-use bevy_inspector_egui::WorldInspectorPlugin;
+
 use bevy_mod_picking::{DefaultPickingPlugins, PickingCameraBundle};
 
 use choose_level::ChooseLevelPlugin;
@@ -91,7 +91,7 @@ fn main() {
         .add_enter_system(AppLoadingState::Loaded, on_loaded);
 
     #[cfg(feature = "dev")]
-    app.add_plugin(WorldInspectorPlugin::default());
+    app.add_plugin(bevy_inspector_egui::WorldInspectorPlugin::default());
 
     app.run();
 }

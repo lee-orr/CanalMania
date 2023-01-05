@@ -22,10 +22,8 @@ pub struct TileMaterial {
     pub base_color: Color,
     #[uniform(1)]
     pub ink_color: Color,
-    #[texture(2)]
-    #[sampler(3)]
-    pub symbol_texture: Option<Handle<Image>>,
-    #[texture(4)]
-    #[sampler(5)]
-    pub overlay_texture: Option<Handle<Image>>,
+    #[uniform(2)]
+    pub world_darkening: f32,
+    #[uniform(3)]
+    pub vertex_color_strength: f32,
 }

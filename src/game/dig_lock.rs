@@ -34,9 +34,7 @@ fn dig_lock(
     if let Ok(board) = board.get_single() {
         for event in event_reader.iter() {
             if let GameActions::ConstructLock(tile) = event {
-                if !matches!(
-                    tile.contents, TileContents::Lock
-                ) {
+                if !matches!(tile.contents, TileContents::Lock) {
                     let my_position = (tile.x, tile.y);
                     if let Some(entity) = board.children.get(&my_position) {
                         if let Ok(mut tile) = tiles.get_mut(*entity) {
