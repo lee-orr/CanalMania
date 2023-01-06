@@ -49,142 +49,86 @@
         },
         {
             "mesh" : 12,
-            "name" : "CanalCrossing"
+            "name" : "CanalLine",
+            "translation" : [
+                0,
+                0,
+                -0.4000000059604645
+            ]
         },
         {
             "mesh" : 13,
-            "name" : "CanalT"
+            "name" : "CanalEnd",
+            "translation" : [
+                0,
+                0,
+                -0.20000000298023224
+            ]
         },
         {
             "mesh" : 14,
-            "name" : "CanalCorner"
-        },
-        {
-            "mesh" : 15,
-            "name" : "CanalLine"
-        },
-        {
-            "mesh" : 16,
-            "name" : "CanalEnd"
-        },
-        {
-            "mesh" : 17,
             "name" : "CanalCenter"
         },
         {
+            "mesh" : 15,
+            "name" : "AquaductLine",
+            "translation" : [
+                -0.6000000238418579,
+                0,
+                -0.4000000059604645
+            ]
+        },
+        {
+            "mesh" : 16,
+            "name" : "AquaductEnd",
+            "translation" : [
+                -0.6000000238418579,
+                0,
+                -0.20000000298023224
+            ]
+        },
+        {
+            "mesh" : 17,
+            "name" : "AquaductCenter",
+            "translation" : [
+                -0.6000000238418579,
+                0,
+                0
+            ]
+        },
+        {
             "mesh" : 18,
-            "name" : "AquaductCrossing"
+            "name" : "Lock",
+            "translation" : [
+                0,
+                0,
+                -0.20000000298023224
+            ]
         },
         {
             "mesh" : 19,
-            "name" : "AquaductT"
+            "name" : "RoadLine",
+            "translation" : [
+                0.6000000238418579,
+                0,
+                -0.4000000059604645
+            ]
         },
         {
             "mesh" : 20,
-            "name" : "AquaductCorner"
+            "name" : "RoadEnd",
+            "translation" : [
+                0.6000000238418579,
+                0,
+                -0.20000000298023224
+            ]
         },
         {
             "mesh" : 21,
-            "name" : "AquaductLine"
-        },
-        {
-            "mesh" : 22,
-            "name" : "AquaductEnd"
-        },
-        {
-            "mesh" : 23,
-            "name" : "AquaductCenter"
-        },
-        {
-            "mesh" : 24,
-            "name" : "AquaductsDryCrossing"
-        },
-        {
-            "mesh" : 25,
-            "name" : "AquaductsDryT"
-        },
-        {
-            "mesh" : 26,
-            "name" : "AquaductsDryCorner"
-        },
-        {
-            "mesh" : 27,
-            "name" : "AquaductsDryLine"
-        },
-        {
-            "mesh" : 28,
-            "name" : "AquaductsDryEnd"
-        },
-        {
-            "mesh" : 29,
-            "name" : "AquaductsDryCenter"
-        },
-        {
-            "mesh" : 30,
-            "name" : "LockCrossing"
-        },
-        {
-            "mesh" : 31,
-            "name" : "LockCorner"
-        },
-        {
-            "mesh" : 32,
-            "name" : "LockEnd"
-        },
-        {
-            "mesh" : 33,
-            "name" : "LockLine"
-        },
-        {
-            "mesh" : 34,
-            "name" : "LockT"
-        },
-        {
-            "mesh" : 35,
-            "name" : "CanalDryCrossing"
-        },
-        {
-            "mesh" : 36,
-            "name" : "CanalDryT"
-        },
-        {
-            "mesh" : 37,
-            "name" : "CanalDryCorner"
-        },
-        {
-            "mesh" : 38,
-            "name" : "CanalDryLine"
-        },
-        {
-            "mesh" : 39,
-            "name" : "CanalDryEnd"
-        },
-        {
-            "mesh" : 40,
-            "name" : "CanalDryCenter"
-        },
-        {
-            "mesh" : 41,
-            "name" : "RoadCorner"
-        },
-        {
-            "mesh" : 42,
-            "name" : "RoadCrossing"
-        },
-        {
-            "mesh" : 43,
-            "name" : "RoadT"
-        },
-        {
-            "mesh" : 44,
-            "name" : "RoadLine"
-        },
-        {
-            "mesh" : 45,
-            "name" : "RoadEnd"
-        },
-        {
-            "mesh" : 46,
-            "name" : "RoadCenter"
+            "name" : "RoadCenter",
+            "translation" : [
+                0.6000000238418579,
+                0,
+                0
+            ]
         }
-    

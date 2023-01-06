@@ -62,43 +62,12 @@ impl TileContents {
             TileContents::Aquaduct(_) => assets.aquaduct_center.clone(),
         }
     }
-    pub fn corner(&self, assets: &CanalManiaAssets) -> Handle<Mesh> {
-        match self {
-            TileContents::None => Handle::default(),
-            TileContents::Road => assets.road_corner.clone(),
-            TileContents::Canal => assets.canal_corner.clone(),
-            TileContents::Lock => assets.lock_corner.clone(),
-            TileContents::Aquaduct(_) => assets.aquaduct_corner.clone(),
-        }
-    }
-    pub fn crossing(&self, assets: &CanalManiaAssets) -> Handle<Mesh> {
-        info!("Checking {self:?}");
-        match self {
-            TileContents::None => {
-                info!("Providing default handle...");
-                Handle::default()
-            }
-            TileContents::Road => assets.road_crossing.clone(),
-            TileContents::Canal => assets.canal_crossing.clone(),
-            TileContents::Lock => assets.lock_crossing.clone(),
-            TileContents::Aquaduct(_) => assets.aquaduct_crossing.clone(),
-        }
-    }
-    pub fn t(&self, assets: &CanalManiaAssets) -> Handle<Mesh> {
-        match self {
-            TileContents::None => Handle::default(),
-            TileContents::Road => assets.road_t.clone(),
-            TileContents::Canal => assets.canal_t.clone(),
-            TileContents::Lock => assets.lock_t.clone(),
-            TileContents::Aquaduct(_) => assets.aquaduct_t.clone(),
-        }
-    }
     pub fn line(&self, assets: &CanalManiaAssets) -> Handle<Mesh> {
         match self {
             TileContents::None => Handle::default(),
             TileContents::Road => assets.road_line.clone(),
             TileContents::Canal => assets.canal_line.clone(),
-            TileContents::Lock => assets.lock_line.clone(),
+            TileContents::Lock => assets.lock.clone(),
             TileContents::Aquaduct(_) => assets.aquaduct_line.clone(),
         }
     }
@@ -107,7 +76,7 @@ impl TileContents {
             TileContents::None => Handle::default(),
             TileContents::Road => assets.road_end.clone(),
             TileContents::Canal => assets.canal_end.clone(),
-            TileContents::Lock => assets.lock_end.clone(),
+            TileContents::Lock => assets.lock.clone(),
             TileContents::Aquaduct(_) => assets.aquaduct_end.clone(),
         }
     }

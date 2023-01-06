@@ -40,10 +40,10 @@ fn run_water_simulation(
                     neighbour.is_wet && z <= nz && z.abs_diff(nz) < diff
                 });
 
-                let n = neighbours[1];
-                let w = neighbours[3];
-                let e = neighbours[4];
-                let s = neighbours[6];
+                let n = neighbours[1].is_some();
+                let w = neighbours[3].is_some();
+                let e = neighbours[4].is_some();
+                let s = neighbours[6].is_some();
 
                 if n || w || s || e {
                     let mut tile = tile.clone();
@@ -60,10 +60,10 @@ fn run_water_simulation(
                     neighbour.is_wet && z <= nz && z.abs_diff(nz) < diff
                 });
 
-                let n = neighbours[1];
-                let w = neighbours[3];
-                let e = neighbours[4];
-                let s = neighbours[6];
+                let n = neighbours[1].is_some();
+                let w = neighbours[3].is_some();
+                let e = neighbours[4].is_some();
+                let s = neighbours[6].is_some();
 
                 if n || w || s || e {
                     let mut tile = tile.clone();
@@ -80,10 +80,10 @@ fn run_water_simulation(
                     neighbour.is_wet && z == nz
                 });
 
-                let n = neighbours[1];
-                let w = neighbours[3];
-                let e = neighbours[4];
-                let s = neighbours[6];
+                let n = neighbours[1].is_some();
+                let w = neighbours[3].is_some();
+                let e = neighbours[4].is_some();
+                let s = neighbours[6].is_some();
 
                 if n || w || s || e {
                     let mut tile = tile.clone();

@@ -591,13 +591,17 @@ fn spawn_content(
 pub fn check_neighbours<F: Fn(&Tile) -> bool, R>(
     neighbours: &[Option<(Entity, &Tile, R)>],
     checked: F,
-) -> [bool; 8] {
-    let mut result = [false; 8];
+) -> [Option<(TileContents, usize)>; 8] {
+    let mut result = [None; 8];
 
     #[allow(clippy::needless_range_loop)]
     for i in 0..8 {
         if let Some(Some((_, neighbour, _))) = neighbours.get(i) {
-            result[i] = checked(neighbour);
+            result[i] = if checked(neighbour) {
+                Some((neighbour.contents, neighbour.z))
+            } else {
+                None
+            };
         }
     }
     result
@@ -607,45 +611,83 @@ fn spawn_variant<T: Material>(
     content_type: TileContents,
     _is_dry: bool,
     assets: &CanalManiaAssets,
-    n: bool,
-    w: bool,
-    e: bool,
-    s: bool,
+    n: Option<(TileContents, usize)>,
+    w: Option<(TileContents, usize)>,
+    e: Option<(TileContents, usize)>,
+    s: Option<(TileContents, usize)>,
     parent: &mut ChildBuilder,
     material: Handle<T>,
     height: usize,
 ) {
-    let (mesh, rotation) = match (n, w, e, s) {
-        (true, true, true, true) => (content_type.crossing(assets), 0f32),
-        (true, true, true, false) => (content_type.t(assets), 180.),
-        (true, true, false, true) => (content_type.t(assets), 270.),
-        (true, true, false, false) => (content_type.corner(assets), 180.),
-        (true, false, true, true) => (content_type.t(assets), 90.),
-        (true, false, true, false) => (content_type.corner(assets), 90.),
-        (true, false, false, true) => (content_type.line(assets), 0.),
-        (true, false, false, false) => (content_type.end(assets), 180.),
-        (false, true, true, true) => (content_type.t(assets), 0.),
-        (false, true, true, false) => (content_type.line(assets), 90.),
-        (false, true, false, true) => (content_type.corner(assets), 270.),
-        (false, true, false, false) => (content_type.end(assets), 270.),
-        (false, false, true, true) => (content_type.corner(assets), 0.),
-        (false, false, true, false) => (content_type.end(assets), 90.),
-        (false, false, false, true) => (content_type.end(assets), 0.),
-        (false, false, false, false) => (content_type.center(assets), 0.),
-    };
+    let results = [(n, 90f32), (w, 180.), (s, 270.), (e, 0.)]
+        .into_iter()
+        .filter_map(|(neighbour, angle)| {
+            if let Some((content, z)) = neighbour {
+                match (content_type, content) {
+                    (TileContents::Canal, TileContents::Aquaduct(u)) => {
+                        Some((TileContents::Aquaduct(u), angle, z))
+                    }
+                    _ => Some((content_type, angle, height)),
+                }
+            } else {
+                None
+            }
+        })
+        .collect::<Vec<_>>();
 
-    println!("Spawning {content_type:?}");
-    let position = match content_type {
-        TileContents::Aquaduct(u) => Vec3::Y * (u as f32 - 1. + height as f32) / 6.,
-        _ => Vec3::ZERO,
-    };
-    parent.spawn(MaterialMeshBundle {
-        mesh,
-        material,
-        transform: Transform::from_rotation(Quat::from_rotation_y(rotation.to_radians()))
-            .with_translation(position),
-        ..Default::default()
-    });
+    match results.len().cmp(&1) {
+        std::cmp::Ordering::Less => {
+            let position = match content_type {
+                TileContents::Aquaduct(u) => Vec3::Y * (u as f32 - 1. + height as f32) / 6.,
+                _ => Vec3::ZERO,
+            };
+    
+            let mesh = content_type.center(assets);
+    
+            parent.spawn(MaterialMeshBundle {
+                mesh,
+                material,
+                transform: Transform::from_translation(position),
+                ..Default::default()
+            });
+        },
+        std::cmp::Ordering::Equal => {
+            for (content, rotation, height) in results.iter() {
+                let position = match content {
+                    TileContents::Aquaduct(u) => Vec3::Y * (*u as f32 - 1. + *height as f32) / 6.,
+                    _ => Vec3::ZERO,
+                };
+    
+                let mesh = content.end(assets);
+    
+                parent.spawn(MaterialMeshBundle {
+                    mesh,
+                    material: material.clone(),
+                    transform: Transform::from_rotation(Quat::from_rotation_y(rotation.to_radians()))
+                        .with_translation(position),
+                    ..Default::default()
+                });
+            }
+        },
+        std::cmp::Ordering::Greater => {
+            for (content, rotation, height) in results.iter() {
+                let position = match content {
+                    TileContents::Aquaduct(u) => Vec3::Y * (*u as f32 - 1. + *height as f32) / 6.,
+                    _ => Vec3::ZERO,
+                };
+    
+                let mesh = content.line(assets);
+    
+                parent.spawn(MaterialMeshBundle {
+                    mesh,
+                    material: material.clone(),
+                    transform: Transform::from_rotation(Quat::from_rotation_y(rotation.to_radians()))
+                        .with_translation(position),
+                    ..Default::default()
+                });
+            }
+        },
+    }
 }
 
 #[derive(Clone)]

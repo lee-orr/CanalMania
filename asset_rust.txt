@@ -34,15 +34,6 @@
 #[asset(key="goal")]
  pub goal : Handle<Mesh>,
 
-#[asset(key="canal_crossing")]
- pub canal_crossing : Handle<Mesh>,
-
-#[asset(key="canal_t")]
- pub canal_t : Handle<Mesh>,
-
-#[asset(key="canal_corner")]
- pub canal_corner : Handle<Mesh>,
-
 #[asset(key="canal_line")]
  pub canal_line : Handle<Mesh>,
 
@@ -51,15 +42,6 @@
 
 #[asset(key="canal_center")]
  pub canal_center : Handle<Mesh>,
-
-#[asset(key="aquaduct_crossing")]
- pub aquaduct_crossing : Handle<Mesh>,
-
-#[asset(key="aquaduct_t")]
- pub aquaduct_t : Handle<Mesh>,
-
-#[asset(key="aquaduct_corner")]
- pub aquaduct_corner : Handle<Mesh>,
 
 #[asset(key="aquaduct_line")]
  pub aquaduct_line : Handle<Mesh>,
@@ -70,65 +52,8 @@
 #[asset(key="aquaduct_center")]
  pub aquaduct_center : Handle<Mesh>,
 
-#[asset(key="aquaducts_dry_crossing")]
- pub aquaducts_dry_crossing : Handle<Mesh>,
-
-#[asset(key="aquaducts_dry_t")]
- pub aquaducts_dry_t : Handle<Mesh>,
-
-#[asset(key="aquaducts_dry_corner")]
- pub aquaducts_dry_corner : Handle<Mesh>,
-
-#[asset(key="aquaducts_dry_line")]
- pub aquaducts_dry_line : Handle<Mesh>,
-
-#[asset(key="aquaducts_dry_end")]
- pub aquaducts_dry_end : Handle<Mesh>,
-
-#[asset(key="aquaducts_dry_center")]
- pub aquaducts_dry_center : Handle<Mesh>,
-
-#[asset(key="lock_crossing")]
- pub lock_crossing : Handle<Mesh>,
-
-#[asset(key="lock_corner")]
- pub lock_corner : Handle<Mesh>,
-
-#[asset(key="lock_end")]
- pub lock_end : Handle<Mesh>,
-
-#[asset(key="lock_line")]
- pub lock_line : Handle<Mesh>,
-
-#[asset(key="lock_t")]
- pub lock_t : Handle<Mesh>,
-
-#[asset(key="canal_dry_crossing")]
- pub canal_dry_crossing : Handle<Mesh>,
-
-#[asset(key="canal_dry_t")]
- pub canal_dry_t : Handle<Mesh>,
-
-#[asset(key="canal_dry_corner")]
- pub canal_dry_corner : Handle<Mesh>,
-
-#[asset(key="canal_dry_line")]
- pub canal_dry_line : Handle<Mesh>,
-
-#[asset(key="canal_dry_end")]
- pub canal_dry_end : Handle<Mesh>,
-
-#[asset(key="canal_dry_center")]
- pub canal_dry_center : Handle<Mesh>,
-
-#[asset(key="road_corner")]
- pub road_corner : Handle<Mesh>,
-
-#[asset(key="road_crossing")]
- pub road_crossing : Handle<Mesh>,
-
-#[asset(key="road_t")]
- pub road_t : Handle<Mesh>,
+#[asset(key="lock")]
+ pub lock : Handle<Mesh>,
 
 #[asset(key="road_line")]
  pub road_line : Handle<Mesh>,
