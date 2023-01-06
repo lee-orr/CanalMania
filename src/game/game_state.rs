@@ -5,6 +5,7 @@ use super::board::Tile;
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum GameState {
     Setup,
+    Description,
     InGame,
     Editor,
     Complete,

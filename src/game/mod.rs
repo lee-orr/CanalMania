@@ -10,6 +10,7 @@ mod dig_lock;
 #[cfg(not(target_family = "wasm"))]
 mod editor_ui;
 mod game_complete_ui;
+mod initial_description;
 mod simulation;
 mod tile_hover_ui;
 pub mod tile_shader;
@@ -28,6 +29,7 @@ use self::{
     game_complete_ui::GameCompleteUiPlugin,
     game_state::{GameActionMode, GameActions, GameResources, GameState},
     in_game_ui::InGameUiPlugin,
+    initial_description::InitialDescriptionUiPlugin,
     simulation::SimulationPlugin,
     tile_hover_ui::TileHoverUi,
     tile_shader::TileMaterial,
@@ -46,6 +48,7 @@ impl Plugin for GamePlugin {
             .add_plugin(BoardPlugin)
             .add_plugin(TileHoverUi)
             .add_plugin(InGameUiPlugin)
+            .add_plugin(InitialDescriptionUiPlugin)
             .add_plugin(GameCompleteUiPlugin)
             .add_plugin(DigCanalPlugin)
             .add_plugin(DigLockPlugin)

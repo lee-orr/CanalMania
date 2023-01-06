@@ -32,10 +32,10 @@ impl Plugin for BoardPlugin {
             .add_system(animate_goal.run_in_state(AppState::InGame))
             .add_system(process_selection_events.run_in_state(AppState::InGame))
             .add_exit_system(AppState::InGame, clear_board);
-        #[cfg(feature = "dev")]
-        app.add_plugin(bevy_inspector_egui::quick::AssetInspectorPlugin::<
-            TileMaterial,
-        >::default());
+        // #[cfg(feature = "dev")]
+        // app.add_plugin(bevy_inspector_egui::quick::AssetInspectorPlugin::<
+        //     TileMaterial,
+        // >::default());
         // .add_plugin(bevy_inspector_egui::quick::ResourceInspectorPlugin::<
         //     BoardRuntimeAssets,
         // >::default());
@@ -534,7 +534,11 @@ fn build_board(
     match state.0 {
         GameState::Editor => {}
         _ => {
-            commands.insert_resource(NextState(GameState::InGame));
+            if level.initial_description.is_none() {
+                commands.insert_resource(NextState(GameState::InGame));
+            } else {
+                commands.insert_resource(NextState(GameState::Description));
+            }
         }
     }
 }

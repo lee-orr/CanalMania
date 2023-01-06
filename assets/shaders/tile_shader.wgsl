@@ -1,11 +1,3 @@
-struct Color {
-    color: vec4<f32>
-};
-
-struct Value {
-    value: vec4<f32>
-};
-
 struct InkSettings {
     base_color: vec4<f32>,
     ink_color: vec4<f32>,
@@ -24,63 +16,6 @@ var<uniform> settings: InkSettings;
 #import bevy_pbr::mesh_bindings
 #import bevy_pbr::mesh_functions
 
-
-struct Vertex {
-#ifdef VERTEX_POSITIONS
-    @location(0) position: vec3<f32>,
-#endif
-#ifdef VERTEX_NORMALS
-    @location(1) normal: vec3<f32>,
-#endif
-#ifdef VERTEX_UVS
-    @location(2) uv: vec2<f32>,
-#endif
-#ifdef VERTEX_TANGENTS
-    @location(3) tangent: vec4<f32>,
-#endif
-#ifdef VERTEX_COLORS
-    @location(4) color: vec4<f32>,
-#endif
-#ifdef SKINNED
-    @location(5) joint_indices: vec4<u32>,
-    @location(6) joint_weights: vec4<f32>,
-#endif
-};
-
-struct VertexOutput {
-    @builtin(position) clip_position: vec4<f32>,
-    #import bevy_pbr::mesh_vertex_output
-};
-
-@vertex
-fn vertex(vertex: Vertex) -> VertexOutput {
-    var out: VertexOutput;
-
-    var position: vec3<f32> =  vertex.position;
-    var normal: vec3<f32> = vertex.normal;
-
-    var model = mesh.model;
-
-
-    out.world_normal = mesh_normal_local_to_world(normal);
-    out.world_position = mesh_position_local_to_world(model, vec4<f32>(position, 1.0));
-    out.clip_position = mesh_position_world_to_clip(out.world_position);
-
-    let depth = out.clip_position.z * out.clip_position.w;
-
-    out.color = vertex.color;
-    let is_ink = vertex.color.w > 0.5;
-    if is_ink && depth > 0.2 {
-        let range = clamp((depth -  0.2) / 4., 0., 1.);        
-        let move_distance = mix(0., 0.15, range);
-        let direction = vertex.color.xzy;
-        position = position + move_distance * direction;
-        out.world_position = mesh_position_local_to_world(model, vec4<f32>(position, 1.0));
-        out.clip_position = mesh_position_world_to_clip(out.world_position);
-    } 
-
-    return out;
-}
 
 struct FragmentInput {
     #import bevy_pbr::mesh_vertex_output

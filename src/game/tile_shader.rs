@@ -5,10 +5,6 @@ use bevy::{
 };
 
 impl Material for TileMaterial {
-    fn vertex_shader() -> ShaderRef {
-        "shaders/tile_shader.wgsl".into()
-    }
-
     fn fragment_shader() -> ShaderRef {
         "shaders/tile_shader.wgsl".into()
     }

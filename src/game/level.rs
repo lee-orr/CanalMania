@@ -8,6 +8,7 @@ use super::board::{TileContents, TileType};
 pub struct Level {
     pub tiles: Vec<Vec<TileInfo>>,
     pub title: Option<String>,
+    pub initial_description: Option<String>,
     pub width: usize,
     pub height: usize,
 }

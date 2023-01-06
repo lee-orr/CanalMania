@@ -328,12 +328,9 @@ fn tiles_to_tile_info<'a, T: Iterator<Item = &'a Tile>>(
 fn save(tiles: &Query<&Tile>, level: &Level) {
     let tiles = tiles_to_tile_info(tiles.iter(), level.width, level.height);
 
-    let level = Level {
-        tiles,
-        title: level.title.clone(),
-        width: level.width,
-        height: level.height,
-    };
+    let mut level = level.clone();
+    level.tiles = tiles;
+
     let mut path = FileAssetIo::get_base_path();
     path.push("assets");
     path.push("levels");
