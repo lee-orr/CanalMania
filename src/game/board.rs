@@ -204,7 +204,6 @@ fn build_tile(
     if updated {
         info!("Updated at least one entity!");
         if let Ok(board) = boards.get_single() {
-            
             info!("We got a board!");
             let width = board.width;
             let height = board.height;
@@ -263,7 +262,10 @@ fn build_tile(
                 });
 
             let result = images.set(board_assets.tile_info_map.clone(), image);
-            info!("Set the image to {result:?} from {:?}", board_assets.tile_info_map);
+            info!(
+                "Set the image to {result:?} from {:?}",
+                board_assets.tile_info_map
+            );
 
             let (offset_x, offset_y) = (board.width % 2 == 0, board.height % 2 == 0);
 
@@ -278,7 +280,7 @@ fn build_tile(
                 material.settings.world_offset.x = if offset_x { 0.5 } else { 0. };
                 material.settings.world_offset.z = if offset_y { 0.5 } else { 0. };
                 material.settings.size = Vec4::new(board.width as f32, 0., board.height as f32, 0.);
-                material.info_map = result.clone();
+                material.info_map = result;
             }
         }
     }
@@ -478,7 +480,7 @@ fn spawn_content(
                 s,
                 parent,
                 base_material,
-                tile.z
+                tile.z,
             );
         }
         TileContents::Canal => {
@@ -508,7 +510,7 @@ fn spawn_content(
                 s,
                 parent,
                 base_material,
-                tile.z
+                tile.z,
             );
         }
         TileContents::Lock => {
@@ -538,7 +540,7 @@ fn spawn_content(
                 s,
                 parent,
                 base_material.clone(),
-                tile.z
+                tile.z,
             );
             spawn_variant(
                 TileContents::Lock,
@@ -550,7 +552,7 @@ fn spawn_content(
                 s,
                 parent,
                 base_material,
-                tile.z
+                tile.z,
             );
         }
         TileContents::Aquaduct(h) => {
@@ -580,7 +582,7 @@ fn spawn_content(
                 s,
                 parent,
                 base_material,
-                tile.z
+                tile.z,
             );
         }
     }
@@ -611,7 +613,7 @@ fn spawn_variant<T: Material>(
     s: bool,
     parent: &mut ChildBuilder,
     material: Handle<T>,
-    height: usize
+    height: usize,
 ) {
     let (mesh, rotation) = match (n, w, e, s) {
         (true, true, true, true) => (content_type.crossing(assets), 0f32),

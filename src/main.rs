@@ -7,10 +7,7 @@ mod menu;
 mod ui;
 
 use assets::CanalManiaAssets;
-use bevy::{
-    prelude::*,
-    render::render_resource::{AddressMode, FilterMode, SamplerDescriptor},
-};
+use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 use bevy_common_assets::{json::JsonAssetPlugin, yaml::YamlAssetPlugin};
 
