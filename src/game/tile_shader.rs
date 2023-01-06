@@ -5,6 +5,10 @@ use bevy::{
 };
 
 impl Material for TileMaterial {
+    fn vertex_shader() -> ShaderRef {
+        "shaders/tile_shader.wgsl".into()
+    }
+
     fn fragment_shader() -> ShaderRef {
         "shaders/tile_shader.wgsl".into()
     }
@@ -24,6 +28,7 @@ pub struct InkSettings {
     /// Params: world_darkening, vertex_color_strength, parchment_low_mix, parchment_high_mix
     pub added_params: Vec4,
     pub world_offset: Vec4,
+    pub size: Vec4,
 }
 
 impl Default for InkSettings {
@@ -36,6 +41,7 @@ impl Default for InkSettings {
             parchment_dark: Color::rgb_u8(110, 67, 49),
             added_params: Vec4::new(1., 0.7, 0.5, 0.1),
             world_offset: Vec4::ZERO,
+            size: Vec4::ZERO,
         }
     }
 }
@@ -46,4 +52,7 @@ impl Default for InkSettings {
 pub struct TileMaterial {
     #[uniform(0)]
     pub settings: InkSettings,
+    #[texture(1)]
+    #[sampler(2)]
+    pub info_map: Handle<Image>,
 }

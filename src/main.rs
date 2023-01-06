@@ -51,16 +51,6 @@ fn main() {
                 .set(AssetPlugin {
                     watch_for_changes: true,
                     ..Default::default()
-                })
-                .set(ImagePlugin {
-                    default_sampler: SamplerDescriptor {
-                        address_mode_u: AddressMode::Repeat,
-                        address_mode_v: AddressMode::Repeat,
-                        mag_filter: FilterMode::Nearest,
-                        min_filter: FilterMode::Nearest,
-                        mipmap_filter: FilterMode::Linear,
-                        ..Default::default()
-                    },
                 }),
         )
         .add_plugin(NoisyShaderPlugin)

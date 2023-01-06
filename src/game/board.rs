@@ -1,22 +1,33 @@
-use bevy::{prelude::*, utils::HashMap};
+mod board_runtime_assets;
+mod tile;
+
+use bevy::{
+    prelude::*,
+    render::{
+        render_resource::{
+            AddressMode, Extent3d, FilterMode, SamplerDescriptor, TextureDimension, TextureFormat,
+        },
+        texture::{TextureFormatPixelInfo, Volume},
+    },
+    utils::HashMap,
+};
 use bevy_mod_picking::{Highlighting, HoverEvent, PickableBundle, PickingEvent};
 use iyes_loopless::{
     prelude::{AppLooplessStateExt, IntoConditionalSystem},
     state::{CurrentState, NextState},
 };
 use noisy_bevy::simplex_noise_3d;
-use serde::{Deserialize, Serialize};
 
 use crate::{
     app_state::{AppLoadingState, AppState},
     assets::CanalManiaAssets,
 };
 
-use super::{
-    game_state::GameState,
-    level::Level,
-    tile_shader::{InkSettings, TileMaterial},
-};
+use super::{game_state::GameState, level::Level, tile_shader::TileMaterial};
+
+pub use board_runtime_assets::*;
+
+pub use tile::*;
 
 pub struct BoardPlugin;
 
@@ -32,29 +43,14 @@ impl Plugin for BoardPlugin {
             .add_system(animate_goal.run_in_state(AppState::InGame))
             .add_system(process_selection_events.run_in_state(AppState::InGame))
             .add_exit_system(AppState::InGame, clear_board);
-        #[cfg(feature = "dev")]
-        app.add_plugin(bevy_inspector_egui::quick::AssetInspectorPlugin::<
-            TileMaterial,
-        >::default());
+        //#[cfg(feature = "dev")]
+        // app.add_plugin(bevy_inspector_egui::quick::AssetInspectorPlugin::<
+        //     TileMaterial,
+        // >::default());
         // .add_plugin(bevy_inspector_egui::quick::ResourceInspectorPlugin::<
         //     BoardRuntimeAssets,
         // >::default());
     }
-}
-
-#[derive(Resource, Reflect)]
-struct BoardRuntimeAssets {
-    pub tile_base_material: Handle<TileMaterial>,
-    pub tile_offset_w_material: Handle<TileMaterial>,
-    pub tile_offset_h_material: Handle<TileMaterial>,
-    pub tile_offset_wh_material: Handle<TileMaterial>,
-    pub dry_material: Handle<TileMaterial>,
-    pub decoration_material: Handle<TileMaterial>,
-    pub selector: Handle<Mesh>,
-    pub selector_base: Handle<StandardMaterial>,
-    pub selector_hovered: Handle<StandardMaterial>,
-    pub selector_pressed: Handle<StandardMaterial>,
-    pub selector_selected: Handle<StandardMaterial>,
 }
 
 #[derive(Component, Debug, Default, Reflect)]
@@ -102,394 +98,13 @@ impl Board {
     }
 }
 
-#[derive(Component, Default, Debug, Clone, Reflect, Serialize, Deserialize)]
-#[reflect(Component)]
-pub struct Tile {
-    pub x: usize,
-    pub y: usize,
-    #[serde(default)]
-    pub z: usize,
-    #[serde(default)]
-    pub tile_type: TileType,
-    #[serde(default)]
-    pub contents: TileContents,
-    #[serde(default)]
-    pub is_goal: bool,
-    #[serde(default)]
-    pub is_wet: bool,
-}
-
-#[derive(Component, Default, Clone, Debug)]
-pub struct TileNeighbours(pub [Option<Entity>; 8]);
-
-#[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum TileType {
-    Land,
-    Farm,
-    City,
-}
-
-impl Default for TileType {
-    fn default() -> Self {
-        Self::Land
-    }
-}
-
-#[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum TileContents {
-    None,
-    Road,
-    Canal,
-    Lock,
-    Aquaduct(usize),
-}
-
-impl Default for TileContents {
-    fn default() -> Self {
-        Self::None
-    }
-}
-
-impl TileContents {
-    fn center(&self, assets: &CanalManiaAssets, is_dry: bool) -> Handle<Mesh> {
-        match self {
-            TileContents::None => Handle::default(),
-            TileContents::Road => assets.road_center.clone(),
-            TileContents::Canal => {
-                if is_dry {
-                    assets.canal_dry_center.clone()
-                } else {
-                    assets.canal_center.clone()
-                }
-            }
-            TileContents::Lock => Handle::default(),
-            TileContents::Aquaduct(_) => {
-                if is_dry {
-                    assets.aquaducts_dry_center.clone()
-                } else {
-                    assets.aquaduct_center.clone()
-                }
-            }
-        }
-    }
-    fn corner(&self, assets: &CanalManiaAssets, is_dry: bool) -> Handle<Mesh> {
-        match self {
-            TileContents::None => Handle::default(),
-            TileContents::Road => assets.road_corner.clone(),
-            TileContents::Canal => {
-                if is_dry {
-                    assets.canal_dry_corner.clone()
-                } else {
-                    assets.canal_corner.clone()
-                }
-            }
-            TileContents::Lock => assets.lock_corner.clone(),
-            TileContents::Aquaduct(_) => {
-                if is_dry {
-                    assets.aquaducts_dry_corner.clone()
-                } else {
-                    assets.aquaduct_corner.clone()
-                }
-            }
-        }
-    }
-    fn crossing(&self, assets: &CanalManiaAssets, is_dry: bool) -> Handle<Mesh> {
-        info!("Checking {self:?}");
-        match self {
-            TileContents::None => {
-                info!("Providing default handle...");
-                Handle::default()
-            }
-            TileContents::Road => assets.road_crossing.clone(),
-            TileContents::Canal => {
-                if is_dry {
-                    info!("Found Dry Canal Mesh");
-                    assets.canal_dry_crossing.clone()
-                } else {
-                    info!("Found Canal Mesh");
-                    assets.canal_crossing.clone()
-                }
-            }
-            TileContents::Lock => assets.lock_crossing.clone(),
-            TileContents::Aquaduct(_) => {
-                if is_dry {
-                    assets.aquaducts_dry_crossing.clone()
-                } else {
-                    assets.aquaduct_crossing.clone()
-                }
-            }
-        }
-    }
-    fn t(&self, assets: &CanalManiaAssets, is_dry: bool) -> Handle<Mesh> {
-        match self {
-            TileContents::None => Handle::default(),
-            TileContents::Road => assets.road_t.clone(),
-            TileContents::Canal => {
-                if is_dry {
-                    assets.canal_dry_t.clone()
-                } else {
-                    assets.canal_t.clone()
-                }
-            }
-            TileContents::Lock => assets.lock_t.clone(),
-            TileContents::Aquaduct(_) => {
-                if is_dry {
-                    assets.aquaducts_dry_t.clone()
-                } else {
-                    assets.aquaduct_t.clone()
-                }
-            }
-        }
-    }
-    fn line(&self, assets: &CanalManiaAssets, is_dry: bool) -> Handle<Mesh> {
-        match self {
-            TileContents::None => Handle::default(),
-            TileContents::Road => assets.road_line.clone(),
-            TileContents::Canal => {
-                if is_dry {
-                    assets.canal_dry_line.clone()
-                } else {
-                    assets.canal_line.clone()
-                }
-            }
-            TileContents::Lock => assets.lock_line.clone(),
-            TileContents::Aquaduct(_) => {
-                if is_dry {
-                    assets.aquaducts_dry_line.clone()
-                } else {
-                    assets.aquaduct_line.clone()
-                }
-            }
-        }
-    }
-    fn end(&self, assets: &CanalManiaAssets, is_dry: bool) -> Handle<Mesh> {
-        match self {
-            TileContents::None => Handle::default(),
-            TileContents::Road => assets.road_end.clone(),
-            TileContents::Canal => {
-                if is_dry {
-                    assets.canal_dry_end.clone()
-                } else {
-                    assets.canal_end.clone()
-                }
-            }
-            TileContents::Lock => assets.lock_end.clone(),
-            TileContents::Aquaduct(_) => {
-                if is_dry {
-                    assets.aquaducts_dry_end.clone()
-                } else {
-                    assets.aquaduct_end.clone()
-                }
-            }
-        }
-    }
-}
-
-impl Tile {
-    pub fn get_dig_cost(&self) -> usize {
-        let type_cost = match self.tile_type {
-            TileType::Land => 1000,
-            TileType::Farm => 1500,
-            TileType::City => 3000,
-        };
-        let road_cost = if self.contents == TileContents::Road {
-            100usize
-        } else {
-            0
-        };
-        type_cost + road_cost
-    }
-    pub fn get_lock_cost(&self) -> usize {
-        let type_cost = match self.tile_type {
-            TileType::Land => 5000,
-            TileType::Farm => 6000,
-            TileType::City => 7000,
-        };
-        let road_cost = if self.contents == TileContents::Road {
-            100usize
-        } else {
-            0
-        };
-        type_cost + road_cost
-    }
-
-    pub fn get_aquaduct_cost(&self) -> usize {
-        match self.tile_type {
-            TileType::Land => 8000,
-            TileType::Farm => 8000,
-            TileType::City => 9000,
-        }
-    }
-
-    pub fn get_demolish_cost(&self) -> usize {
-        let construction_cost = match self.contents {
-            TileContents::None => 0,
-            TileContents::Road => 100,
-            TileContents::Canal => 300,
-            TileContents::Lock => 400,
-            TileContents::Aquaduct(h) => 500 * h,
-        };
-        let type_multiplier = match self.tile_type {
-            TileType::Land => 1,
-            TileType::Farm => 2,
-            TileType::City => 3,
-        };
-        construction_cost * type_multiplier
-    }
-
-    pub fn get_decorations(&self, assets: &CanalManiaAssets) -> Vec<Handle<Mesh>> {
-        let count = match self.contents {
-            TileContents::None => match self.tile_type {
-                TileType::Land => 3.,
-                TileType::Farm => 3.,
-                TileType::City => 8.,
-            },
-            _ => match self.tile_type {
-                TileType::Land => 1.,
-                TileType::Farm => 1.,
-                TileType::City => 4.,
-            },
-        };
-
-        let mut pos = Vec3::new(self.x as f32, self.y as f32, self.z as f32);
-
-        let amount = (simplex_noise_3d(pos).abs() * (count + 1.)).floor() as usize;
-
-        (0..amount)
-            .map(|i| {
-                let i = i as f32;
-                pos = Vec3::new(-1. * i, 2. * i, 0.24 * i) * pos;
-                match self.tile_type {
-                    TileType::Land => {
-                        let index = (simplex_noise_3d(pos).abs() * 4.).floor() as usize;
-                        match index {
-                            1 => assets.tree2.clone(),
-                            2 => assets.tree3.clone(),
-                            3 => assets.tree4.clone(),
-                            _ => assets.tree1.clone(),
-                        }
-                    }
-                    TileType::Farm => {
-                        let index = (simplex_noise_3d(pos).abs() * 6.).floor() as usize;
-                        match index {
-                            1 => assets.house2.clone(),
-                            2 => assets.house3.clone(),
-                            3 => assets.house4.clone(),
-                            4 => assets.tree2.clone(),
-                            5 => assets.tree3.clone(),
-                            _ => assets.house.clone(),
-                        }
-                    }
-                    TileType::City => {
-                        let index = (simplex_noise_3d(pos).abs() * 4.).floor() as usize;
-                        match index {
-                            1 => assets.house2.clone(),
-                            2 => assets.house3.clone(),
-                            3 => assets.house4.clone(),
-                            _ => assets.house.clone(),
-                        }
-                    }
-                }
-            })
-            .collect()
-    }
-}
-
-fn tile_position(x: Option<usize>, y: Option<usize>) -> Option<(usize, usize)> {
-    if let (Some(x), Some(y)) = (x, y) {
-        Some((x, y))
-    } else {
-        None
-    }
-}
-
-fn setup_board_materials(
-    mut commands: Commands,
-    _assets: Res<CanalManiaAssets>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
-    mut tile_materials: ResMut<Assets<TileMaterial>>,
-    mut meshes: ResMut<Assets<Mesh>>,
-) {
-    let tile_base_material = tile_materials.add(TileMaterial::default());
-    let tile_offset_w_material = tile_materials.add(TileMaterial {
-        settings: InkSettings {
-            world_offset: Vec4::new(0.5, 0., 0., 0.),
-            ..Default::default()
-        },
-    });
-    let tile_offset_h_material = tile_materials.add(TileMaterial {
-        settings: InkSettings {
-            world_offset: Vec4::new(0., 0., 0.5, 0.),
-            ..Default::default()
-        },
-    });
-    let tile_offset_wh_material = tile_materials.add(TileMaterial {
-        settings: InkSettings {
-            world_offset: Vec4::new(0.5, 0., 0.5, 0.),
-            ..Default::default()
-        },
-    });
-    let decoration_material = tile_materials.add(TileMaterial {
-        settings: InkSettings {
-            added_params: Vec4::new(0., 0.7, 0.5, 0.1),
-            world_offset: Vec4::new(0., 0., 0., 1.),
-            ..Default::default()
-        },
-    });
-    let dry_material = tile_materials.add(TileMaterial {
-        settings: InkSettings {
-            added_params: Vec4::new(0., 0.7, 0.5, 0.1),
-            world_offset: Vec4::new(0., 0., 0., 0.1),
-            ..Default::default()
-        },
-    });
-
-    let selector = meshes.add(shape::Box::new(1., 0.1, 1.).into());
-
-    let selector_base = materials.add(StandardMaterial {
-        base_color: Color::rgba(0., 0., 0., 0.0),
-        alpha_mode: AlphaMode::Blend,
-        ..Default::default()
-    });
-
-    let selector_hovered = materials.add(StandardMaterial {
-        base_color: Color::rgba(0., 0.7, 0.5, 0.5),
-        alpha_mode: AlphaMode::Blend,
-        ..Default::default()
-    });
-
-    let selector_pressed = materials.add(StandardMaterial {
-        base_color: Color::rgba(0., 0.7, 0.5, 0.7),
-        alpha_mode: AlphaMode::Blend,
-        ..Default::default()
-    });
-
-    let selector_selected = materials.add(StandardMaterial {
-        base_color: Color::rgba(0., 0.9, 0.7, 0.5),
-        alpha_mode: AlphaMode::Blend,
-        ..Default::default()
-    });
-
-    commands.insert_resource(BoardRuntimeAssets {
-        tile_base_material,
-        tile_offset_w_material,
-        tile_offset_h_material,
-        tile_offset_wh_material,
-        decoration_material,
-        dry_material,
-        selector,
-        selector_base,
-        selector_hovered,
-        selector_pressed,
-        selector_selected,
-    });
-}
-
 fn build_board(
     mut commands: Commands,
     level: Res<Level>,
     boards: Query<Entity, With<Board>>,
     state: Res<CurrentState<GameState>>,
+    board_assets: Res<BoardRuntimeAssets>,
+    mut materials: ResMut<Assets<TileMaterial>>,
 ) {
     if !level.is_changed() {
         return;
@@ -507,6 +122,21 @@ fn build_board(
         height: level.height,
         ..Default::default()
     };
+
+    let (offset_x, offset_y) = (board.width % 2 == 0, board.height % 2 == 0);
+
+    if let Some(material) = materials.get_mut(&board_assets.tile_base_material) {
+        material.settings.world_offset.x = if offset_x { 0.5 } else { 0. };
+        material.settings.world_offset.z = if offset_y { 0.5 } else { 0. };
+        material.settings.size = Vec4::new(board.width as f32, 0., board.height as f32, 0.);
+    }
+
+    if let Some(material) = materials.get_mut(&board_assets.decoration_material) {
+        material.settings.world_offset.x = if offset_x { 0.5 } else { 0. };
+        material.settings.world_offset.z = if offset_y { 0.5 } else { 0. };
+        material.settings.size = Vec4::new(board.width as f32, 0., board.height as f32, 0.);
+    }
+
     commands
         .spawn((SpatialBundle {
             transform: Transform::from_translation(center),
@@ -543,20 +173,22 @@ fn build_board(
     }
 }
 
+const TILE_HEIGHT: u8 = u8::MAX / 10;
+
 fn build_tile(
     mut commands: Commands,
     assets: Res<CanalManiaAssets>,
-    materials: Res<BoardRuntimeAssets>,
+    board_assets: Res<BoardRuntimeAssets>,
     tiles: Query<(Entity, &Tile, Option<&TileNeighbours>), Changed<Tile>>,
     neighbour_tiles: Query<(Entity, &Tile, Option<&TileNeighbours>)>,
     boards: Query<&Board>,
+    mut images: ResMut<Assets<Image>>,
+    mut materials: ResMut<Assets<TileMaterial>>,
 ) {
-    let (offset_x, offset_y) = if let Ok(board) = boards.get_single() {
-        (board.width % 2 == 0, board.height % 2 == 0)
-    } else {
-        (false, false)
-    };
+    let mut updated = false;
     for (entity, tile, neighbours) in tiles.iter() {
+        info!("Updating tile");
+        updated = true;
         update_tile(
             &neighbours,
             &neighbour_tiles,
@@ -564,12 +196,91 @@ fn build_tile(
             tile,
             &mut commands,
             entity,
-            &materials,
+            &board_assets,
             &assets,
             true,
-            offset_x,
-            offset_y,
         );
+    }
+    if updated {
+        info!("Updated at least one entity!");
+        if let Ok(board) = boards.get_single() {
+            
+            info!("We got a board!");
+            let width = board.width;
+            let height = board.height;
+            let mut content = vec![(0u8, false); width * height];
+
+            for (_, tile, _) in neighbour_tiles.iter() {
+                let x = tile.x;
+                let y = tile.y;
+
+                let height = tile.z;
+                let is_wet = tile.is_wet;
+
+                let i = x * width + y;
+
+                if let Some(content) = content.get_mut(i) {
+                    content.0 = height as u8;
+                    if is_wet {
+                        content.1 = true;
+                    }
+                }
+            }
+
+            let size = Extent3d {
+                width: width as u32,
+                height: height as u32,
+                depth_or_array_layers: 1,
+            };
+            let format = TextureFormat::Rg8Unorm;
+            let data = content
+                .iter()
+                .flat_map(|(height, is_wet)| {
+                    [
+                        *height * TILE_HEIGHT,
+                        if *is_wet { u8::MAX } else { u8::MIN },
+                    ]
+                })
+                .collect::<Vec<_>>();
+
+            info!(
+                "Size: {size:?} - {}, format : {format:?} - {}, data: {}, content_len: {}\n{data:?}",
+                size.volume(),
+                format.pixel_size(),
+                data.len(),
+                content.len()
+            );
+
+            let mut image = Image::new(size, TextureDimension::D2, data, format);
+            image.sampler_descriptor =
+                bevy::render::texture::ImageSampler::Descriptor(SamplerDescriptor {
+                    address_mode_u: AddressMode::ClampToEdge,
+                    address_mode_v: AddressMode::ClampToEdge,
+                    mag_filter: FilterMode::Linear,
+                    min_filter: FilterMode::Linear,
+                    mipmap_filter: FilterMode::Linear,
+                    ..Default::default()
+                });
+
+            let result = images.set(board_assets.tile_info_map.clone(), image);
+            info!("Set the image to {result:?} from {:?}", board_assets.tile_info_map);
+
+            let (offset_x, offset_y) = (board.width % 2 == 0, board.height % 2 == 0);
+
+            if let Some(material) = materials.get_mut(&board_assets.tile_base_material) {
+                material.settings.world_offset.x = if offset_x { 0.5 } else { 0. };
+                material.settings.world_offset.z = if offset_y { 0.5 } else { 0. };
+                material.settings.size = Vec4::new(board.width as f32, 0., board.height as f32, 0.);
+                material.info_map = result.clone();
+            }
+
+            if let Some(material) = materials.get_mut(&board_assets.decoration_material) {
+                material.settings.world_offset.x = if offset_x { 0.5 } else { 0. };
+                material.settings.world_offset.z = if offset_y { 0.5 } else { 0. };
+                material.settings.size = Vec4::new(board.width as f32, 0., board.height as f32, 0.);
+                material.info_map = result.clone();
+            }
+        }
     }
 }
 
@@ -586,8 +297,6 @@ fn update_tile(
     materials: &BoardRuntimeAssets,
     assets: &CanalManiaAssets,
     primary: bool,
-    offset_x: bool,
-    offset_y: bool,
 ) {
     let neighbours = if let Some(n) = neighbours {
         n.0.iter()
@@ -618,12 +327,7 @@ fn update_tile(
     };
     let center = Vec3::new(tile.x as f32, (tile.z as f32) / 6., tile.y as f32);
     let mut entity = commands.entity(entity);
-    let base_material = match (offset_x, offset_y) {
-        (true, true) => materials.tile_offset_wh_material.clone(),
-        (true, false) => materials.tile_offset_w_material.clone(),
-        (false, true) => materials.tile_offset_h_material.clone(),
-        (false, false) => materials.tile_base_material.clone(),
-    };
+    let base_material = materials.tile_base_material.clone();
     entity.insert((
         PickableBundle::default(),
         Highlighting {
@@ -641,89 +345,92 @@ fn update_tile(
     ));
     entity.despawn_descendants();
     entity.with_children(|parent| {
-        parent.spawn(MaterialMeshBundle {
-            mesh: match tile.tile_type {
-                TileType::Land => assets.land_tile.clone(),
-                TileType::City => assets.city_tile.clone(),
-                TileType::Farm => assets.farm_tile.clone(),
-            },
-            material: base_material.clone(),
-            ..Default::default()
-        });
-
-        if tile.is_goal {
-            parent.spawn((
-                Goal,
-                MaterialMeshBundle {
-                    mesh: assets.goal.clone(),
-                    material: materials.decoration_material.clone(),
+        parent
+            .spawn(SpatialBundle::from_transform(Transform::from_xyz(
+                0.,
+                -1. * center.y,
+                0.,
+            )))
+            .with_children(|parent| {
+                parent.spawn(MaterialMeshBundle {
+                    mesh: match tile.tile_type {
+                        TileType::Land => assets.land_tile.clone(),
+                        TileType::City => assets.city_tile.clone(),
+                        TileType::Farm => assets.farm_tile.clone(),
+                    },
+                    material: base_material.clone(),
                     ..Default::default()
-                },
-            ));
-        }
+                });
 
-        let decorations = tile.get_decorations(assets);
-
-        let mut pos = Vec3::new(tile.x as f32, tile.y as f32, tile.z as f32);
-        pos *= 4295.;
-        for (i, decoration) in decorations.into_iter().enumerate() {
-            let i = i as f32;
-
-            pos = Vec3::new(i * 235., -141.5 * i, 9998. * i) + pos;
-
-            let x = simplex_noise_3d(pos);
-            pos /= 325.;
-
-            let y = simplex_noise_3d(pos);
-
-            pos = pos / 213. + 5935.;
-            let rot = simplex_noise_3d(pos) * 360.;
-
-            let position = match tile.contents {
-                TileContents::None => {
-                    let x = x.clamp(0.1, 0.9);
-                    let y = y.clamp(0.1, 0.9);
-                    let x = x - 0.5;
-                    let y = y - 0.5;
-                    Vec3::new(x, 0., y)
+                if tile.is_goal {
+                    parent.spawn((
+                        Goal,
+                        MaterialMeshBundle {
+                            mesh: assets.goal.clone(),
+                            material: materials.decoration_material.clone(),
+                            ..Default::default()
+                        },
+                    ));
                 }
-                _ => {
-                    let x = if x > 0.5 {
-                        x.clamp(0.75, 0.9)
-                    } else {
-                        x.clamp(0.1, 0.25)
+
+                let decorations = tile.get_decorations(assets);
+
+                let mut pos = Vec3::new(tile.x as f32, tile.y as f32, tile.z as f32);
+                pos *= 4295.;
+                for (i, decoration) in decorations.into_iter().enumerate() {
+                    let i = i as f32;
+
+                    pos = Vec3::new(i * 235., -141.5 * i, 9998. * i) + pos;
+
+                    let x = simplex_noise_3d(pos);
+                    pos /= 325.;
+
+                    let y = simplex_noise_3d(pos);
+
+                    pos = pos / 213. + 5935.;
+                    let rot = simplex_noise_3d(pos) * 360.;
+
+                    let position = match tile.contents {
+                        TileContents::None => {
+                            let x = x.clamp(0.1, 0.9);
+                            let y = y.clamp(0.1, 0.9);
+                            let x = x - 0.5;
+                            let y = y - 0.5;
+                            Vec3::new(x, 0., y)
+                        }
+                        _ => {
+                            let x = if x > 0.5 {
+                                x.clamp(0.75, 0.9)
+                            } else {
+                                x.clamp(0.1, 0.25)
+                            };
+                            let y = if y > 0.5 {
+                                y.clamp(0.75, 0.9)
+                            } else {
+                                y.clamp(0.1, 0.25)
+                            };
+                            let x = x - 0.5;
+                            let y = y - 0.5;
+                            Vec3::new(x, 0., y)
+                        }
                     };
-                    let y = if y > 0.5 {
-                        y.clamp(0.75, 0.9)
-                    } else {
-                        y.clamp(0.1, 0.25)
-                    };
-                    let x = x - 0.5;
-                    let y = y - 0.5;
-                    Vec3::new(x, 0., y)
+                    parent.spawn(MaterialMeshBundle {
+                        mesh: decoration,
+                        material: materials.decoration_material.clone(),
+                        transform: Transform::from_translation(position)
+                            .with_rotation(Quat::from_rotation_y(rot.to_radians())),
+                        ..Default::default()
+                    });
                 }
-            };
-            parent.spawn(MaterialMeshBundle {
-                mesh: decoration,
-                material: materials.decoration_material.clone(),
-                transform: Transform::from_translation(position)
-                    .with_rotation(Quat::from_rotation_y(rot.to_radians()))
-                    .with_scale(Vec3::new(0.3, 0.3, 0.3)),
-                ..Default::default()
+
+                spawn_content(
+                    tile,
+                    &neighbours,
+                    assets,
+                    parent,
+                    materials.decoration_material.clone(),
+                );
             });
-        }
-
-        spawn_content(
-            tile,
-            &neighbours,
-            assets,
-            parent,
-            if tile.is_wet {
-                materials.decoration_material.clone()
-            } else {
-                materials.dry_material.clone()
-            },
-        );
     });
 
     if primary {
@@ -738,8 +445,6 @@ fn update_tile(
                 materials,
                 assets,
                 false,
-                offset_x,
-                offset_y,
             );
         }
     };
@@ -773,6 +478,7 @@ fn spawn_content(
                 s,
                 parent,
                 base_material,
+                tile.z
             );
         }
         TileContents::Canal => {
@@ -802,6 +508,7 @@ fn spawn_content(
                 s,
                 parent,
                 base_material,
+                tile.z
             );
         }
         TileContents::Lock => {
@@ -831,6 +538,7 @@ fn spawn_content(
                 s,
                 parent,
                 base_material.clone(),
+                tile.z
             );
             spawn_variant(
                 TileContents::Lock,
@@ -842,6 +550,7 @@ fn spawn_content(
                 s,
                 parent,
                 base_material,
+                tile.z
             );
         }
         TileContents::Aquaduct(h) => {
@@ -871,6 +580,7 @@ fn spawn_content(
                 s,
                 parent,
                 base_material,
+                tile.z
             );
         }
     }
@@ -893,7 +603,7 @@ pub fn check_neighbours<F: Fn(&Tile) -> bool, R>(
 
 fn spawn_variant<T: Material>(
     content_type: TileContents,
-    is_dry: bool,
+    _is_dry: bool,
     assets: &CanalManiaAssets,
     n: bool,
     w: bool,
@@ -901,29 +611,30 @@ fn spawn_variant<T: Material>(
     s: bool,
     parent: &mut ChildBuilder,
     material: Handle<T>,
+    height: usize
 ) {
     let (mesh, rotation) = match (n, w, e, s) {
-        (true, true, true, true) => (content_type.crossing(assets, is_dry), 0f32),
-        (true, true, true, false) => (content_type.t(assets, is_dry), 180.),
-        (true, true, false, true) => (content_type.t(assets, is_dry), 270.),
-        (true, true, false, false) => (content_type.corner(assets, is_dry), 180.),
-        (true, false, true, true) => (content_type.t(assets, is_dry), 90.),
-        (true, false, true, false) => (content_type.corner(assets, is_dry), 90.),
-        (true, false, false, true) => (content_type.line(assets, is_dry), 0.),
-        (true, false, false, false) => (content_type.end(assets, is_dry), 180.),
-        (false, true, true, true) => (content_type.t(assets, is_dry), 0.),
-        (false, true, true, false) => (content_type.line(assets, is_dry), 90.),
-        (false, true, false, true) => (content_type.corner(assets, is_dry), 270.),
-        (false, true, false, false) => (content_type.end(assets, is_dry), 270.),
-        (false, false, true, true) => (content_type.corner(assets, is_dry), 0.),
-        (false, false, true, false) => (content_type.end(assets, is_dry), 90.),
-        (false, false, false, true) => (content_type.end(assets, is_dry), 0.),
-        (false, false, false, false) => (content_type.center(assets, is_dry), 0.),
+        (true, true, true, true) => (content_type.crossing(assets), 0f32),
+        (true, true, true, false) => (content_type.t(assets), 180.),
+        (true, true, false, true) => (content_type.t(assets), 270.),
+        (true, true, false, false) => (content_type.corner(assets), 180.),
+        (true, false, true, true) => (content_type.t(assets), 90.),
+        (true, false, true, false) => (content_type.corner(assets), 90.),
+        (true, false, false, true) => (content_type.line(assets), 0.),
+        (true, false, false, false) => (content_type.end(assets), 180.),
+        (false, true, true, true) => (content_type.t(assets), 0.),
+        (false, true, true, false) => (content_type.line(assets), 90.),
+        (false, true, false, true) => (content_type.corner(assets), 270.),
+        (false, true, false, false) => (content_type.end(assets), 270.),
+        (false, false, true, true) => (content_type.corner(assets), 0.),
+        (false, false, true, false) => (content_type.end(assets), 90.),
+        (false, false, false, true) => (content_type.end(assets), 0.),
+        (false, false, false, false) => (content_type.center(assets), 0.),
     };
 
     println!("Spawning {content_type:?}");
     let position = match content_type {
-        TileContents::Aquaduct(u) => Vec3::Y * (u as f32 - 1.) / 6.,
+        TileContents::Aquaduct(u) => Vec3::Y * (u as f32 - 1. + height as f32) / 6.,
         _ => Vec3::ZERO,
     };
     parent.spawn(MaterialMeshBundle {
