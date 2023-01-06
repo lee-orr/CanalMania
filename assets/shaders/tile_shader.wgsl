@@ -136,11 +136,11 @@ fn fragment(
     let bg = mix(init_bg, init_bg * settings.base_color , 0.3);
 
     let depth = clamp(mix(-0.3, 1.2, clamp(world_position.y + 1., 0., 1.)), 0., 1.);
-    var darkening : f32 = clamp(sin(max(0., (world_position.y + 0.0337) * 12. * 3.14159)), 0., 1.);
+    var darkening : f32 = clamp(sin(max(0., (world_position.y + 0.01) * 12. * 3.14159)), 0., 1.);
 
-    if darkening > 0.99 {
-        darkening = 1. - 0.99;
-        darkening = mix(0.3, 1., darkening * 0.05);
+    if darkening > 0.997 {
+        darkening = 1. - 0.997;
+        darkening = 0.5;
     } else {
         darkening = 1.;
     }
