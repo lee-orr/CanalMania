@@ -641,52 +641,56 @@ fn spawn_variant<T: Material>(
                 TileContents::Aquaduct(u) => Vec3::Y * (u as f32 - 1. + height as f32) / 6.,
                 _ => Vec3::ZERO,
             };
-    
+
             let mesh = content_type.center(assets);
-    
+
             parent.spawn(MaterialMeshBundle {
                 mesh,
                 material,
                 transform: Transform::from_translation(position),
                 ..Default::default()
             });
-        },
+        }
         std::cmp::Ordering::Equal => {
             for (content, rotation, height) in results.iter() {
                 let position = match content {
                     TileContents::Aquaduct(u) => Vec3::Y * (*u as f32 - 1. + *height as f32) / 6.,
                     _ => Vec3::ZERO,
                 };
-    
+
                 let mesh = content.end(assets);
-    
+
                 parent.spawn(MaterialMeshBundle {
                     mesh,
                     material: material.clone(),
-                    transform: Transform::from_rotation(Quat::from_rotation_y(rotation.to_radians()))
-                        .with_translation(position),
+                    transform: Transform::from_rotation(Quat::from_rotation_y(
+                        rotation.to_radians(),
+                    ))
+                    .with_translation(position),
                     ..Default::default()
                 });
             }
-        },
+        }
         std::cmp::Ordering::Greater => {
             for (content, rotation, height) in results.iter() {
                 let position = match content {
                     TileContents::Aquaduct(u) => Vec3::Y * (*u as f32 - 1. + *height as f32) / 6.,
                     _ => Vec3::ZERO,
                 };
-    
+
                 let mesh = content.line(assets);
-    
+
                 parent.spawn(MaterialMeshBundle {
                     mesh,
                     material: material.clone(),
-                    transform: Transform::from_rotation(Quat::from_rotation_y(rotation.to_radians()))
-                        .with_translation(position),
+                    transform: Transform::from_rotation(Quat::from_rotation_y(
+                        rotation.to_radians(),
+                    ))
+                    .with_translation(position),
                     ..Default::default()
                 });
             }
-        },
+        }
     }
 }
 
