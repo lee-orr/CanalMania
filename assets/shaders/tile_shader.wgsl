@@ -71,7 +71,7 @@ fn fragment(
 
     let overlay_mixer = mix(mix(overlay_1, overlay_2, settings.params.z), overlay_3, settings.params.w);
 
-    let overlay_color = mix(parchment_base, parchment_burn, overlay_mixer);
+    let overlay_color = mix(parchment_dark, mix(parchment_base, parchment_burn, overlay_mixer), mix(0.6, 1., clamp(world_position.y, 0., 1.)));
 
     let init_bg = mix(vertex_color * overlay_color, overlay_color, 1. - settings.params.y);
     let bg = mix(init_bg, init_bg * settings.base_color , 0.3);

@@ -1,172 +1,1036 @@
 {
   "tiles": [
     [
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "City", "is_goal": false, "height": 0 },
-      { "tile_type": "City", "is_goal": false, "height": 1 },
-      { "tile_type": "City", "is_goal": false, "height": 1 },
-      { "tile_type": "City", "is_goal": false, "height": 1 },
-      { "tile_type": "City", "is_goal": false, "height": 1 },
-      { "tile_type": "City", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "is_goal": false, "height": 2 },
-      { "tile_type": "Land", "is_goal": false, "height": 2 }
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "City",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "City",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "City",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "City",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "City",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "City",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 2
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 2
+      }
     ],
     [
-      { "tile_type": "Land", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "City", "is_goal": false, "height": 0 },
-      { "tile_type": "City", "is_goal": false, "height": 1 },
-      { "tile_type": "City", "is_goal": false, "height": 1 },
-      { "tile_type": "City", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "is_goal": false, "height": 1 }
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "City",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "City",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "City",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "City",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      }
     ],
     [
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "contents": "Road", "is_goal": false, "height": 0 },
-      { "tile_type": "City", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "City", "is_goal": false, "height": 1 },
-      { "tile_type": "City", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "is_goal": false, "height": 1 }
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Road",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "City",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "City",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "City",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      }
     ],
     [
-      { "tile_type": "Land", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "contents": "Road", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "contents": "Road", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Farm", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "contents": "Road", "is_goal": false, "height": 0 },
-      { "tile_type": "City", "is_goal": true, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 }
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Road",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Road",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "City",
+        "contents": "None",
+        "is_goal": true,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      }
     ],
     [
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "contents": "Road", "is_goal": false, "height": 0 },
-      { "tile_type": "Farm", "is_goal": false, "height": 0 },
-      { "tile_type": "Farm", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "contents": "Road", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "contents": "Road", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 }
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Road",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Road",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Canal",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Canal",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      }
     ],
     [
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "contents": "Road", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "contents": "Road", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "contents": "Road", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "contents": "Road", "is_goal": false, "height": 0 },
-      { "tile_type": "Farm", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 1 },
-      { "tile_type": "Farm", "is_goal": false, "height": 1 },
-      { "tile_type": "Farm", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 }
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Road",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Road",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Road",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Road",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      }
     ],
     [
-      { "tile_type": "Land", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "contents": "Road", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "contents": "Road", "is_goal": false, "height": 1 },
-      { "tile_type": "Farm", "is_goal": false, "height": 1 },
-      { "tile_type": "Farm", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 1 },
-      { "tile_type": "Farm", "is_goal": false, "height": 1 },
-      { "tile_type": "Farm", "is_goal": false, "height": 1 },
-      { "tile_type": "Farm", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 }
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Road",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Road",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      }
     ],
     [
-      { "tile_type": "Land", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "contents": "Road", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "contents": "Road", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Farm", "is_goal": false, "height": 1 },
-      { "tile_type": "Farm", "is_goal": false, "height": 1 },
-      { "tile_type": "Farm", "is_goal": false, "height": 0 },
-      { "tile_type": "Farm", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 }
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Road",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Road",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      }
     ],
     [
-      { "tile_type": "Land", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "City", "is_goal": false, "height": 0 },
-      { "tile_type": "City", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Farm", "is_goal": false, "height": 0 },
-      { "tile_type": "Farm", "is_goal": false, "height": 0 },
-      { "tile_type": "Farm", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 }
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "City",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "City",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      }
     ],
     [
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "contents": "Canal", "is_wet": true, "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "contents": "Canal", "is_wet": true, "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "contents": "Canal", "is_wet": true, "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 1 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 }
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Canal",
+        "is_goal": false,
+        "is_wet": true,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Canal",
+        "is_goal": false,
+        "is_wet": true,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Canal",
+        "is_goal": false,
+        "is_wet": true,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      }
     ],
     [
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "contents": "Canal", "is_wet": true, "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "contents": "Canal", "is_wet": true, "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "contents": "Canal", "is_wet": true, "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "contents": "Canal", "is_wet": true, "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "contents": "Canal", "is_wet": true, "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 }
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Canal",
+        "is_goal": false,
+        "is_wet": true,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Canal",
+        "is_goal": false,
+        "is_wet": true,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Canal",
+        "is_goal": false,
+        "is_wet": true,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Canal",
+        "is_goal": false,
+        "is_wet": true,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Canal",
+        "is_goal": false,
+        "is_wet": true,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      }
     ],
     [
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "contents": "Canal", "is_wet": true, "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "contents": "Canal", "is_wet": true, "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "contents": "Canal", "is_wet": true, "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "contents": "Canal", "is_wet": true, "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 },
-      { "tile_type": "Land", "is_goal": false, "height": 0 }
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Canal",
+        "is_goal": false,
+        "is_wet": true,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Canal",
+        "is_goal": false,
+        "is_wet": true,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Canal",
+        "is_goal": false,
+        "is_wet": true,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Canal",
+        "is_goal": false,
+        "is_wet": true,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "height": 0
+      }
     ]
   ],
   "title": "Beverley Beck",
