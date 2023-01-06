@@ -74,10 +74,14 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
                 .style(ButtonStyle::Small);
             parent.div().padding(20.);
             if let Some(text) = &level.sidebar_text {
-                parent.div().opaque().size(Size::new(Val::Px(200.),Val::Auto)).with_children(|parent| {
+                parent
+                    .div()
+                    .opaque()
+                    .size(Size::new(Val::Px(200.), Val::Auto))
+                    .with_children(|parent| {
                         parent.text(text).size(15.);
-                });
-        }
+                    });
+            }
         });
 
     #[cfg(feature = "dev")]

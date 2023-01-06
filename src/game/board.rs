@@ -32,10 +32,10 @@ impl Plugin for BoardPlugin {
             .add_system(animate_goal.run_in_state(AppState::InGame))
             .add_system(process_selection_events.run_in_state(AppState::InGame))
             .add_exit_system(AppState::InGame, clear_board);
-        // #[cfg(feature = "dev")]
-        // app.add_plugin(bevy_inspector_egui::quick::AssetInspectorPlugin::<
-        //     TileMaterial,
-        // >::default());
+        #[cfg(feature = "dev")]
+        app.add_plugin(bevy_inspector_egui::quick::AssetInspectorPlugin::<
+            TileMaterial,
+        >::default());
         // .add_plugin(bevy_inspector_egui::quick::ResourceInspectorPlugin::<
         //     BoardRuntimeAssets,
         // >::default());
@@ -419,13 +419,13 @@ fn setup_board_materials(
     });
     let tile_offset_h_material = tile_materials.add(TileMaterial {
         settings: InkSettings {
-            world_offset: Vec4::new(0., 0.5, 0., 0.),
+            world_offset: Vec4::new(0., 0., 0.5, 0.),
             ..Default::default()
         },
     });
     let tile_offset_wh_material = tile_materials.add(TileMaterial {
         settings: InkSettings {
-            world_offset: Vec4::new(0.5, 0.5, 0., 0.),
+            world_offset: Vec4::new(0.5, 0., 0.5, 0.),
             ..Default::default()
         },
     });

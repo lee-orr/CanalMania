@@ -1,5 +1,5 @@
 levels:
-  - name: test
-    file: test.lvl.json
   - name: Beverley Beck
     file: beverley.lvl.json
+  - name: test
+    file: test.lvl.json

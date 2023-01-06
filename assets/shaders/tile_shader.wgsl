@@ -43,7 +43,7 @@ fn fragment(
     }
 
 
-    let world_position = in.world_position + vec4<f32>(settings.world_offset_and_wetness.xz, 0., 0.);
+    let world_position = in.world_position + vec4<f32>(settings.world_offset_and_wetness.xyz, 0.);
     var test_position : vec3<f32> = world_position.xyz * 0.3;
     var overlay_1: f32 = simplex_noise_3d(test_position);
 
