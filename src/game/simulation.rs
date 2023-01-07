@@ -75,7 +75,7 @@ fn run_water_simulation(
 }
 
 fn propogate_wetness(
-    neighbours: [Option<(TileContents, usize, Wetness)>; 8],
+    neighbours: [NeighbourMatch<(TileContents, usize, Wetness)>; 8],
     tile: &Tile,
     commands: &mut Commands,
     entity: Entity,
@@ -89,7 +89,7 @@ fn propogate_wetness(
                 // Filter out diagonals...
                 return val;
             }
-            if let Some((_, _, wetness)) = n {
+            if let NeighbourMatch::Matches((_, _, wetness)) = n {
                 match wetness {
                     Wetness::Dry => val,
                     Wetness::WaterSource => *wetness,

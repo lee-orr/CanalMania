@@ -478,18 +478,7 @@ fn spawn_content(
             let e = neighbours[4];
             let s = neighbours[6];
 
-            spawn_variant(
-                TileContents::Road,
-                !is_wet,
-                assets,
-                n,
-                w,
-                e,
-                s,
-                parent,
-                base_material,
-                tile.z,
-            );
+            spawn_variant(tile, !is_wet, assets, n, w, e, s, parent, base_material);
         }
         TileContents::Canal => {
             println!("Setting up canal!");
@@ -509,18 +498,7 @@ fn spawn_content(
             let e = neighbours[4];
             let s = neighbours[6];
 
-            spawn_variant(
-                TileContents::Canal,
-                !is_wet,
-                assets,
-                n,
-                w,
-                e,
-                s,
-                parent,
-                base_material,
-                tile.z,
-            );
+            spawn_variant(tile, !is_wet, assets, n, w, e, s, parent, base_material);
         }
         TileContents::River => {
             println!("Setting up river!");
@@ -540,18 +518,7 @@ fn spawn_content(
             let e = neighbours[4];
             let s = neighbours[6];
 
-            spawn_variant(
-                TileContents::River,
-                !is_wet,
-                assets,
-                n,
-                w,
-                e,
-                s,
-                parent,
-                base_material,
-                tile.z,
-            );
+            spawn_variant(tile, !is_wet, assets, n, w, e, s, parent, base_material);
         }
         TileContents::Lock => {
             println!("Setting up lock!");
@@ -572,8 +539,13 @@ fn spawn_content(
             let e = neighbours[4];
             let s = neighbours[6];
 
+            let tmp = Tile {
+                contents: TileContents::Canal,
+                ..tile.clone()
+            };
+
             spawn_variant(
-                TileContents::Canal,
+                &tmp,
                 !is_wet,
                 assets,
                 n,
@@ -582,20 +554,8 @@ fn spawn_content(
                 s,
                 parent,
                 base_material.clone(),
-                tile.z,
             );
-            spawn_variant(
-                TileContents::Lock,
-                !is_wet,
-                assets,
-                n,
-                w,
-                e,
-                s,
-                parent,
-                base_material,
-                tile.z,
-            );
+            spawn_variant(tile, !is_wet, assets, n, w, e, s, parent, base_material);
         }
         TileContents::Aquaduct(h) => {
             println!("Setting up aquaduct {h:?}");
@@ -617,35 +577,31 @@ fn spawn_content(
             let e = neighbours[4];
             let s = neighbours[6];
 
-            spawn_variant(
-                TileContents::Aquaduct(h),
-                !is_wet,
-                assets,
-                n,
-                w,
-                e,
-                s,
-                parent,
-                base_material,
-                tile.z,
-            );
+            spawn_variant(tile, !is_wet, assets, n, w, e, s, parent, base_material);
         }
     }
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum NeighbourMatch<T> {
+    Matches(T),
+    DoesntMatch,
+    NoNeighbour,
 }
 
 pub fn check_neighbours<F: Fn(&Tile) -> bool, R>(
     neighbours: &[Option<(Entity, &Tile, R)>],
     checked: F,
-) -> [Option<(TileContents, usize, Wetness)>; 8] {
-    let mut result = [None; 8];
+) -> [NeighbourMatch<(TileContents, usize, Wetness)>; 8] {
+    let mut result = [NeighbourMatch::NoNeighbour; 8];
 
     #[allow(clippy::needless_range_loop)]
     for i in 0..8 {
         if let Some(Some((_, neighbour, _))) = neighbours.get(i) {
             result[i] = if checked(neighbour) {
-                Some((neighbour.contents, neighbour.z, neighbour.wetness))
+                NeighbourMatch::Matches((neighbour.contents, neighbour.z, neighbour.wetness))
             } else {
-                None
+                NeighbourMatch::DoesntMatch
             };
         }
     }
@@ -653,21 +609,26 @@ pub fn check_neighbours<F: Fn(&Tile) -> bool, R>(
 }
 
 fn spawn_variant<T: Material>(
-    content_type: TileContents,
+    tile: &Tile,
     _is_dry: bool,
     assets: &CanalManiaAssets,
-    n: Option<(TileContents, usize, Wetness)>,
-    w: Option<(TileContents, usize, Wetness)>,
-    e: Option<(TileContents, usize, Wetness)>,
-    s: Option<(TileContents, usize, Wetness)>,
+    n: NeighbourMatch<(TileContents, usize, Wetness)>,
+    w: NeighbourMatch<(TileContents, usize, Wetness)>,
+    e: NeighbourMatch<(TileContents, usize, Wetness)>,
+    s: NeighbourMatch<(TileContents, usize, Wetness)>,
     parent: &mut ChildBuilder,
     material: Handle<T>,
-    height: usize,
 ) {
+    let content_type = tile.contents;
+    let height = tile.z;
+    let mut num_river_neighbours = 0usize;
     let results = [(n, 90f32), (w, 180.), (s, 270.), (e, 0.)]
         .into_iter()
         .filter_map(|(neighbour, angle)| {
-            if let Some((content, z, _)) = neighbour {
+            if let NeighbourMatch::Matches((content, z, _)) = neighbour {
+                if content == TileContents::River {
+                    num_river_neighbours += 1;
+                }
                 match (content_type, content) {
                     (TileContents::Canal, TileContents::Aquaduct(u)) => {
                         Some((TileContents::Aquaduct(u), angle, z, false))
@@ -688,6 +649,43 @@ fn spawn_variant<T: Material>(
             }
         })
         .collect::<Vec<_>>();
+
+    let map_edge = [(n, 90f32), (w, 180.), (s, 270.), (e, 0.)]
+        .into_iter()
+        .filter_map(|(neighbour, angle)| {
+            if matches!(neighbour, NeighbourMatch::NoNeighbour) {
+                Some(angle)
+            } else {
+                None
+            }
+        })
+        .next();
+
+    if let Some(angle) = map_edge {
+        match content_type {
+            TileContents::River => {
+                if num_river_neighbours == 1 {
+                    parent.spawn(MaterialMeshBundle {
+                        mesh: assets.river_line.clone(),
+                        material: material.clone(),
+                        transform: Transform::from_rotation(Quat::from_rotation_y(
+                            angle.to_radians(),
+                        )),
+                        ..Default::default()
+                    });
+                }
+            }
+            TileContents::Road => {
+                parent.spawn(MaterialMeshBundle {
+                    mesh: assets.road_line.clone(),
+                    material: material.clone(),
+                    transform: Transform::from_rotation(Quat::from_rotation_y(angle.to_radians())),
+                    ..Default::default()
+                });
+            }
+            _ => {}
+        }
+    }
 
     match results.len().cmp(&1) {
         std::cmp::Ordering::Less => {
@@ -712,10 +710,28 @@ fn spawn_variant<T: Material>(
                     _ => Vec3::ZERO,
                 };
 
-                let mesh = if !transition {
-                    content.end(assets)
-                } else {
-                    assets.river_to_canal_end.clone()
+                let mesh = match content {
+                    TileContents::River => {
+                        if map_edge.is_some() {
+                            if !transition {
+                                content.line(assets)
+                            } else {
+                                assets.river_to_canal_line.clone()
+                            }
+                        } else if !transition {
+                            content.end(assets)
+                        } else {
+                            assets.river_to_canal_end.clone()
+                        }
+                    }
+                    TileContents::Road => {
+                        if map_edge.is_some() {
+                            content.line(assets)
+                        } else {
+                            content.end(assets)
+                        }
+                    }
+                    _ => content.end(assets),
                 };
 
                 parent.spawn(MaterialMeshBundle {
