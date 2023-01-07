@@ -43,6 +43,7 @@ fn display_ui(
     asset: Res<CanalManiaAssets>,
     tools: Res<LevelTools>,
     sidebar: Res<SidebarText>,
+    resources: Res<GameResources>,
 ) {
     commands
         .ui_root()
@@ -57,7 +58,10 @@ fn display_ui(
                 parent
                     .icon(asset.coin_icon.clone())
                     .size(GameIconSize::Normal);
-                parent.text("").size(20.).id(GameUiId::CostText);
+                parent
+                    .text(resources.cost_so_far.to_string())
+                    .size(20.)
+                    .id(GameUiId::CostText);
             });
             parent
                 .text("Choose an Action")
