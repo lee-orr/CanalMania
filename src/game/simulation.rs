@@ -1,14 +1,31 @@
 use bevy::prelude::*;
 use iyes_loopless::{prelude::IntoConditionalSystem, state::NextState};
 
-use super::{board::*, game_state::GameState};
+use super::{
+    board::*,
+    game_state::GameState,
+    initial_description::CurrentDescription,
+    level::{EventAction, Level, LevelEvent, LevelEventType, PendingLevelEvents},
+};
 
 pub struct SimulationPlugin;
 
 impl Plugin for SimulationPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(run_water_simulation.run_in_state(GameState::InGame))
-            .add_system(check_goals_for_sucess.run_in_state(GameState::InGame));
+        app.add_event::<LevelEvent>()
+            .init_resource::<PendingLevelEvents>()
+            .add_system(setup_level_events.run_in_state(GameState::InGame))
+            .add_system(run_water_simulation.run_in_state(GameState::InGame))
+            .add_system(
+                check_goals_for_sucess
+                    .run_in_state(GameState::InGame)
+                    .label("check_goal"),
+            )
+            .add_system(
+                process_level_event
+                    .run_in_state(GameState::InGame)
+                    .after("check_gaol"),
+            );
     }
 }
 
@@ -140,17 +157,92 @@ fn propogate_wetness(
     }
 }
 
-fn check_goals_for_sucess(tiles: Query<&Tile>, mut commands: Commands) {
+fn setup_level_events(level: Res<Level>, mut level_events: ResMut<PendingLevelEvents>) {
+    if !level.is_changed() {
+        return;
+    }
+    level_events.0 = level.events.iter().cloned().collect();
+}
+
+fn check_goals_for_sucess(
+    mut tiles: Query<&mut Tile>,
+    mut commands: Commands,
+    mut level_events: ResMut<PendingLevelEvents>,
+    mut events: EventWriter<LevelEvent>,
+) {
     let mut found_goal = false;
-    for tile in tiles.iter() {
+    for mut tile in tiles.iter_mut() {
         if tile.is_goal {
             found_goal = true;
             if matches!(tile.wetness, Wetness::Dry) {
                 return;
             }
+            tile.is_goal = false;
         }
     }
     if found_goal {
+        let mut pop = false;
+        if let Some(event) = level_events.0.front() {
+            if event.0 == LevelEventType::GoalReached {
+                pop = true;
+            }
+        }
+        if pop {
+            if let Some(event) = level_events.0.pop_front() {
+                info!("Goal Reached Event {event:?}");
+                events.send(event);
+                return;
+            }
+        }
         commands.insert_resource(NextState(GameState::Complete));
+    }
+}
+
+fn process_level_event(
+    mut events: EventReader<LevelEvent>,
+    mut tiles: Query<&mut Tile>,
+    mut commands: Commands,
+) {
+    for event in events.iter() {
+        for action in event.1.iter() {
+            match action {
+                EventAction::DisplayText {
+                    text,
+                    title,
+                    continue_button,
+                } => {
+                    commands.insert_resource(CurrentDescription {
+                        text: Some(text.clone()),
+                        title: title.clone(),
+                        continue_button: continue_button.clone(),
+                    });
+                    commands.insert_resource(NextState(GameState::Description));
+                }
+                EventAction::SetNewGoal(x, y) => {
+                    for mut tile in tiles.iter_mut() {
+                        if tile.x == *x && tile.y == *y {
+                            tile.is_goal = true;
+                            break;
+                        }
+                    }
+                }
+                EventAction::AdjustCost(x, y, modifier) => {
+                    for mut tile in tiles.iter_mut() {
+                        if tile.x == *x && tile.y == *y {
+                            tile.cost_modifier = *modifier;
+                            break;
+                        }
+                    }
+                }
+                EventAction::AdjustContents(x, y, contents) => {
+                    for mut tile in tiles.iter_mut() {
+                        if tile.x == *x && tile.y == *y {
+                            tile.contents = *contents;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 }

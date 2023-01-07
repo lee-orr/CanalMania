@@ -7,6 +7,8 @@ struct InkSettings {
     params: vec4<f32>,
     world_offset_and_wetness: vec4<f32>,
     size: vec4<f32>,
+    blocked_color: vec4<f32>,
+    cost_color: vec4<f32>,
 }
 
 @group(1) @binding(0)
@@ -104,6 +106,8 @@ fn fragment(
 
         vertex_color = mix(parchment_dark, vertex_color, wetness);
     }
+    vertex_color = mix(vertex_color, vertex_color * settings.blocked_color, sample.z * settings.size.w);
+    vertex_color = mix(vertex_color, vertex_color * settings.cost_color, sample.w);
 
     var test_position : vec3<f32> = world_position.xyz * 0.3;
     var overlay_1: f32 = simplex_noise_3d(test_position);
@@ -147,32 +151,10 @@ fn fragment(
         darkening = 1.;
     }
 
-    // let xmod = abs(abs(world_position.x) % 1. - 0.5);
-    // let ymod = abs(abs(world_position.z) % 1. - 0.5);
-    // let xmod_2 = xmod * 10. % 1.;
-    // let ymod_2 = ymod * 10. % 1.;
-
-    // var darken : bool = false;
-
-    // if xmod > 0.49 && ymod_2 < 0.3 {
-    //     darken = true;
-    // } else if ymod > 0.49 && xmod_2 < 0.3 {
-    //     darken = true;
-    // }
-
-    // if in.world_normal.y > 0.9 && darken && darkening > 0.7{
-    //         darkening = 0.5;
-    // }
-
     let ink = mix(vec4<f32>(1., 1., 1., 1.), mix(settings.ink_color, vec4<f32>(1., 1., 1., 1.), darkening), settings.params.x);
 
     let color = mix(bg * ink , bg  * parchment_dark, 1. - depth);
 
-    var v : f32 = 0.0;
-    if sample.y > 0.5 {
-        v  = 1.;
-    }
-
-    let test_vec = vec4<f32>(world_uv, v, 1.);
+    let test_vec = vec4<f32>(sample.z,0.,sample.w, 1.);
     return color;
 }

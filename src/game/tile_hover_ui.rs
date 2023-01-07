@@ -89,12 +89,15 @@ fn update_tile_hover_ui(
                         }
                     );
                     #[cfg(feature = "dev")]
-                    let added_text = format!("{:?}", tile.wetness);
+                    let added_text = format!("{:?} {},{}", tile.wetness, tile.x, tile.y);
 
                     let secondary_text = format!(
                         "{} {added_text}",
                         match cost {
-                            Some(cost) => cost.to_string(),
+                            Some(cost) => match cost {
+                                Some(v) => v.to_string(),
+                                None => 0.to_string(),
+                            },
                             None => 0.to_string(),
                         }
                     );

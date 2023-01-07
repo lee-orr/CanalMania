@@ -6,8 +6,8 @@ use iyes_loopless::prelude::*;
 use crate::ui::*;
 
 use super::{
-    board::{Tile, TileContents, TileEvent, TileType, Wetness},
-    game_state::GameState,
+    board::{Tile, TileContents, TileCostModifier, TileEvent, TileType, Wetness},
+    game_state::{GameActionMode, GameState},
     level::{Level, TileInfo},
 };
 
@@ -34,6 +34,7 @@ enum EditorOperation {
     ToggleConstruction(TileContents),
     ToggleWetness,
     SetGoal,
+    SetCostModifier(TileCostModifier),
 }
 
 #[derive(Debug, Hash, PartialEq, Eq, Clone)]
@@ -44,6 +45,7 @@ enum EditorUiElement {
 }
 
 fn display_ui(mut commands: Commands, level: Res<Level>) {
+    commands.insert_resource(NextState(GameActionMode::None));
     commands.insert_resource(NextState(EditorOperation::None));
     commands
         .ui_root()
@@ -62,6 +64,7 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
                     parent.button("goal", "Set Goals");
                     parent.button("construct", "Set Construction");
                     parent.button("water", "Adjust Water");
+                    parent.button("modifier", "Toggle Cost Modifier");
                 });
             });
         });
@@ -113,6 +116,7 @@ fn update_labels(
                         EditorOperation::SetGoal => "Set Goals".to_string(),
                         EditorOperation::ToggleConstruction(t) => format!("Build {t:?} on tiles"),
                         EditorOperation::ToggleWetness => "Adjust Water Status".to_string(),
+                        EditorOperation::SetCostModifier(t) => format!("Set cost to {t:?}"),
                     }
                 }
                 EditorUiElement::Width => {
@@ -155,6 +159,22 @@ fn button_pressed(
                 _ => TileType::Land,
             };
             commands.insert_resource(NextState(EditorOperation::ToggleType(next)));
+        } else if event.0 == "modifier" {
+            let next = match operation.0 {
+                EditorOperation::SetCostModifier(t) => match t {
+                    TileCostModifier::None => TileCostModifier::Blocked,
+                    TileCostModifier::Multiplier(u) => {
+                        if u < 4 {
+                            TileCostModifier::Multiplier(u + 1)
+                        } else {
+                            TileCostModifier::None
+                        }
+                    }
+                    TileCostModifier::Blocked => TileCostModifier::Multiplier(2),
+                },
+                _ => TileCostModifier::Blocked,
+            };
+            commands.insert_resource(NextState(EditorOperation::SetCostModifier(next)));
         } else if event.0 == "construct" {
             let next = match operation.0 {
                 EditorOperation::ToggleConstruction(t) => match t {
@@ -267,6 +287,9 @@ fn tile_clicked(
                             _ => Wetness::Dry,
                         };
                     }
+                    EditorOperation::SetCostModifier(t) => {
+                        new_tile.cost_modifier = t;
+                    }
                 }
             }
         }
@@ -342,6 +365,17 @@ fn tile_hovered_set(
                             if let Ok(mut new_tile) = tiles.get_mut(*entity) {
                                 new_tile.z = h;
                             }
+                        }
+                    }
+                }
+            }
+        }
+        EditorOperation::SetCostModifier(t) => {
+            if buttons.pressed(MouseButton::Left) {
+                for event in events.iter() {
+                    if let TileEvent::HoverStarted(_old_tile, entity) = event {
+                        if let Ok(mut new_tile) = tiles.get_mut(*entity) {
+                            new_tile.cost_modifier = t;
                         }
                     }
                 }

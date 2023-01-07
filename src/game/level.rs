@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+
 use bevy::{prelude::*, reflect::TypeUuid};
 use serde::{Deserialize, Serialize};
 
@@ -12,6 +14,8 @@ pub struct Level {
     pub sidebar_text: Option<String>,
     pub width: usize,
     pub height: usize,
+    #[serde(default)]
+    pub events: Vec<LevelEvent>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -39,4 +43,29 @@ pub struct TileInfo {
     #[serde(default)]
     pub cost_modifier: TileCostModifier,
     pub height: usize,
+}
+
+#[derive(Clone, Debug, Resource, Default)]
+pub struct PendingLevelEvents(pub VecDeque<LevelEvent>);
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct LevelEvent(pub LevelEventType, pub Vec<EventAction>);
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub enum LevelEventType {
+    GoalReached,
+    AnyActionsComplete(usize),
+    BuiltNofType(usize, TileContents),
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub enum EventAction {
+    DisplayText {
+        text: String,
+        title: Option<String>,
+        continue_button: Option<String>,
+    },
+    SetNewGoal(usize, usize),
+    AdjustCost(usize, usize, TileCostModifier),
+    AdjustContents(usize, usize, TileContents),
 }

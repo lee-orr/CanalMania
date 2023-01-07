@@ -29,6 +29,8 @@ pub struct InkSettings {
     pub added_params: Vec4,
     pub world_offset: Vec4,
     pub size: Vec4,
+    pub blocked_color: Color,
+    pub cost_color: Color,
 }
 
 impl Default for InkSettings {
@@ -42,6 +44,8 @@ impl Default for InkSettings {
             added_params: Vec4::new(1., 0.7, 0.5, 0.1),
             world_offset: Vec4::ZERO,
             size: Vec4::ZERO,
+            cost_color: Color::rgb_u8(232, 89, 89),
+            blocked_color: Color::rgb_u8(68, 5, 5),
         }
     }
 }

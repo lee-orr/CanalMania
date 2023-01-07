@@ -47,9 +47,11 @@ fn dig_lock(
                     let my_position = (tile.x, tile.y);
                     if let Some(entity) = board.children.get(&my_position) {
                         if let Ok(mut tile) = tiles.get_mut(*entity) {
-                            resources.cost_so_far += tile.get_lock_cost();
-                            tile.contents = TileContents::Lock;
-                            tile.wetness = Wetness::Dry;
+                            if let Some(cost) = tile.get_lock_cost() {
+                                resources.cost_so_far += cost;
+                                tile.contents = TileContents::Lock;
+                                tile.wetness = Wetness::Dry;
+                            }
                         }
                     }
                 }

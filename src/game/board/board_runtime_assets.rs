@@ -30,8 +30,8 @@ pub fn setup_board_materials(
         height: 1,
         depth_or_array_layers: 1,
     };
-    let format = TextureFormat::Rg8Unorm;
-    let data = vec![0u8, 0u8];
+    let format = TextureFormat::Rgba8Unorm;
+    let data = vec![0u8, 0u8, 0u8, 0u8];
     let tile_info_map = images.add(Image::new_fill(size, TextureDimension::D2, &data, format));
     let tile_base_material = tile_materials.add(TileMaterial {
         settings: InkSettings::default(),

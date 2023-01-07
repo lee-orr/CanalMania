@@ -1181,5 +1181,14 @@
   "initial_description": "The town of Beverley had a problem - boats arrive at the nearby River Hull, but the creek leading to the town isn't in good shape...",
   "sidebar_text": "Build a canal from the River Hull to the target location. You'll want to avoid any hills, since the canal can't go upstream!",
   "width": 12,
-  "height": 12
+  "height": 12,
+  "events": [
+    [
+      "GoalReached",
+      [
+        { "DisplayText": {"text": "Almost there..", "continue_button": "Keep Going"} },
+        { "SetNewGoal": [3,5]}
+      ]
+    ]
+  ]
 }

@@ -23,7 +23,10 @@ use crate::{
     assets::CanalManiaAssets,
 };
 
-use super::{game_state::GameState, level::Level, tile_shader::TileMaterial};
+use super::{
+    game_state::GameState, initial_description::CurrentDescription, level::Level,
+    tile_shader::TileMaterial,
+};
 
 pub use board_runtime_assets::*;
 
@@ -43,10 +46,10 @@ impl Plugin for BoardPlugin {
             .add_system(animate_goal.run_in_state(AppState::InGame))
             .add_system(process_selection_events.run_in_state(AppState::InGame))
             .add_exit_system(AppState::InGame, clear_board);
-        //#[cfg(feature = "dev")]
-        // app.add_plugin(bevy_inspector_egui::quick::AssetInspectorPlugin::<
-        //     TileMaterial,
-        // >::default());
+        #[cfg(feature = "dev")]
+        app.add_plugin(bevy_inspector_egui::quick::AssetInspectorPlugin::<
+            TileMaterial,
+        >::default());
         // .add_plugin(bevy_inspector_egui::quick::ResourceInspectorPlugin::<
         //     BoardRuntimeAssets,
         // >::default());
@@ -172,6 +175,11 @@ fn build_board(
             if level.initial_description.is_none() {
                 commands.insert_resource(NextState(GameState::InGame));
             } else {
+                commands.insert_resource(CurrentDescription {
+                    title: level.title.clone(),
+                    text: level.initial_description.clone(),
+                    continue_button: Some("Play".into()),
+                });
                 commands.insert_resource(NextState(GameState::Description));
             }
         }
@@ -179,6 +187,7 @@ fn build_board(
 }
 
 const TILE_HEIGHT: u8 = u8::MAX / 10;
+const TILE_COST_MAX: u8 = u8::MAX / 5;
 
 fn build_tile(
     mut commands: Commands,
@@ -212,7 +221,7 @@ fn build_tile(
             info!("We got a board!");
             let width = board.width;
             let height = board.height;
-            let mut content = vec![(0u8, false); width * height];
+            let mut content = vec![(0u8, false, false, 0u8); width * height];
 
             for (_, tile, _) in neighbour_tiles.iter() {
                 let x = tile.x;
@@ -228,6 +237,16 @@ fn build_tile(
                     if is_wet {
                         content.1 = true;
                     }
+
+                    match tile.cost_modifier {
+                        TileCostModifier::None => {}
+                        TileCostModifier::Multiplier(a) => {
+                            content.3 = a as u8;
+                        }
+                        TileCostModifier::Blocked => {
+                            content.2 = true;
+                        }
+                    }
                 }
             }
 
@@ -236,13 +255,15 @@ fn build_tile(
                 height: height as u32,
                 depth_or_array_layers: 1,
             };
-            let format = TextureFormat::Rg8Unorm;
+            let format = TextureFormat::Rgba8Unorm;
             let data = content
                 .iter()
-                .flat_map(|(height, is_wet)| {
+                .flat_map(|(height, is_wet, blocked, cost_modifier)| {
                     [
                         *height * TILE_HEIGHT,
                         if *is_wet { u8::MAX } else { u8::MIN },
+                        if *blocked { u8::MAX } else { u8::MIN },
+                        *cost_modifier * TILE_COST_MAX,
                     ]
                 })
                 .collect::<Vec<_>>();
@@ -279,14 +300,16 @@ fn build_tile(
             if let Some(material) = materials.get_mut(&board_assets.tile_base_material) {
                 material.settings.world_offset.x = if offset_x { 0.5 } else { 0. };
                 material.settings.world_offset.z = if offset_y { 0.5 } else { 0. };
-                material.settings.size = Vec4::new(board.width as f32, 0., board.height as f32, 0.);
+                material.settings.size =
+                    Vec4::new(board.width as f32, 0., board.height as f32, 0.9);
                 material.info_map = result.clone();
             }
 
             if let Some(material) = materials.get_mut(&board_assets.decoration_material) {
                 material.settings.world_offset.x = if offset_x { 0.5 } else { 0. };
                 material.settings.world_offset.z = if offset_y { 0.5 } else { 0. };
-                material.settings.size = Vec4::new(board.width as f32, 0., board.height as f32, 0.);
+                material.settings.size =
+                    Vec4::new(board.width as f32, 0., board.height as f32, 0.2);
                 material.info_map = result;
             }
         }

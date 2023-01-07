@@ -23,7 +23,7 @@ pub struct Tile {
     pub cost_modifier: TileCostModifier,
 }
 
-#[derive(Clone, Copy, Debug, Reflect, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Reflect, Serialize, Deserialize, Hash, PartialEq, Eq)]
 pub enum TileCostModifier {
     None,
     Multiplier(usize),
@@ -115,9 +115,17 @@ impl TileContents {
 }
 
 impl Tile {
-    pub fn get_dig_cost(&self) -> usize {
+    fn get_modified_cost(&self, cost: usize) -> Option<usize> {
+        match self.cost_modifier {
+            TileCostModifier::None => Some(cost),
+            TileCostModifier::Multiplier(x) => Some(cost * x),
+            TileCostModifier::Blocked => None,
+        }
+    }
+
+    pub fn get_dig_cost(&self) -> Option<usize> {
         if self.contents == TileContents::River {
-            return 0;
+            return None;
         }
         let type_cost = match self.tile_type {
             TileType::Land => 3,
@@ -125,25 +133,25 @@ impl Tile {
             TileType::City => 6,
         };
         let road_cost = usize::from(self.contents == TileContents::Road);
-        type_cost + road_cost
+        self.get_modified_cost(type_cost + road_cost)
     }
 
-    pub fn get_lock_cost(&self) -> usize {
-        self.get_dig_cost() + 1
+    pub fn get_lock_cost(&self) -> Option<usize> {
+        self.get_dig_cost().map(|a| a + 1)
     }
 
-    pub fn get_aquaduct_cost(&self) -> usize {
-        self.get_dig_cost() + 2
+    pub fn get_aquaduct_cost(&self) -> Option<usize> {
+        self.get_dig_cost().map(|a| a + 2)
     }
 
-    pub fn get_demolish_cost(&self) -> usize {
+    pub fn get_demolish_cost(&self) -> Option<usize> {
         match self.contents {
-            TileContents::None => 0,
-            TileContents::Road => 1,
-            TileContents::Canal => 3,
-            TileContents::Lock => 4,
-            TileContents::Aquaduct(h) => 5 * h,
-            TileContents::River => 0,
+            TileContents::None => None,
+            TileContents::Road => Some(1),
+            TileContents::Canal => Some(3),
+            TileContents::Lock => Some(4),
+            TileContents::Aquaduct(h) => Some(5 * h),
+            TileContents::River => None,
         }
     }
 
