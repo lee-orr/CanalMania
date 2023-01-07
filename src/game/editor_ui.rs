@@ -225,15 +225,13 @@ fn tile_clicked(
                     EditorOperation::None => {}
                     EditorOperation::RaiseHeight(_) => {
                         new_tile.z = old_tile.z + 1;
-                        commands.insert_resource(NextState(
-                            EditorOperation::RaiseHeight(new_tile.z),
-                        ));
+                        commands
+                            .insert_resource(NextState(EditorOperation::RaiseHeight(new_tile.z)));
                     }
                     EditorOperation::LowerHeight(_) => {
                         new_tile.z = old_tile.z.checked_sub(1).unwrap_or_default();
-                        commands.insert_resource(NextState(
-                            EditorOperation::LowerHeight(new_tile.z),
-                        ));
+                        commands
+                            .insert_resource(NextState(EditorOperation::LowerHeight(new_tile.z)));
                     }
                     EditorOperation::ToggleType(t) => {
                         new_tile.tile_type = t;

@@ -3,7 +3,6 @@ use iyes_loopless::prelude::AppLooplessStateExt;
 use iyes_loopless::prelude::IntoConditionalSystem;
 use iyes_loopless::state::NextState;
 
-use crate::app_state::*;
 use crate::ui::*;
 
 use super::game_state::GameState;

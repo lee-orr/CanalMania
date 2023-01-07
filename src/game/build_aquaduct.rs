@@ -9,8 +9,7 @@ pub struct BuildAquaductPlugin;
 
 impl Plugin for BuildAquaductPlugin {
     fn build(&self, app: &mut App) {
-        app
-            .insert_resource(LastAquaductHeight(0))
+        app.insert_resource(LastAquaductHeight(0))
             .add_system(trigger_build_aquaduct.run_in_state(GameActionMode::BuildAquaduct))
             .add_system(build_aquaduct.run_in_state(GameActionMode::BuildAquaduct));
     }
@@ -23,7 +22,7 @@ fn trigger_build_aquaduct(
     mut event_writer: EventWriter<GameActions>,
     mut event_reader: EventReader<TileEvent>,
     buttons: Res<Input<MouseButton>>,
-    mut aquaduct_height: ResMut<LastAquaductHeight>
+    mut aquaduct_height: ResMut<LastAquaductHeight>,
 ) {
     for event in event_reader.iter() {
         match event {
@@ -37,10 +36,11 @@ fn trigger_build_aquaduct(
                 }
             }
             TileEvent::HoverStarted(tile, _) => {
-                if buttons.pressed(MouseButton::Left) {
-                    if tile.z < aquaduct_height.0 {
-                        event_writer.send(GameActions::BuildAquaduct(tile.clone(), aquaduct_height.0 - tile.z));
-                    }
+                if buttons.pressed(MouseButton::Left) && tile.z < aquaduct_height.0 {
+                    event_writer.send(GameActions::BuildAquaduct(
+                        tile.clone(),
+                        aquaduct_height.0 - tile.z,
+                    ));
                 }
             }
             _ => (),
