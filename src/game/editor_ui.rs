@@ -367,10 +367,7 @@ fn tiles_to_tile_info<'a, T: Iterator<Item = &'a Tile>>(
                 info.is_goal = tile.is_goal;
                 info.tile_type = tile.tile_type;
                 info.contents = tile.contents;
-                info.is_wet = match tile.wetness {
-                    Wetness::Dry => false,
-                    _ => true,
-                };
+                info.is_wet = tile.wetness == Wetness::Dry;
             }
         }
     }

@@ -494,7 +494,8 @@ fn spawn_content(
         TileContents::Canal => {
             println!("Setting up canal!");
             let neighbours = check_neighbours(neighbours, |t| {
-                matches!(t.contents, TileContents::Canal| TileContents::River) && tile.z.abs_diff(t.z) < 2
+                matches!(t.contents, TileContents::Canal | TileContents::River)
+                    && tile.z.abs_diff(t.z) < 2
                     || matches!(t.contents, TileContents::Lock) && tile.z.abs_diff(t.z) < 5
                     || if let TileContents::Aquaduct(h) = t.contents {
                         tile.z == h + t.z
@@ -524,7 +525,8 @@ fn spawn_content(
         TileContents::River => {
             println!("Setting up river!");
             let neighbours = check_neighbours(neighbours, |t| {
-                matches!(t.contents, TileContents::Canal | TileContents::River) && tile.z.abs_diff(t.z) < 2
+                matches!(t.contents, TileContents::Canal | TileContents::River)
+                    && tile.z.abs_diff(t.z) < 2
                     || matches!(t.contents, TileContents::Lock) && tile.z.abs_diff(t.z) < 5
                     || if let TileContents::Aquaduct(h) = t.contents {
                         tile.z == h + t.z
@@ -554,8 +556,10 @@ fn spawn_content(
         TileContents::Lock => {
             println!("Setting up lock!");
             let neighbours = check_neighbours(neighbours, |t| {
-                matches!(t.contents, TileContents::Canal | TileContents::River | TileContents::Lock)
-                    && tile.z.abs_diff(t.z) < 5
+                matches!(
+                    t.contents,
+                    TileContents::Canal | TileContents::River | TileContents::Lock
+                ) && tile.z.abs_diff(t.z) < 5
                     || if let TileContents::Aquaduct(h) = t.contents {
                         tile.z == h + t.z
                     } else {
@@ -597,7 +601,10 @@ fn spawn_content(
             println!("Setting up aquaduct {h:?}");
             let z = tile.z + h;
             let neighbours = check_neighbours(neighbours, |t| {
-                matches!(t.contents, TileContents::Canal | TileContents::River| TileContents::Lock) && z == t.z
+                matches!(
+                    t.contents,
+                    TileContents::Canal | TileContents::River | TileContents::Lock
+                ) && z == t.z
                     || if let TileContents::Aquaduct(h) = t.contents {
                         z == h + t.z
                     } else {
