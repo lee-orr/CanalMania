@@ -15,7 +15,16 @@ impl Plugin for CameraControlPlugin {
     fn build(&self, app: &mut App) {
         app.add_enter_system(AppState::InGame, reset_camera)
             .add_exit_system(AppState::InGame, freeze_camera)
-            .add_system(control_camera.run_in_state(AppState::InGame));
+            .add_system(
+                control_camera
+                    .run_in_state(AppState::InGame)
+                    .label("camera_move"),
+            )
+            .add_system(
+                keep_camera_in_line
+                    .run_in_state(AppState::InGame)
+                    .after("camera_move"),
+            );
     }
 }
 
@@ -32,6 +41,16 @@ fn freeze_camera(mut query: Query<(&mut OrbitCameraController, &mut LookTransfor
         orbit.enabled = false;
         look.target = Vec3::default();
         look.eye = Vec3::new(5., 10., 5.);
+    }
+}
+
+fn keep_camera_in_line(mut query: Query<&mut LookTransform>) {
+    for mut look in query.iter_mut() {
+        look.target.y = 0.;
+        let dist_squared = look.eye.distance_squared(look.target);
+        if dist_squared < 3. {
+            look.eye = (look.eye - look.target).normalize() * 3.5;
+        }
     }
 }
 
@@ -57,38 +76,38 @@ fn control_camera(
     if keys.any_pressed([KeyCode::LControl, KeyCode::RControl]) {
         // Orbit Mode
         if keys.any_pressed([KeyCode::Left, KeyCode::A]) {
-            events.send(ControlEvent::Orbit(Vec2::new(1., 0.)));
+            events.send(ControlEvent::Orbit(Vec2::new(3., 0.)));
         }
         if keys.any_pressed([KeyCode::Right, KeyCode::D]) {
-            events.send(ControlEvent::Orbit(Vec2::new(-1., 0.)));
+            events.send(ControlEvent::Orbit(Vec2::new(-3., 0.)));
         }
         if keys.any_pressed([KeyCode::Up, KeyCode::W]) {
-            events.send(ControlEvent::Orbit(Vec2::new(0., 1.)));
+            events.send(ControlEvent::Orbit(Vec2::new(0., 3.)));
         }
         if keys.any_pressed([KeyCode::Down, KeyCode::S]) {
-            events.send(ControlEvent::Orbit(Vec2::new(0., -1.)));
+            events.send(ControlEvent::Orbit(Vec2::new(0., -3.)));
         }
     } else {
         // Move Mode
         if keys.any_pressed([KeyCode::Left, KeyCode::A]) {
-            events.send(ControlEvent::TranslateTarget(Vec2::new(1., 0.)));
+            events.send(ControlEvent::TranslateTarget(Vec2::new(6., 0.)));
         }
         if keys.any_pressed([KeyCode::Right, KeyCode::D]) {
-            events.send(ControlEvent::TranslateTarget(Vec2::new(-1., 0.)));
+            events.send(ControlEvent::TranslateTarget(Vec2::new(-6., 0.)));
         }
         if keys.any_pressed([KeyCode::Up, KeyCode::W]) {
-            events.send(ControlEvent::TranslateTarget(Vec2::new(0., 1.)));
+            events.send(ControlEvent::TranslateTarget(Vec2::new(0., 6.)));
         }
         if keys.any_pressed([KeyCode::Down, KeyCode::S]) {
-            events.send(ControlEvent::TranslateTarget(Vec2::new(0., -1.)));
+            events.send(ControlEvent::TranslateTarget(Vec2::new(0., -6.)));
         }
     }
 
     if keys.any_pressed([KeyCode::NumpadSubtract, KeyCode::Minus]) {
-        events.send(ControlEvent::Zoom(1.01));
+        events.send(ControlEvent::Zoom(1.03));
     }
     if keys.any_pressed([KeyCode::NumpadAdd, KeyCode::Equals]) {
-        events.send(ControlEvent::Zoom(0.99));
+        events.send(ControlEvent::Zoom(0.97));
     }
 
     if mouse_buttons.pressed(MouseButton::Middle) {
