@@ -1052,7 +1052,8 @@
         { "AdjustContents": [9,6,"None"] },
         { "SetHeight": [9,6,0] },
         { "SetNewGoal": [9,6] },
-        { "AdjustToolAccess": ["ConstructLock", true]}
+        { "AdjustToolAccess": ["ConstructLock", true]},
+        { "SetSidebar": "Build a lock to connect the river to your canal. A lock will let a canal connect to a source of water that is significantly higher than it, like the river here."}
       ]
     ],
     [
@@ -1065,7 +1066,8 @@
             "continue_button": "Keep Going"
           }
         },
-        { "SetNewGoal": [3,6] }
+        { "SetNewGoal": [3,6] },
+        { "SetSidebar": "Ok - now just finish building the canal into town!"}
       ]
     ],
     [

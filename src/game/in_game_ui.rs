@@ -13,8 +13,10 @@ pub struct InGameUiPlugin;
 impl Plugin for InGameUiPlugin {
     fn build(&self, app: &mut App) {
         clear_ui_system_set(app, GameState::InGame)
+            .init_resource::<SidebarText>()
             .add_enter_system(GameState::InGame, display_ui)
             .add_system(update_labels.run_in_state(GameState::InGame))
+            .add_system(update_sidebar.run_in_state(GameState::InGame))
             .add_system(update_buttons.run_in_state(GameState::InGame))
             .add_system(button_pressed.run_in_state(GameState::InGame));
     }
@@ -24,17 +26,23 @@ impl Plugin for InGameUiPlugin {
 enum GameUiId {
     ActionText,
     CostText,
+    SidebarText,
+    Sidebar,
     Dig,
     Lock,
     Aquaduct,
     Demolish,
 }
 
+#[derive(Resource, Debug, Clone, Default, Reflect)]
+pub struct SidebarText(pub Option<String>);
+
 fn display_ui(
     mut commands: Commands,
     level: Res<Level>,
     asset: Res<CanalManiaAssets>,
     tools: Res<LevelTools>,
+    sidebar: Res<SidebarText>,
 ) {
     commands
         .ui_root()
@@ -104,15 +112,15 @@ fn display_ui(
                     .icon(asset.menu_icon.clone())
                     .hover_direction(crate::ui::div::Direction::Horizontal);
             });
-            if let Some(text) = &level.sidebar_text {
-                parent
-                    .div()
-                    .opaque()
-                    .size(Size::new(Val::Px(200.), Val::Auto))
-                    .with_children(|parent| {
-                        parent.text(text).size(15.);
-                    });
-            }
+            parent
+                .div()
+                .opaque()
+                .size(Size::new(Val::Px(200.), Val::Auto))
+                .hidden(sidebar.0.is_none())
+                .id(GameUiId::Sidebar)
+                .with_children(|parent| {
+                    parent.text(sidebar.0.as_ref().unwrap_or(&String::new())).size(15.).id(GameUiId::SidebarText);
+                });
             parent.div().padding(20.);
             parent
             .div()
@@ -159,6 +167,31 @@ fn update_labels(
         for (mut label, id) in labels.iter_mut() {
             if let GameUiId::CostText = id.val() {
                 label.text(resources.cost_so_far.to_string());
+            }
+        }
+    }
+}
+
+fn update_sidebar(
+    mut labels: Query<(&mut GameText, &UiId<GameUiId>)>,
+    mut divs: Query<(&mut Div, &UiId<GameUiId>)>,
+    sidebar: Res<SidebarText>,
+) {
+    if sidebar.is_changed() {
+        info!("Sidebar changed");
+        for (mut label, id) in labels.iter_mut() {
+            if let GameUiId::SidebarText = id.val() {
+                if let Some(text) = &sidebar.0 {
+                    info!("Updated sidebar text");
+                    label.text(text);
+                }
+            }
+        }
+
+        for (mut div, id) in divs.iter_mut() {
+            if let GameUiId::Sidebar = id.val() {
+                info!("Set sidebar hidden to {}", sidebar.0.is_none());
+                div.hidden(sidebar.0.is_none());
             }
         }
     }

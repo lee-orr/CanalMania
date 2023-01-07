@@ -11,6 +11,7 @@ pub struct Div {
     pub direction: Direction,
     pub padding: f32,
     pub size: Size,
+    pub hidden: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -69,6 +70,11 @@ impl Div {
         self.size = size;
         self
     }
+
+    pub fn hidden(&mut self, hidden: bool) -> &mut Self {
+        self.hidden = hidden;
+        self
+    }
 }
 
 pub trait DivSpawner {
@@ -80,6 +86,7 @@ pub trait DivSpawner {
     fn horizontal(self) -> Self;
 
     fn opaque(self) -> Self;
+    fn hidden(self, hidden: bool) -> Self;
 }
 
 impl<T: UiComponentSpawner<Div>> DivSpawner for T {
@@ -102,9 +109,13 @@ impl<T: UiComponentSpawner<Div>> DivSpawner for T {
     fn size(self, size: Size) -> Self {
         self.update_value(|v| v.size(size))
     }
+
+    fn hidden(self, hidden: bool) -> Self {
+        self.update_value(move |v| v.hidden(hidden))
+    }
 }
 
-pub fn spawn_div(mut commands: Commands, roots: Query<(Entity, &Div), Added<Div>>) {
+pub fn spawn_div(mut commands: Commands, roots: Query<(Entity, &Div), Changed<Div>>) {
     for (entity, div) in roots.iter() {
         commands.entity(entity).insert((NodeBundle {
             style: Style {
@@ -124,6 +135,11 @@ pub fn spawn_div(mut commands: Commands, roots: Query<(Entity, &Div), Added<Div>
                     DivType::Positioned(rect) => rect,
                 },
                 size: div.size,
+                display: if div.hidden {
+                    Display::None
+                } else {
+                    Display::Flex
+                },
                 ..Default::default()
             },
             background_color: match div.background {

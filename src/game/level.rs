@@ -87,6 +87,7 @@ pub enum EventAction {
         title: Option<String>,
         continue_button: Option<String>,
     },
+    SetSidebar(Option<String>),
     SetNewGoal(usize, usize),
     AdjustCost(usize, usize, TileCostModifier),
     AdjustContents(usize, usize, TileContents),

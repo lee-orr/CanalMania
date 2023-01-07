@@ -61,15 +61,17 @@ impl Plugin for GamePlugin {
         app.add_plugin(self::editor_ui::EditorUiPlugin);
 
         #[cfg(feature = "dev")]
-        // app.add_plugin(bevy_inspector_egui::quick::AssetInspectorPlugin::<
-        //     TileMaterial,
-        // >::default());
-        // app.add_plugin(bevy_inspector_egui::quick::ResourceInspectorPlugin::<
-        //     BoardRuntimeAssets,
-        // >::default());
-        app.add_plugin(bevy_inspector_egui::quick::ResourceInspectorPlugin::<
-            level::LevelTools,
-        >::default());
+        {
+            // app.add_plugin(bevy_inspector_egui::quick::AssetInspectorPlugin::<
+            //     TileMaterial,
+            // >::default());
+            // app.add_plugin(bevy_inspector_egui::quick::ResourceInspectorPlugin::<
+            //     BoardRuntimeAssets,
+            // >::default());
+            // app.add_plugin(bevy_inspector_egui::quick::ResourceInspectorPlugin::<
+            //     in_game_ui::SidebarText,
+            // >::default());
+        }
     }
 }
 

@@ -4,6 +4,7 @@ use iyes_loopless::{prelude::IntoConditionalSystem, state::NextState};
 use super::{
     board::*,
     game_state::{GameActionMode, GameActions, GameState},
+    in_game_ui::SidebarText,
     initial_description::CurrentDescription,
     level::{EventAction, Level, LevelEvent, LevelEventType, LevelTools, PendingLevelEvents},
 };
@@ -170,6 +171,7 @@ fn setup_level_events(
     }
     level_events.0 = level.events.iter().cloned().collect();
     commands.insert_resource(level.tools.clone());
+    commands.insert_resource(SidebarText(level.sidebar_text.clone()));
 }
 
 fn check_goals_for_sucess(
@@ -366,6 +368,9 @@ fn process_level_event(
                         GameActionMode::BuildAquaduct => tools.aquaduct = *action,
                         GameActionMode::Demolish => tools.demolish = *action,
                     }
+                }
+                EventAction::SetSidebar(text) => {
+                    commands.insert_resource(SidebarText(text.clone()))
                 }
             }
         }

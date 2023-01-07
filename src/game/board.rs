@@ -193,7 +193,6 @@ fn build_tile(
 ) {
     let mut updated = false;
     for (entity, tile, neighbours) in tiles.iter() {
-        info!("Updating tile");
         updated = true;
         update_tile(
             &neighbours,
