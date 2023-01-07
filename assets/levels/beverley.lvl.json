@@ -1067,6 +1067,17 @@
         },
         { "SetNewGoal": [3,6] }
       ]
+    ],
+    [
+      { "AnyActionsComplete": [1, true]},
+      [
+        {
+          "DisplayText": {
+            "text": "Just notice the cost, you want to keep it as low as possible!\nWhen you have an action selected, and you hover over a tile, it'll show you the cost.",
+            "title": "This is getting expensive..."
+          }
+        }
+      ]
     ]
   ],
   "tools": {

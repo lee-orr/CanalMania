@@ -1,5 +1,5 @@
 levels:
-  - name: Beverley Beck
+  - name: Tutorial - Beverley Beck
     file: beverley.lvl.json
   - name: test
     file: test.lvl.json
