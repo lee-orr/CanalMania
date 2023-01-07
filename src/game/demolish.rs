@@ -17,10 +17,19 @@ impl Plugin for DemolishPlugin {
 fn trigger_demolish(
     mut event_writer: EventWriter<GameActions>,
     mut event_reader: EventReader<TileEvent>,
+    buttons: Res<Input<MouseButton>>,
 ) {
     for event in event_reader.iter() {
-        if let TileEvent::Clicked(tile, _) = event {
-            event_writer.send(GameActions::Demolish(tile.clone()));
+        match event {
+            TileEvent::Clicked(tile, _) => {
+                event_writer.send(GameActions::Demolish(tile.clone()));
+            }
+            TileEvent::HoverStarted(tile, _) => {
+                if buttons.pressed(MouseButton::Left) {
+                    event_writer.send(GameActions::Demolish(tile.clone()));
+                }
+            }
+            _ => (),
         }
     }
 }
@@ -39,6 +48,7 @@ fn demolish(
                     if let Ok(mut tile) = tiles.get_mut(*entity) {
                         resources.cost_so_far += tile.get_demolish_cost();
                         tile.contents = TileContents::None;
+                        tile.is_wet = false;
                     }
                 }
             }

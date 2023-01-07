@@ -17,10 +17,19 @@ impl Plugin for DigLockPlugin {
 fn trigger_dig_lock(
     mut event_writer: EventWriter<GameActions>,
     mut event_reader: EventReader<TileEvent>,
+    buttons: Res<Input<MouseButton>>,
 ) {
     for event in event_reader.iter() {
-        if let TileEvent::Clicked(tile, _) = event {
-            event_writer.send(GameActions::ConstructLock(tile.clone()));
+        match event {
+            TileEvent::Clicked(tile, _) => {
+                event_writer.send(GameActions::ConstructLock(tile.clone()));
+            }
+            TileEvent::HoverStarted(tile, _) => {
+                if buttons.pressed(MouseButton::Left) {
+                    event_writer.send(GameActions::ConstructLock(tile.clone()));
+                }
+            }
+            _ => (),
         }
     }
 }
@@ -40,6 +49,7 @@ fn dig_lock(
                         if let Ok(mut tile) = tiles.get_mut(*entity) {
                             resources.cost_so_far += tile.get_lock_cost();
                             tile.contents = TileContents::Lock;
+                            tile.is_wet = false;
                         }
                     }
                 }
