@@ -58,6 +58,10 @@ fn vertex(vertex: Vertex) -> VertexOutput {
     if position.y > -1.5 && descriminator % 5 != 0 {
         position.y = target_y + position.y;
     }
+
+    if descriminator % 5 == 0 {
+        position.y += 0.1666667;
+    }
     
     out.world_position = mesh_position_local_to_world(model, vec4<f32>(position, 1.0));
 

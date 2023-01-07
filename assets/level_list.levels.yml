@@ -3,5 +3,9 @@ levels:
     file: beverley.lvl.json
   - name: Blyth Navigation
     file: blyth.lvl.json
+  - name: Sankey Canal
+    file: sankey.lvl.json
+  - name: Across The Valley
+    file: aquaduct_1.lvl.json
   - name: test
     file: test.lvl.json

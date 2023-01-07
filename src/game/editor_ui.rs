@@ -196,6 +196,8 @@ fn button_pressed(
                     tile.height = 0;
                     tile.tile_type = TileType::Land;
                     tile.is_goal = false;
+                    tile.contents = TileContents::None;
+                    tile.cost_modifier = TileCostModifier::None;
                 }
             }
         } else if event.0 == "width_add" {

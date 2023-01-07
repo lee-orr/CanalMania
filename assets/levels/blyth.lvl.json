@@ -727,5 +727,5 @@
   "width": 10,
   "height": 10,
   "events": [],
-  "tools": { "canal": true, "lock": true, "aquaduct": false, "demolish": false }
+  "tools": { "canal": true, "lock": true, "aquaduct": false, "demolish": true }
 }

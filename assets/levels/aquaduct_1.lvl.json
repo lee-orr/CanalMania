@@ -1,0 +1,520 @@
+{
+    "tiles": [
+      [
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 0
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 0
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 0
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 0
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 0
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 3
+        },
+        {
+          "tile_type": "City",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 4
+        },
+        {
+          "tile_type": "City",
+          "contents": "River",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 4
+        }
+      ],
+      [
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 0
+        },
+        {
+          "tile_type": "Farm",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 0
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 0
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 2
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 0
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 3
+        },
+        {
+          "tile_type": "Land",
+          "contents": "River",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 4
+        },
+        {
+          "tile_type": "City",
+          "contents": "River",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 4
+        }
+      ],
+      [
+        {
+          "tile_type": "Farm",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 2
+        },
+        {
+          "tile_type": "Farm",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 2
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 0
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 0
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 2
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 3
+        },
+        {
+          "tile_type": "Land",
+          "contents": "River",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 3
+        },
+        {
+          "tile_type": "City",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 3
+        }
+      ],
+      [
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 2
+        },
+        {
+          "tile_type": "Farm",
+          "contents": "None",
+          "is_goal": true,
+          "cost_modifier": "None",
+          "height": 2
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 0
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 0
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 2
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 0
+        },
+        {
+          "tile_type": "City",
+          "contents": "River",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 3
+        },
+        {
+          "tile_type": "City",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 3
+        }
+      ],
+      [
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 3
+        },
+        {
+          "tile_type": "City",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 2
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 2
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 0
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 0
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 2
+        },
+        {
+          "tile_type": "City",
+          "contents": "River",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 3
+        },
+        {
+          "tile_type": "City",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 3
+        }
+      ],
+      [
+        {
+          "tile_type": "City",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 3
+        },
+        {
+          "tile_type": "City",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 3
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 2
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 0
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 0
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 2
+        },
+        {
+          "tile_type": "City",
+          "contents": "River",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 2
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 2
+        }
+      ],
+      [
+        {
+          "tile_type": "City",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 3
+        },
+        {
+          "tile_type": "City",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 3
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 3
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 2
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 0
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 2
+        },
+        {
+          "tile_type": "Land",
+          "contents": "River",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 2
+        },
+        {
+          "tile_type": "Land",
+          "contents": "River",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 2
+        }
+      ],
+      [
+        {
+          "tile_type": "City",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 3
+        },
+        {
+          "tile_type": "City",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 3
+        },
+        {
+          "tile_type": "City",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 3
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 2
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 0
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 0
+        },
+        {
+          "tile_type": "Land",
+          "contents": "None",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 2
+        },
+        {
+          "tile_type": "Land",
+          "contents": "River",
+          "is_goal": false,
+          "cost_modifier": "None",
+          "height": 2
+        }
+      ]
+    ],
+    "title": "Across The Valley",
+    "initial_description": "The fictional town of Casterbridge has been growing slowly, and now they find they need a better way to transport their goods. Help them by connecting a Canal across the valley.",
+    "sidebar_text": "Aquaducts can be used to transfer water across lower terrain - give it a try!",
+    "width": 8,
+    "height": 8,
+    "events": [
+      [
+        {
+          "BuiltNofType": [
+            1,
+            "BuildAquaduct",
+            true
+          ]
+        },
+        [
+          {
+            "DisplayText": {
+              "text": "The aquaduct is currently too short! To make it taller, you can always use the aquaduct tool again on the same tile.",
+              "title": null,
+              "continue_button": "Keep Going"
+            }
+          }
+        ]
+      ],
+      [
+        "GoalReached",
+        [
+          {
+            "DisplayText": {
+              "text": "The new canal was a great success! As you can see, the town grew quite a bit - and ow they want the canal to reach the town center.\nOnly problem is - that's even higher up. You may need to re-build things with a new aquaduct to make this work...",
+              "title": "Complications Arise",
+              "continue_button": "Keep Going"
+            }
+          },
+          {
+            "SetNewGoal": [
+              6,
+              1
+            ]
+          },
+          {
+            "SetSidebar": "You can always use the demolishion tool to remove existing construction."
+          }
+        ]
+      ]
+    ],
+    "tools": {
+      "canal": true,
+      "lock": true,
+      "aquaduct": true,
+      "demolish": true
+    }
+  }
