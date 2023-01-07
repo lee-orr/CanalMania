@@ -49,7 +49,7 @@ fn vertex(vertex: Vertex) -> VertexOutput {
     let world_position = mesh_position_local_to_world(model, vec4<f32>(position, 1.0));
 
     
-    let world_uv = vec2<f32>(world_position.z / settings.size.z + 0.5, world_position.x / settings.size.x + 0.5) + 1. / ( 2. * settings.size.zx);
+    let world_uv = vec2<f32>(world_position.x / settings.size.x + 0.5,world_position.z / settings.size.z + 0.5) + 1. / ( 2. * settings.size.xz);
     var target_y : f32 = textureSampleLevel(info_map, info_map_sampler, world_uv, 0.).x * 1.66666666667;
 
     if position.y > -1.5 && descriminator % 5 != 0 {
@@ -96,11 +96,13 @@ fn fragment(
 
     let world_position = in.world_position + vec4<f32>(settings.world_offset_and_wetness.xyz, 0.);
 
-    let world_uv = vec2<f32>(world_position.z / settings.size.z + 0.5, world_position.x / settings.size.x + 0.5) + 1. / ( 2. * settings.size.zx);
+    let world_uv = vec2<f32>(in.world_position.x / settings.size.x + 0.5,in.world_position.z / settings.size.z + 0.5) + 1. / ( 2. * settings.size.xz);
     let sample = textureSample(info_map, info_map_sampler, world_uv);
     let wetness = sample.y;
     if modify_wetness {
-        vertex_color = mix(parchment_dark, vertex_color, clamp(wetness * 5., 0., 1.));
+        let wetness = clamp(wetness * 5. - 4., -0.5, 1.);
+
+        vertex_color = mix(parchment_dark, vertex_color, wetness);
     }
 
     var test_position : vec3<f32> = world_position.xyz * 0.3;
@@ -166,6 +168,11 @@ fn fragment(
 
     let color = mix(bg * ink , bg  * parchment_dark, 1. - depth);
 
-    let test_vec = vec4<f32>(sample.y, 0., 0., 1.);
+    var v : f32 = 0.0;
+    if sample.y > 0.5 {
+        v  = 1.;
+    }
+
+    let test_vec = vec4<f32>(world_uv, v, 1.);
     return color;
 }

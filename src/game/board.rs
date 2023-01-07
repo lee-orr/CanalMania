@@ -216,7 +216,7 @@ fn build_tile(
                 let height = tile.z;
                 let is_wet = tile.is_wet;
 
-                let i = x * width + y;
+                let i = y * width + x;
 
                 if let Some(content) = content.get_mut(i) {
                     content.0 = height as u8;
@@ -266,6 +266,8 @@ fn build_tile(
                 "Set the image to {result:?} from {:?}",
                 board_assets.tile_info_map
             );
+
+            info!("Board width {} height {}", &board.width, &board.height);
 
             let (offset_x, offset_y) = (board.width % 2 == 0, board.height % 2 == 0);
 
