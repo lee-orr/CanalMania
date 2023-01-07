@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use iyes_loopless::prelude::*;
 
-use crate::{app_state::AppState, ui::*};
+use crate::{app_state::AppState, assets::CanalManiaAssets, ui::*};
 
 use super::{
     game_state::{GameActionMode, GameResources, GameState},
@@ -25,7 +25,7 @@ enum GameUiId {
     CostText,
 }
 
-fn display_ui(mut commands: Commands, level: Res<Level>) {
+fn display_ui(mut commands: Commands, level: Res<Level>, asset: Res<CanalManiaAssets>) {
     commands
         .ui_root()
         .position(Val::Px(0.), Val::Px(0.), Val::Px(0.), Val::Auto)
@@ -51,16 +51,20 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
             parent.div().horizontal().with_children(|parent| {
                 parent
                     .button("dig", "Dig Canal")
-                    .style(ButtonStyle::Primary);
+                    .style(ButtonStyle::Primary)
+                    .icon(asset.dig_canal_icon.clone());
                 parent
                     .button("lock", "Construct Lock")
-                    .style(ButtonStyle::Primary);
+                    .style(ButtonStyle::Primary)
+                    .icon(asset.lock_icon.clone());
                 parent
                     .button("aquaduct", "Construct Aquaduct")
-                    .style(ButtonStyle::Primary);
+                    .style(ButtonStyle::Primary)
+                    .icon(asset.aqueduct_icon.clone());
                 parent
                     .button("demolish", "Demolish")
-                    .style(ButtonStyle::Primary);
+                    .style(ButtonStyle::Primary)
+                    .icon(asset.demolish_icon.clone());
             });
         });
 
@@ -69,10 +73,14 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
         .for_state(GameState::InGame)
         .position(Val::Px(0.), Val::Auto, Val::Px(0.), Val::Auto)
         .with_children(|parent| {
-            parent
-                .button("choose-level", "Choose Another Level")
-                .style(ButtonStyle::Small);
             parent.div().padding(20.);
+            parent.div().position(Val::Px(0.), Val::Auto, Val::Px(0.), Val::Auto).with_children(|parent| {
+                parent
+                    .button("choose-level", "Choose Another Level")
+                    .style(ButtonStyle::Small)
+                    .icon(asset.menu_icon.clone())
+                    .hover_direction(crate::ui::div::Direction::Horizontal);
+            });
             if let Some(text) = &level.sidebar_text {
                 parent
                     .div()
@@ -80,6 +88,8 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
                     .size(Size::new(Val::Px(200.), Val::Auto))
                     .with_children(|parent| {
                         parent.text(text).size(15.);
+                        parent.div().padding(2.);
+                        parent.text("Right-click and drag to pan, Ctrl and move the mouse to orbit, Scroll to zoom.").size(15.);
                     });
             }
         });

@@ -1,15 +1,18 @@
 use crate::assets::CanalManiaAssets;
 
 use bevy::prelude::*;
-use bevy::ui::JustifyContent;
+use bevy::ui::{JustifyContent, FocusPolicy};
 
 use super::UiComponentSpawner;
+use super::div::Direction;
 
 #[derive(Clone, Component, Debug)]
 pub struct GameButton {
     pub(crate) text: String,
     pub name: String,
     pub style: ButtonStyle,
+    pub icon: Option<Handle<Image>>,
+    pub hover_direction: Direction,
 }
 
 #[derive(Clone, Debug)]
@@ -25,6 +28,8 @@ impl Default for GameButton {
             text: Default::default(),
             name: Default::default(),
             style: ButtonStyle::Primary,
+            icon: None,
+            hover_direction: Direction::Vertical,
         }
     }
 }
@@ -42,15 +47,35 @@ impl GameButton {
         self.style = style;
         self
     }
+
+    pub fn icon(&mut self, icon: Handle<Image>) -> &mut Self {
+        self.icon = Some(icon);
+        self
+    }
+
+    pub fn hover_direction(&mut self, hover_direction: Direction) -> &mut Self {
+        self.hover_direction = hover_direction;
+        self
+    }
 }
 
 pub trait ButtonSpawner {
     fn style(self, style: ButtonStyle) -> Self;
+    fn icon(self, image: Handle<Image>) -> Self;
+    fn hover_direction(self, hover_direction: Direction) -> Self;
 }
 
 impl<T: UiComponentSpawner<GameButton>> ButtonSpawner for T {
     fn style(self, style: ButtonStyle) -> Self {
         self.update_value(move |v| v.style(style.clone()))
+    }
+
+    fn icon(self, icon: Handle<Image>) -> Self {
+        self.update_value(move |v| v.icon(icon.clone()))
+    }
+
+    fn hover_direction(self, hover_direction: Direction) -> Self {
+        self.update_value(move |v| v.hover_direction(hover_direction.clone()))
     }
 }
 
@@ -117,18 +142,59 @@ pub(crate) fn spawn_button(
                 align_items: AlignItems::Center,
                 border: UiRect::all(Val::Px(1.)),
                 margin: UiRect::all(Val::Px(5.)),
+                overflow: Overflow::Hidden,
                 ..Default::default()
             },
             ..Default::default()
         });
         commands.entity(entity).with_children(|parent| {
-            parent.spawn(
-                TextBundle::from_section(text, style.clone()).with_style(Style {
-                    max_size: Size::new(Val::Undefined, Val::Px(size)),
-                    margin: UiRect::all(Val::Px(4.)),
+            if let Some(icon) = &button.icon {
+                parent.spawn(ImageBundle {
+                    image: icon.clone().into(),
+                    focus_policy: FocusPolicy::Pass,
+                    style: Style {
+                        size: Size::new(Val::Px(button.style.text_size()), Val::Px(button.style.text_size())),
+                        ..Default::default()
+                    },
                     ..Default::default()
-                }),
-            );
+                });
+
+                parent.spawn(NodeBundle {
+                    background_color: Color::rgba_u8(253, 231, 192, 150).into(),
+                    style: Style {
+                        position_type: PositionType::Absolute,
+                        position: match button.hover_direction {
+                            Direction::Vertical =>UiRect::bottom(Val::Percent(100.)),
+                            Direction::Horizontal => UiRect::left(Val::Percent(100.)),
+                        },
+                        padding: UiRect::all(Val::Px(5.)),
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        border: UiRect::all(Val::Px(1.)),
+                        margin: UiRect::all(Val::Px(3.)),
+                        overflow: Overflow::Hidden,
+                        ..Default::default()
+                    },
+                    focus_policy: FocusPolicy::Pass,
+                    ..Default::default()
+                }).with_children(|parent|{
+                    parent.spawn(
+                        TextBundle::from_section(text, style.clone()).with_style(Style {
+                            max_size: Size::new(Val::Undefined, Val::Px(size)),
+                            margin: UiRect::all(Val::Px(4.)),
+                            ..Default::default()
+                        }),
+                    );
+                });
+            } else {
+                parent.spawn(
+                    TextBundle::from_section(text, style.clone()).with_style(Style {
+                        max_size: Size::new(Val::Undefined, Val::Px(size)),
+                        margin: UiRect::all(Val::Px(4.)),
+                        ..Default::default()
+                    }),
+                );
+            }
         });
     }
 }
@@ -138,22 +204,25 @@ pub struct ButtonClickEvent(pub String, pub Entity);
 
 pub fn button_events(
     mut buttons: Query<
-        (Entity, &Interaction, &mut BackgroundColor, &GameButton),
+        (Entity, &Interaction, &mut BackgroundColor, &GameButton, &mut Style),
         Changed<Interaction>,
     >,
     mut click_event: EventWriter<ButtonClickEvent>,
 ) {
-    for (entity, interaction, mut background, button) in &mut buttons {
+    for (entity, interaction, mut background, button, mut style) in &mut buttons {
         match *interaction {
             Interaction::Hovered => {
                 *background = button.style.hover_color().into();
+                style.overflow = Overflow::Visible;
             }
             Interaction::Clicked => {
                 *background = button.style.click_color().into();
+                style.overflow = Overflow::Hidden;
                 info!("Clicked on {} - {:?}", &button.name, &entity);
                 click_event.send(ButtonClickEvent(button.name.clone(), entity))
             }
             Interaction::None => {
+                style.overflow = Overflow::Hidden;
                 *background = button.style.main_color().into();
             }
         }

@@ -1,7 +1,13 @@
 ({
     "font": File ( path: "libre-baskerville/LibreBaskerville-Regular.ttf"),
     "font_italic": File ( path: "libre-baskerville/LibreBaskerville-Italic.ttf"),
-    "level_list": File (path: "level_list.levels.yml"),"land_tile": File (path: "models_2.gltf#Mesh0/Primitive0"),
+    "level_list": File (path: "level_list.levels.yml"),
+    "aqueduct_icon": File ( path: "icons/aqueduct.png"),
+    "lock_icon": File ( path: "icons/dam.png"),
+    "demolish_icon": File ( path: "icons/demolish.png"),
+    "dig_canal_icon": File ( path: "icons/dig-dug.png"),
+    "menu_icon": File ( path: "icons/hamburger-menu.png"),
+    
     "land_tile": File (path: "models_2.gltf#Mesh0/Primitive0"),
 "farm_tile": File (path: "models_2.gltf#Mesh1/Primitive0"),
 "city_tile": File (path: "models_2.gltf#Mesh2/Primitive0"),

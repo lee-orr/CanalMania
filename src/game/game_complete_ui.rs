@@ -26,7 +26,7 @@ fn display_ui(mut commands: Commands, resource: Res<GameResources>, level: Res<L
         .position(Val::Px(0.), Val::Px(0.), Val::Px(0.), Val::Auto)
         .for_state(GameState::Complete)
         .with_children(|parent| {
-            parent.div().opaque().with_children(|parent| {
+            parent.div().opaque().padding(5.).with_children(|parent| {
                 parent
                     .text(format!(
                         "{} Complete!",
@@ -45,7 +45,7 @@ fn display_ui(mut commands: Commands, resource: Res<GameResources>, level: Res<L
         .position(Val::Px(0.), Val::Px(0.), Val::Auto, Val::Px(0.))
         .for_state(GameState::Complete)
         .with_children(|parent| {
-            parent.div().opaque().with_children(|parent| {
+            parent.div().opaque().padding(5.).with_children(|parent| {
                 parent.button("level", "Play Another Level");
                 parent
                     .button("menu", "Main Menu")

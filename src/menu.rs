@@ -4,6 +4,7 @@ use iyes_loopless::prelude::IntoConditionalSystem;
 use iyes_loopless::state::NextState;
 
 use crate::app_state::*;
+use crate::assets::CanalManiaAssets;
 use crate::ui::*;
 
 pub struct MainMenuPlugin;
@@ -16,7 +17,7 @@ impl Plugin for MainMenuPlugin {
     }
 }
 
-fn display_main_menu(mut commands: Commands) {
+fn display_main_menu(mut commands: Commands, assets: Res<CanalManiaAssets>) {
     commands
         .ui_root()
         .for_state(AppState::MainMenu)

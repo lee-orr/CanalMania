@@ -1,18 +1,19 @@
-mod button;
-mod div;
-mod text;
-mod ui_id;
-mod ui_root;
+pub mod button;
+pub mod div;
+pub mod text;
+pub mod ui_id;
+pub mod ui_root;
 
 use crate::app_state::AppLoadingState;
 
 use bevy::{ecs::system::EntityCommands, prelude::*};
-pub use button::*;
-pub use div::*;
 use iyes_loopless::prelude::IntoConditionalSystem;
 use std::fmt::Debug;
 use std::hash::Hash;
 use std::marker::PhantomData;
+
+pub use button::*;
+pub use div::*;
 pub use text::*;
 pub use ui_id::*;
 pub use ui_root::*;

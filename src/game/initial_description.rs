@@ -29,7 +29,7 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
             .position(Val::Px(0.), Val::Px(0.), Val::Px(0.), Val::Auto)
             .for_state(GameState::Description)
             .with_children(|parent| {
-                parent.div().opaque().with_children(|parent| {
+                parent.div().opaque().padding(5.).with_children(|parent| {
                     parent
                         .text(level.title.as_ref().unwrap_or(&"Start Level".into()))
                         .size(100.)
@@ -42,11 +42,11 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
             .position(Val::Px(0.), Val::Px(0.), Val::Auto, Val::Px(0.))
             .for_state(GameState::Description)
             .with_children(|parent| {
-                parent.div().opaque().with_children(|parent| {
+                parent.div().opaque().padding(5.).with_children(|parent| {
                     parent.button("play", "Start");
                     parent
                         .button("menu", "Main Menu")
-                        .style(ButtonStyle::Secondary);
+                        .style(ButtonStyle::Small);
                 });
             });
     }

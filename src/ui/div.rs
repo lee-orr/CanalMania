@@ -128,7 +128,7 @@ pub fn spawn_div(mut commands: Commands, roots: Query<(Entity, &Div), Added<Div>
             },
             background_color: match div.background {
                 Background::Transparent => Color::rgba(0., 0., 0., 0.).into(),
-                Background::Opaque => Color::rgb_u8(177, 162, 124).into(),
+                Background::Opaque => Color::rgba_u8(177, 162, 124, 150).into(),
             },
             ..Default::default()
         },));
