@@ -1,51 +1,111 @@
 
         {
             "mesh" : 0,
-            "name" : "LandTile"
+            "name" : "LandTile",
+            "translation" : [
+                1.1862382888793945,
+                0,
+                -1.1333204507827759
+            ]
         },
         {
             "mesh" : 1,
-            "name" : "FarmTile"
+            "name" : "FarmTile",
+            "translation" : [
+                -0.057327501475811005,
+                0,
+                -1.1289106607437134
+            ]
         },
         {
             "mesh" : 2,
-            "name" : "CityTile"
+            "name" : "CityTile",
+            "translation" : [
+                -1.221516728401184,
+                0,
+                -1.0804027318954468
+            ]
         },
         {
             "mesh" : 3,
-            "name" : "Tree1"
+            "name" : "Tree1",
+            "translation" : [
+                2.8266868591308594,
+                0,
+                -0.5027180314064026
+            ]
         },
         {
             "mesh" : 4,
-            "name" : "Tree4"
+            "name" : "Tree4",
+            "translation" : [
+                2.8619654178619385,
+                0,
+                -0.9348790645599365
+            ]
         },
         {
             "mesh" : 5,
-            "name" : "Tree3"
+            "name" : "Tree3",
+            "translation" : [
+                2.9325220584869385,
+                0,
+                -0.2998668849468231
+            ]
         },
         {
             "mesh" : 6,
-            "name" : "Tree2"
+            "name" : "Tree2",
+            "translation" : [
+                2.544459104537964,
+                0,
+                -0.27781784534454346
+            ]
         },
         {
             "mesh" : 7,
-            "name" : "House"
+            "name" : "House",
+            "translation" : [
+                2.10347843170166,
+                0,
+                -0.8202241659164429
+            ]
         },
         {
             "mesh" : 8,
-            "name" : "House2"
+            "name" : "House2",
+            "translation" : [
+                2.13875675201416,
+                0,
+                -1.2303361892700195
+            ]
         },
         {
             "mesh" : 9,
-            "name" : "House3"
+            "name" : "House3",
+            "translation" : [
+                2.5003609657287598,
+                0,
+                -1.203877329826355
+            ]
         },
         {
             "mesh" : 10,
-            "name" : "House4"
+            "name" : "House4",
+            "translation" : [
+                2.4871315956115723,
+                0,
+                -0.8422731161117554
+            ]
         },
         {
             "mesh" : 11,
-            "name" : "Goal"
+            "name" : "Goal",
+            "translation" : [
+                2.0285115242004395,
+                0,
+                -0.22930997610092163
+            ]
         },
         {
             "mesh" : 12,
@@ -71,6 +131,51 @@
         },
         {
             "mesh" : 15,
+            "name" : "RiverLine",
+            "translation" : [
+                -1.3780651092529297,
+                0,
+                -0.4000000059604645
+            ]
+        },
+        {
+            "mesh" : 16,
+            "name" : "RiverEnd",
+            "translation" : [
+                -1.3780651092529297,
+                0,
+                -0.20000000298023224
+            ]
+        },
+        {
+            "mesh" : 17,
+            "name" : "RiverCenter",
+            "translation" : [
+                -1.3780651092529297,
+                0,
+                0
+            ]
+        },
+        {
+            "mesh" : 18,
+            "name" : "RiverToCanalLine",
+            "translation" : [
+                -2.3970816135406494,
+                0,
+                -0.4000000059604645
+            ]
+        },
+        {
+            "mesh" : 19,
+            "name" : "RiverToCanalEnd",
+            "translation" : [
+                -2.3970816135406494,
+                0,
+                -0.20000000298023224
+            ]
+        },
+        {
+            "mesh" : 20,
             "name" : "AquaductLine",
             "translation" : [
                 -0.6000000238418579,
@@ -79,7 +184,7 @@
             ]
         },
         {
-            "mesh" : 16,
+            "mesh" : 21,
             "name" : "AquaductEnd",
             "translation" : [
                 -0.6000000238418579,
@@ -88,7 +193,7 @@
             ]
         },
         {
-            "mesh" : 17,
+            "mesh" : 22,
             "name" : "AquaductCenter",
             "translation" : [
                 -0.6000000238418579,
@@ -97,7 +202,7 @@
             ]
         },
         {
-            "mesh" : 18,
+            "mesh" : 23,
             "name" : "Lock",
             "translation" : [
                 0,
@@ -106,7 +211,7 @@
             ]
         },
         {
-            "mesh" : 19,
+            "mesh" : 24,
             "name" : "RoadLine",
             "translation" : [
                 0.6000000238418579,
@@ -115,7 +220,7 @@
             ]
         },
         {
-            "mesh" : 20,
+            "mesh" : 25,
             "name" : "RoadEnd",
             "translation" : [
                 0.6000000238418579,
@@ -124,7 +229,7 @@
             ]
         },
         {
-            "mesh" : 21,
+            "mesh" : 26,
             "name" : "RoadCenter",
             "translation" : [
                 0.6000000238418579,

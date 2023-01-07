@@ -6,6 +6,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -13,6 +14,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -20,6 +22,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -27,6 +30,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -34,6 +38,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -41,6 +46,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -48,6 +54,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -55,6 +62,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -62,6 +70,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -69,6 +78,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -76,6 +86,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 2
       },
       {
@@ -83,6 +94,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 2
       }
     ],
@@ -92,6 +104,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -99,6 +112,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -106,13 +120,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
-        "height": 0
-      },
-      {
-        "tile_type": "City",
-        "contents": "None",
-        "is_goal": false,
-        "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -120,6 +128,15 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
+        "height": 0
+      },
+      {
+        "tile_type": "City",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -127,6 +144,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -134,6 +152,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -141,6 +160,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -148,6 +168,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -155,6 +176,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -162,6 +184,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -169,6 +192,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       }
     ],
@@ -178,6 +202,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -185,6 +210,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -192,6 +218,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -199,6 +226,7 @@
         "contents": "Road",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -206,6 +234,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -213,6 +242,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -220,6 +250,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -227,6 +258,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -234,6 +266,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -241,6 +274,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -248,6 +282,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -255,6 +290,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       }
     ],
@@ -264,6 +300,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -271,6 +308,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -278,6 +316,7 @@
         "contents": "Road",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -285,6 +324,7 @@
         "contents": "Road",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -292,6 +332,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -299,6 +340,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -306,6 +348,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -313,6 +356,7 @@
         "contents": "None",
         "is_goal": true,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -320,6 +364,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -327,6 +372,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -334,6 +380,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -341,6 +388,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       }
     ],
@@ -350,6 +398,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -357,6 +406,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -364,6 +414,7 @@
         "contents": "Road",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -371,6 +422,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -378,6 +430,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -385,6 +438,7 @@
         "contents": "Road",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -392,6 +446,7 @@
         "contents": "Canal",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -399,6 +454,7 @@
         "contents": "Canal",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -406,6 +462,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -413,6 +470,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -420,6 +478,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -427,92 +486,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
-        "height": 0
-      }
-    ],
-    [
-      {
-        "tile_type": "Land",
-        "contents": "None",
-        "is_goal": false,
-        "is_wet": false,
-        "height": 0
-      },
-      {
-        "tile_type": "Land",
-        "contents": "None",
-        "is_goal": false,
-        "is_wet": false,
-        "height": 0
-      },
-      {
-        "tile_type": "Land",
-        "contents": "Road",
-        "is_goal": false,
-        "is_wet": false,
-        "height": 0
-      },
-      {
-        "tile_type": "Land",
-        "contents": "Road",
-        "is_goal": false,
-        "is_wet": false,
-        "height": 1
-      },
-      {
-        "tile_type": "Land",
-        "contents": "Road",
-        "is_goal": false,
-        "is_wet": false,
-        "height": 0
-      },
-      {
-        "tile_type": "Land",
-        "contents": "Road",
-        "is_goal": false,
-        "is_wet": false,
-        "height": 0
-      },
-      {
-        "tile_type": "Farm",
-        "contents": "None",
-        "is_goal": false,
-        "is_wet": false,
-        "height": 0
-      },
-      {
-        "tile_type": "Land",
-        "contents": "None",
-        "is_goal": false,
-        "is_wet": false,
-        "height": 1
-      },
-      {
-        "tile_type": "Farm",
-        "contents": "None",
-        "is_goal": false,
-        "is_wet": false,
-        "height": 1
-      },
-      {
-        "tile_type": "Farm",
-        "contents": "None",
-        "is_goal": false,
-        "is_wet": false,
-        "height": 1
-      },
-      {
-        "tile_type": "Land",
-        "contents": "None",
-        "is_goal": false,
-        "is_wet": false,
-        "height": 0
-      },
-      {
-        "tile_type": "Land",
-        "contents": "None",
-        "is_goal": false,
-        "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       }
     ],
@@ -522,13 +496,15 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
-        "height": 1
+        "cost_modifier": "None",
+        "height": 0
       },
       {
         "tile_type": "Land",
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -536,6 +512,7 @@
         "contents": "Road",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -543,27 +520,31 @@
         "contents": "Road",
         "is_goal": false,
         "is_wet": false,
-        "height": 1
-      },
-      {
-        "tile_type": "Farm",
-        "contents": "None",
-        "is_goal": false,
-        "is_wet": false,
-        "height": 1
-      },
-      {
-        "tile_type": "Farm",
-        "contents": "None",
-        "is_goal": false,
-        "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
         "tile_type": "Land",
+        "contents": "Road",
+        "is_goal": false,
+        "is_wet": false,
+        "cost_modifier": "None",
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Road",
+        "is_goal": false,
+        "is_wet": false,
+        "cost_modifier": "None",
+        "height": 0
+      },
+      {
+        "tile_type": "Farm",
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -571,6 +552,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -578,6 +560,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -585,13 +568,15 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
-        "tile_type": "Farm",
+        "tile_type": "Land",
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -599,6 +584,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       }
     ],
@@ -608,6 +594,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -615,13 +602,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
-        "height": 1
-      },
-      {
-        "tile_type": "Land",
-        "contents": "None",
-        "is_goal": false,
-        "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -629,6 +610,7 @@
         "contents": "Road",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -636,27 +618,7 @@
         "contents": "Road",
         "is_goal": false,
         "is_wet": false,
-        "height": 1
-      },
-      {
-        "tile_type": "Land",
-        "contents": "None",
-        "is_goal": false,
-        "is_wet": false,
-        "height": 0
-      },
-      {
-        "tile_type": "Land",
-        "contents": "None",
-        "is_goal": false,
-        "is_wet": false,
-        "height": 0
-      },
-      {
-        "tile_type": "Farm",
-        "contents": "None",
-        "is_goal": false,
-        "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -664,6 +626,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -671,13 +634,15 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
-        "height": 0
+        "cost_modifier": "None",
+        "height": 1
       },
       {
-        "tile_type": "Farm",
+        "tile_type": "Land",
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -685,6 +650,39 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
+        "height": 1
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "cost_modifier": "None",
+        "height": 1
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "cost_modifier": "None",
+        "height": 1
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "cost_modifier": "None",
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       }
     ],
@@ -694,6 +692,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -701,6 +700,39 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "cost_modifier": "None",
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Road",
+        "is_goal": false,
+        "is_wet": false,
+        "cost_modifier": "None",
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "Road",
+        "is_goal": false,
+        "is_wet": false,
+        "cost_modifier": "None",
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -708,6 +740,39 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
+        "height": 0
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "cost_modifier": "None",
+        "height": 1
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "cost_modifier": "None",
+        "height": 1
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "cost_modifier": "None",
+        "height": 0
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -715,6 +780,41 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
+        "height": 0
+      }
+    ],
+    [
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "cost_modifier": "None",
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "cost_modifier": "None",
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "cost_modifier": "None",
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -722,6 +822,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -729,6 +830,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -736,6 +838,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -743,6 +846,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -750,6 +854,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -757,6 +862,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -764,6 +870,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -771,6 +878,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       }
     ],
@@ -780,6 +888,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -787,6 +896,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -794,27 +904,31 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
         "tile_type": "Land",
-        "contents": "Canal",
+        "contents": "River",
         "is_goal": false,
-        "is_wet": true,
+        "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
         "tile_type": "Land",
-        "contents": "Canal",
+        "contents": "River",
         "is_goal": false,
-        "is_wet": true,
+        "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
         "tile_type": "Land",
-        "contents": "Canal",
+        "contents": "River",
         "is_goal": false,
-        "is_wet": true,
+        "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -822,6 +936,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -829,6 +944,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -836,6 +952,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -843,6 +960,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 1
       },
       {
@@ -850,6 +968,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -857,6 +976,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       }
     ],
@@ -866,6 +986,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -873,20 +994,23 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
         "tile_type": "Land",
-        "contents": "Canal",
+        "contents": "River",
         "is_goal": false,
-        "is_wet": true,
+        "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
         "tile_type": "Land",
-        "contents": "Canal",
+        "contents": "River",
         "is_goal": false,
-        "is_wet": true,
+        "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -894,27 +1018,31 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
         "tile_type": "Land",
-        "contents": "Canal",
+        "contents": "River",
         "is_goal": false,
-        "is_wet": true,
+        "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
         "tile_type": "Land",
-        "contents": "Canal",
+        "contents": "River",
         "is_goal": false,
-        "is_wet": true,
+        "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
         "tile_type": "Land",
-        "contents": "Canal",
+        "contents": "River",
         "is_goal": false,
-        "is_wet": true,
+        "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -922,6 +1050,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -929,6 +1058,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -936,6 +1066,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -943,6 +1074,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       }
     ],
@@ -952,20 +1084,23 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
         "tile_type": "Land",
-        "contents": "Canal",
+        "contents": "River",
         "is_goal": false,
-        "is_wet": true,
+        "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
         "tile_type": "Land",
-        "contents": "Canal",
+        "contents": "River",
         "is_goal": false,
-        "is_wet": true,
+        "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -973,6 +1108,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -980,6 +1116,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -987,6 +1124,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -994,20 +1132,23 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
         "tile_type": "Land",
-        "contents": "Canal",
+        "contents": "River",
         "is_goal": false,
-        "is_wet": true,
+        "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
         "tile_type": "Land",
-        "contents": "Canal",
+        "contents": "River",
         "is_goal": false,
-        "is_wet": true,
+        "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -1015,6 +1156,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -1022,6 +1164,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -1029,6 +1172,7 @@
         "contents": "None",
         "is_goal": false,
         "is_wet": false,
+        "cost_modifier": "None",
         "height": 0
       }
     ]

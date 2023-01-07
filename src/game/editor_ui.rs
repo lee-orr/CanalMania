@@ -159,7 +159,8 @@ fn button_pressed(
             let next = match operation.0 {
                 EditorOperation::ToggleConstruction(t) => match t {
                     TileContents::None => TileContents::Road,
-                    TileContents::Road => TileContents::Canal,
+                    TileContents::Road => TileContents::River,
+                    TileContents::River => TileContents::Canal,
                     TileContents::Canal => TileContents::Lock,
                     TileContents::Lock => TileContents::Aquaduct(1),
                     TileContents::Aquaduct(_) => TileContents::None,

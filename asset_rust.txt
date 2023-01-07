@@ -43,6 +43,21 @@
 #[asset(key="canal_center")]
  pub canal_center : Handle<Mesh>,
 
+#[asset(key="river_line")]
+ pub river_line : Handle<Mesh>,
+
+#[asset(key="river_end")]
+ pub river_end : Handle<Mesh>,
+
+#[asset(key="river_center")]
+ pub river_center : Handle<Mesh>,
+
+#[asset(key="river_to_canal_line")]
+ pub river_to_canal_line : Handle<Mesh>,
+
+#[asset(key="river_to_canal_end")]
+ pub river_to_canal_end : Handle<Mesh>,
+
 #[asset(key="aquaduct_line")]
  pub aquaduct_line : Handle<Mesh>,
 

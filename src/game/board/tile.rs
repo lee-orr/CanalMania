@@ -72,6 +72,7 @@ pub enum TileContents {
     Canal,
     Lock,
     Aquaduct(usize),
+    River,
 }
 
 impl Default for TileContents {
@@ -88,6 +89,7 @@ impl TileContents {
             TileContents::Canal => assets.canal_center.clone(),
             TileContents::Lock => Handle::default(),
             TileContents::Aquaduct(_) => assets.aquaduct_center.clone(),
+            TileContents::River => assets.river_center.clone(),
         }
     }
     pub fn line(&self, assets: &CanalManiaAssets) -> Handle<Mesh> {
@@ -97,6 +99,7 @@ impl TileContents {
             TileContents::Canal => assets.canal_line.clone(),
             TileContents::Lock => assets.lock.clone(),
             TileContents::Aquaduct(_) => assets.aquaduct_line.clone(),
+            TileContents::River => assets.river_line.clone(),
         }
     }
     pub fn end(&self, assets: &CanalManiaAssets) -> Handle<Mesh> {
@@ -106,12 +109,16 @@ impl TileContents {
             TileContents::Canal => assets.canal_end.clone(),
             TileContents::Lock => assets.lock.clone(),
             TileContents::Aquaduct(_) => assets.aquaduct_end.clone(),
+            TileContents::River => assets.river_end.clone(),
         }
     }
 }
 
 impl Tile {
     pub fn get_dig_cost(&self) -> usize {
+        if self.contents == TileContents::River {
+            return 0;
+        }
         let type_cost = match self.tile_type {
             TileType::Land => 3,
             TileType::Farm => 4,
@@ -136,6 +143,7 @@ impl Tile {
             TileContents::Canal => 3,
             TileContents::Lock => 4,
             TileContents::Aquaduct(h) => 5 * h,
+            TileContents::River => 0,
         }
     }
 

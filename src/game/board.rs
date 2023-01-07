@@ -152,7 +152,7 @@ fn build_board(
                         tile_type: row.tile_type,
                         is_goal: row.is_goal,
                         contents: row.contents,
-                        wetness: if row.is_wet {
+                        wetness: if row.is_wet || row.contents == TileContents::River {
                             Wetness::WaterSource
                         } else {
                             Wetness::Dry
@@ -494,7 +494,7 @@ fn spawn_content(
         TileContents::Canal => {
             println!("Setting up canal!");
             let neighbours = check_neighbours(neighbours, |t| {
-                matches!(t.contents, TileContents::Canal) && tile.z.abs_diff(t.z) < 2
+                matches!(t.contents, TileContents::Canal| TileContents::River) && tile.z.abs_diff(t.z) < 2
                     || matches!(t.contents, TileContents::Lock) && tile.z.abs_diff(t.z) < 5
                     || if let TileContents::Aquaduct(h) = t.contents {
                         tile.z == h + t.z
@@ -521,10 +521,40 @@ fn spawn_content(
                 tile.z,
             );
         }
+        TileContents::River => {
+            println!("Setting up river!");
+            let neighbours = check_neighbours(neighbours, |t| {
+                matches!(t.contents, TileContents::Canal | TileContents::River) && tile.z.abs_diff(t.z) < 2
+                    || matches!(t.contents, TileContents::Lock) && tile.z.abs_diff(t.z) < 5
+                    || if let TileContents::Aquaduct(h) = t.contents {
+                        tile.z == h + t.z
+                    } else {
+                        false
+                    }
+            });
+
+            let n = neighbours[1];
+            let w = neighbours[3];
+            let e = neighbours[4];
+            let s = neighbours[6];
+
+            spawn_variant(
+                TileContents::River,
+                !is_wet,
+                assets,
+                n,
+                w,
+                e,
+                s,
+                parent,
+                base_material,
+                tile.z,
+            );
+        }
         TileContents::Lock => {
             println!("Setting up lock!");
             let neighbours = check_neighbours(neighbours, |t| {
-                matches!(t.contents, TileContents::Canal | TileContents::Lock)
+                matches!(t.contents, TileContents::Canal | TileContents::River | TileContents::Lock)
                     && tile.z.abs_diff(t.z) < 5
                     || if let TileContents::Aquaduct(h) = t.contents {
                         tile.z == h + t.z
@@ -567,7 +597,7 @@ fn spawn_content(
             println!("Setting up aquaduct {h:?}");
             let z = tile.z + h;
             let neighbours = check_neighbours(neighbours, |t| {
-                matches!(t.contents, TileContents::Canal | TileContents::Lock) && z == t.z
+                matches!(t.contents, TileContents::Canal | TileContents::River| TileContents::Lock) && z == t.z
                     || if let TileContents::Aquaduct(h) = t.contents {
                         z == h + t.z
                     } else {
@@ -633,9 +663,18 @@ fn spawn_variant<T: Material>(
             if let Some((content, z, _)) = neighbour {
                 match (content_type, content) {
                     (TileContents::Canal, TileContents::Aquaduct(u)) => {
-                        Some((TileContents::Aquaduct(u), angle, z))
+                        Some((TileContents::Aquaduct(u), angle, z, false))
                     }
-                    _ => Some((content_type, angle, height)),
+                    (TileContents::River, TileContents::Aquaduct(u)) => {
+                        Some((TileContents::Aquaduct(u), angle, z, false))
+                    }
+                    (TileContents::River, TileContents::Canal) => {
+                        Some((TileContents::River, angle, z, true))
+                    }
+                    (TileContents::River, TileContents::Lock) => {
+                        Some((TileContents::River, angle, z, true))
+                    }
+                    _ => Some((content_type, angle, height, false)),
                 }
             } else {
                 None
@@ -660,13 +699,17 @@ fn spawn_variant<T: Material>(
             });
         }
         std::cmp::Ordering::Equal => {
-            for (content, rotation, height) in results.iter() {
+            for (content, rotation, height, transition) in results.iter() {
                 let position = match content {
                     TileContents::Aquaduct(u) => Vec3::Y * (*u as f32 - 1. + *height as f32) / 6.,
                     _ => Vec3::ZERO,
                 };
 
-                let mesh = content.end(assets);
+                let mesh = if !transition {
+                    content.end(assets)
+                } else {
+                    assets.river_to_canal_end.clone()
+                };
 
                 parent.spawn(MaterialMeshBundle {
                     mesh,
@@ -680,13 +723,17 @@ fn spawn_variant<T: Material>(
             }
         }
         std::cmp::Ordering::Greater => {
-            for (content, rotation, height) in results.iter() {
+            for (content, rotation, height, transition) in results.iter() {
                 let position = match content {
                     TileContents::Aquaduct(u) => Vec3::Y * (*u as f32 - 1. + *height as f32) / 6.,
                     _ => Vec3::ZERO,
                 };
 
-                let mesh = content.line(assets);
+                let mesh = if !transition {
+                    content.line(assets)
+                } else {
+                    assets.river_to_canal_line.clone()
+                };
 
                 parent.spawn(MaterialMeshBundle {
                     mesh,

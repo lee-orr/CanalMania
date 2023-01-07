@@ -60,6 +60,9 @@ fn build_aquaduct(
                 let my_position = (tile.x, tile.y);
                 if let Some(entity) = board.children.get(&my_position) {
                     if let Ok(mut tile) = tiles.get_mut(*entity) {
+                        if tile.contents == TileContents::River {
+                            continue;
+                        }
                         resources.cost_so_far += tile.get_aquaduct_cost();
                         tile.wetness = Wetness::Dry;
                         tile.contents = TileContents::Aquaduct(*height);

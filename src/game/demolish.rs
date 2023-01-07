@@ -46,6 +46,9 @@ fn demolish(
                 let my_position = (tile.x, tile.y);
                 if let Some(entity) = board.children.get(&my_position) {
                     if let Ok(mut tile) = tiles.get_mut(*entity) {
+                        if tile.contents == TileContents::River {
+                            continue;
+                        }
                         resources.cost_so_far += tile.get_demolish_cost();
                         tile.contents = TileContents::None;
                         tile.wetness = Wetness::Dry;
