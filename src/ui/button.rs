@@ -1,10 +1,10 @@
 use crate::assets::CanalManiaAssets;
 
 use bevy::prelude::*;
-use bevy::ui::{JustifyContent, FocusPolicy};
+use bevy::ui::{FocusPolicy, JustifyContent};
 
-use super::UiComponentSpawner;
 use super::div::Direction;
+use super::UiComponentSpawner;
 
 #[derive(Clone, Component, Debug)]
 pub struct GameButton {
@@ -153,39 +153,44 @@ pub(crate) fn spawn_button(
                     image: icon.clone().into(),
                     focus_policy: FocusPolicy::Pass,
                     style: Style {
-                        size: Size::new(Val::Px(button.style.text_size()), Val::Px(button.style.text_size())),
+                        size: Size::new(
+                            Val::Px(button.style.text_size()),
+                            Val::Px(button.style.text_size()),
+                        ),
                         ..Default::default()
                     },
                     ..Default::default()
                 });
 
-                parent.spawn(NodeBundle {
-                    background_color: Color::rgba_u8(253, 231, 192, 150).into(),
-                    style: Style {
-                        position_type: PositionType::Absolute,
-                        position: match button.hover_direction {
-                            Direction::Vertical =>UiRect::bottom(Val::Percent(100.)),
-                            Direction::Horizontal => UiRect::left(Val::Percent(100.)),
-                        },
-                        padding: UiRect::all(Val::Px(5.)),
-                        justify_content: JustifyContent::Center,
-                        align_items: AlignItems::Center,
-                        border: UiRect::all(Val::Px(1.)),
-                        margin: UiRect::all(Val::Px(3.)),
-                        overflow: Overflow::Hidden,
-                        ..Default::default()
-                    },
-                    focus_policy: FocusPolicy::Pass,
-                    ..Default::default()
-                }).with_children(|parent|{
-                    parent.spawn(
-                        TextBundle::from_section(text, style.clone()).with_style(Style {
-                            max_size: Size::new(Val::Undefined, Val::Px(size)),
-                            margin: UiRect::all(Val::Px(4.)),
+                parent
+                    .spawn(NodeBundle {
+                        background_color: Color::rgba_u8(253, 231, 192, 150).into(),
+                        style: Style {
+                            position_type: PositionType::Absolute,
+                            position: match button.hover_direction {
+                                Direction::Vertical => UiRect::bottom(Val::Percent(100.)),
+                                Direction::Horizontal => UiRect::left(Val::Percent(100.)),
+                            },
+                            padding: UiRect::all(Val::Px(5.)),
+                            justify_content: JustifyContent::Center,
+                            align_items: AlignItems::Center,
+                            border: UiRect::all(Val::Px(1.)),
+                            margin: UiRect::all(Val::Px(3.)),
+                            overflow: Overflow::Hidden,
                             ..Default::default()
-                        }),
-                    );
-                });
+                        },
+                        focus_policy: FocusPolicy::Pass,
+                        ..Default::default()
+                    })
+                    .with_children(|parent| {
+                        parent.spawn(TextBundle::from_section(text, style.clone()).with_style(
+                            Style {
+                                max_size: Size::new(Val::Undefined, Val::Px(size)),
+                                margin: UiRect::all(Val::Px(4.)),
+                                ..Default::default()
+                            },
+                        ));
+                    });
             } else {
                 parent.spawn(
                     TextBundle::from_section(text, style.clone()).with_style(Style {
@@ -204,7 +209,13 @@ pub struct ButtonClickEvent(pub String, pub Entity);
 
 pub fn button_events(
     mut buttons: Query<
-        (Entity, &Interaction, &mut BackgroundColor, &GameButton, &mut Style),
+        (
+            Entity,
+            &Interaction,
+            &mut BackgroundColor,
+            &GameButton,
+            &mut Style,
+        ),
         Changed<Interaction>,
     >,
     mut click_event: EventWriter<ButtonClickEvent>,

@@ -17,7 +17,7 @@ impl Plugin for MainMenuPlugin {
     }
 }
 
-fn display_main_menu(mut commands: Commands, assets: Res<CanalManiaAssets>) {
+fn display_main_menu(mut commands: Commands, _assets: Res<CanalManiaAssets>) {
     commands
         .ui_root()
         .for_state(AppState::MainMenu)

@@ -44,9 +44,7 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
             .with_children(|parent| {
                 parent.div().opaque().padding(5.).with_children(|parent| {
                     parent.button("play", "Start");
-                    parent
-                        .button("menu", "Main Menu")
-                        .style(ButtonStyle::Small);
+                    parent.button("menu", "Main Menu").style(ButtonStyle::Small);
                 });
             });
     }

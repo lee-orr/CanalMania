@@ -163,7 +163,7 @@ pub fn spawn_ui_root(
                         get_world_ui_position(track, camera, &transformables, &cameras)
                     }
                 },
-                
+
                 ..Default::default()
             },
             background_color: match root.background {

@@ -14,15 +14,15 @@ pub struct CanalManiaAssets {
     #[asset(key = "land_tile")]
     pub land_tile: Handle<Mesh>,
 
-    #[asset(key="aqueduct_icon")]
+    #[asset(key = "aqueduct_icon")]
     pub aqueduct_icon: Handle<Image>,
-    #[asset(key="lock_icon")]
+    #[asset(key = "lock_icon")]
     pub lock_icon: Handle<Image>,
-    #[asset(key="demolish_icon")]
+    #[asset(key = "demolish_icon")]
     pub demolish_icon: Handle<Image>,
-    #[asset(key="dig_canal_icon")]
+    #[asset(key = "dig_canal_icon")]
     pub dig_canal_icon: Handle<Image>,
-    #[asset(key="menu_icon")]
+    #[asset(key = "menu_icon")]
     pub menu_icon: Handle<Image>,
 
     #[asset(key = "farm_tile")]
