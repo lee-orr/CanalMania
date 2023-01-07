@@ -26,7 +26,6 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
     if let Some(description) = &level.initial_description {
         commands
             .ui_root()
-            .position(Val::Px(0.), Val::Px(0.), Val::Px(0.), Val::Auto)
             .for_state(GameState::Description)
             .with_children(|parent| {
                 parent.div().opaque().padding(5.).with_children(|parent| {
@@ -35,16 +34,9 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
                         .size(100.)
                         .style(FontStyle::Italic);
                     parent.text(description);
-                });
-            });
-        commands
-            .ui_root()
-            .position(Val::Px(0.), Val::Px(0.), Val::Auto, Val::Px(0.))
-            .for_state(GameState::Description)
-            .with_children(|parent| {
-                parent.div().opaque().padding(5.).with_children(|parent| {
+                    parent.div().padding(5.);
+
                     parent.button("play", "Start");
-                    parent.button("menu", "Main Menu").style(ButtonStyle::Small);
                 });
             });
     }
@@ -52,9 +44,7 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
 
 fn button_pressed(mut events: EventReader<ButtonClickEvent>, mut commands: Commands) {
     for event in events.iter() {
-        if event.0 == "menu" {
-            commands.insert_resource(NextState(AppState::MainMenu));
-        } else if event.0 == "play" {
+        if event.0 == "play" {
             commands.insert_resource(NextState(GameState::InGame));
         }
     }

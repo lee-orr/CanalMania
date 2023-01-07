@@ -28,8 +28,8 @@ impl Plugin for EditorUiPlugin {
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 enum EditorOperation {
     None,
-    RaiseHeight,
-    LowerHeight,
+    RaiseHeight(usize),
+    LowerHeight(usize),
     ToggleType(TileType),
     ToggleConstruction(TileContents),
     ToggleWetness,
@@ -107,8 +107,8 @@ fn update_labels(
                 EditorUiElement::CurrentModeText => {
                     label.text = match operation.0 {
                         EditorOperation::None => "No Operation Selected".to_string(),
-                        EditorOperation::RaiseHeight => "Raise Height".to_string(),
-                        EditorOperation::LowerHeight => "Lower Height".to_string(),
+                        EditorOperation::RaiseHeight(_) => "Raise Height".to_string(),
+                        EditorOperation::LowerHeight(_) => "Lower Height".to_string(),
                         EditorOperation::ToggleType(t) => format!("Set to {t:?}"),
                         EditorOperation::SetGoal => "Set Goals".to_string(),
                         EditorOperation::ToggleConstruction(t) => format!("Build {t:?} on tiles"),
@@ -138,9 +138,9 @@ fn button_pressed(
             commands.insert_resource(NextState(EditorOperation::None));
             commands.insert_resource(NextState(GameState::InGame));
         } else if event.0 == "raise" {
-            commands.insert_resource(NextState(EditorOperation::RaiseHeight));
+            commands.insert_resource(NextState(EditorOperation::RaiseHeight(1)));
         } else if event.0 == "lower" {
-            commands.insert_resource(NextState(EditorOperation::LowerHeight));
+            commands.insert_resource(NextState(EditorOperation::LowerHeight(0)));
         } else if event.0 == "goal" {
             commands.insert_resource(NextState(EditorOperation::SetGoal));
         } else if event.0 == "water" {
@@ -223,11 +223,17 @@ fn tile_clicked(
             if let Ok(mut new_tile) = tiles.get_mut(*entity) {
                 match operation.0 {
                     EditorOperation::None => {}
-                    EditorOperation::RaiseHeight => {
+                    EditorOperation::RaiseHeight(_) => {
                         new_tile.z = old_tile.z + 1;
+                        commands.insert_resource(NextState(
+                            EditorOperation::RaiseHeight(new_tile.z),
+                        ));
                     }
-                    EditorOperation::LowerHeight => {
+                    EditorOperation::LowerHeight(_) => {
                         new_tile.z = old_tile.z.checked_sub(1).unwrap_or_default();
+                        commands.insert_resource(NextState(
+                            EditorOperation::LowerHeight(new_tile.z),
+                        ));
                     }
                     EditorOperation::ToggleType(t) => {
                         new_tile.tile_type = t;
@@ -266,38 +272,70 @@ fn tile_hovered_set(
     operation: Res<CurrentState<EditorOperation>>,
     buttons: Res<Input<MouseButton>>,
 ) {
-    if let EditorOperation::ToggleType(t) = operation.0 {
-        if buttons.pressed(MouseButton::Left) {
-            for event in events.iter() {
-                if let TileEvent::HoverStarted(old_tile, entity) = event {
-                    if old_tile.tile_type == t {
-                        continue;
-                    }
-                    if let Ok(mut new_tile) = tiles.get_mut(*entity) {
-                        new_tile.tile_type = t;
-                    }
-                }
-            }
-        }
-    } else if let EditorOperation::ToggleConstruction(t) = operation.0 {
-        if buttons.pressed(MouseButton::Left) {
-            for event in events.iter() {
-                if let TileEvent::HoverStarted(old_tile, entity) = event {
-                    if old_tile.contents == t {
-                        continue;
-                    }
-                    if let Ok(mut new_tile) = tiles.get_mut(*entity) {
-                        new_tile.is_wet = matches!(
-                            t,
-                            TileContents::Canal | TileContents::Lock | TileContents::Aquaduct(_)
-                        );
-                        if !matches!(new_tile.contents, TileContents::Aquaduct(_)) {
-                            new_tile.contents = t;
+    match operation.0 {
+        EditorOperation::ToggleType(t) => {
+            if buttons.pressed(MouseButton::Left) {
+                for event in events.iter() {
+                    if let TileEvent::HoverStarted(old_tile, entity) = event {
+                        if old_tile.tile_type == t {
+                            continue;
+                        }
+                        if let Ok(mut new_tile) = tiles.get_mut(*entity) {
+                            new_tile.tile_type = t;
                         }
                     }
                 }
             }
         }
+        EditorOperation::ToggleConstruction(t) => {
+            if buttons.pressed(MouseButton::Left) {
+                for event in events.iter() {
+                    if let TileEvent::HoverStarted(old_tile, entity) = event {
+                        if old_tile.contents == t {
+                            continue;
+                        }
+                        if let Ok(mut new_tile) = tiles.get_mut(*entity) {
+                            new_tile.is_wet = matches!(
+                                t,
+                                TileContents::Canal
+                                    | TileContents::Lock
+                                    | TileContents::Aquaduct(_)
+                            );
+                            if !matches!(new_tile.contents, TileContents::Aquaduct(_)) {
+                                new_tile.contents = t;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        EditorOperation::RaiseHeight(h) => {
+            if buttons.pressed(MouseButton::Left) {
+                for event in events.iter() {
+                    if let TileEvent::HoverStarted(old_tile, entity) = event {
+                        if old_tile.z < h {
+                            if let Ok(mut new_tile) = tiles.get_mut(*entity) {
+                                new_tile.z = h;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        EditorOperation::LowerHeight(h) => {
+            if buttons.pressed(MouseButton::Left) {
+                for event in events.iter() {
+                    if let TileEvent::HoverStarted(old_tile, entity) = event {
+                        if old_tile.z > h {
+                            if let Ok(mut new_tile) = tiles.get_mut(*entity) {
+                                new_tile.z = h;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        _ => (),
     }
 }
 

@@ -45,6 +45,7 @@ impl Plugin for GamePlugin {
             .add_loopless_state(GameActionMode::None)
             .add_enter_system(AppState::InGame, prepare_for_setup)
             .add_exit_system(AppState::InGame, prepare_for_setup)
+            .add_enter_system(GameState::Complete, disable_actions)
             .add_plugin(BoardPlugin)
             .add_plugin(TileHoverUi)
             .add_plugin(InGameUiPlugin)
@@ -63,5 +64,9 @@ impl Plugin for GamePlugin {
 
 fn prepare_for_setup(mut commands: Commands) {
     commands.insert_resource(NextState(GameState::Setup));
+    commands.insert_resource(NextState(GameActionMode::None));
+}
+
+fn disable_actions(mut commands: Commands) {
     commands.insert_resource(NextState(GameActionMode::None));
 }

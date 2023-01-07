@@ -100,7 +100,7 @@ fn fragment(
     let sample = textureSample(info_map, info_map_sampler, world_uv);
     let wetness = sample.y;
     if modify_wetness {
-        vertex_color = mix(parchment_dark, vertex_color, wetness * 2.);
+        vertex_color = mix(parchment_dark, vertex_color, clamp(wetness * 5., 0., 1.));
     }
 
     var test_position : vec3<f32> = world_position.xyz * 0.3;
@@ -145,22 +145,22 @@ fn fragment(
         darkening = 1.;
     }
 
-    let xmod = abs(abs(world_position.x) % 1. - 0.5);
-    let ymod = abs(abs(world_position.z) % 1. - 0.5);
-    let xmod_2 = xmod * 10. % 1.;
-    let ymod_2 = ymod * 10. % 1.;
+    // let xmod = abs(abs(world_position.x) % 1. - 0.5);
+    // let ymod = abs(abs(world_position.z) % 1. - 0.5);
+    // let xmod_2 = xmod * 10. % 1.;
+    // let ymod_2 = ymod * 10. % 1.;
 
-    var darken : bool = false;
+    // var darken : bool = false;
 
-    if xmod > 0.49 && ymod_2 < 0.3 {
-        darken = true;
-    } else if ymod > 0.49 && xmod_2 < 0.3 {
-        darken = true;
-    }
+    // if xmod > 0.49 && ymod_2 < 0.3 {
+    //     darken = true;
+    // } else if ymod > 0.49 && xmod_2 < 0.3 {
+    //     darken = true;
+    // }
 
-    if in.world_normal.y > 0.9 && darken && darkening > 0.7{
-            darkening = 0.5;
-    }
+    // if in.world_normal.y > 0.9 && darken && darkening > 0.7{
+    //         darkening = 0.5;
+    // }
 
     let ink = mix(vec4<f32>(1., 1., 1., 1.), mix(settings.ink_color, vec4<f32>(1., 1., 1., 1.), darkening), settings.params.x);
 
