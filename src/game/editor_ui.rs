@@ -58,13 +58,12 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
                     .text("No Operation Selected")
                     .id(EditorUiElement::CurrentModeText);
                 parent.div().horizontal().with_children(|parent| {
-                    parent.button("raise", "Raise Height");
-                    parent.button("lower", "Lower Height");
-                    parent.button("toggle", "Toggle Type");
-                    parent.button("goal", "Set Goals");
-                    parent.button("construct", "Set Construction");
-                    parent.button("water", "Adjust Water");
-                    parent.button("modifier", "Toggle Cost Modifier");
+                    parent.button("raise", "Raise");
+                    parent.button("lower", "Lower");
+                    parent.button("toggle", "Type");
+                    parent.button("goal", "Goals");
+                    parent.button("construct", "Construction");
+                    parent.button("modifier", "Cost");
                 });
             });
         });
