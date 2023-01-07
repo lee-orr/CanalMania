@@ -128,7 +128,6 @@ pub fn spawn_ui_root(
     cameras: Query<(&Camera, &GlobalTransform)>,
 ) {
     for (entity, root) in roots.iter() {
-        info!("Spawning Ui Root: {root:?} {entity:?}");
         let mut commands = commands.entity(entity);
         commands.insert((NodeBundle {
             style: Style {
@@ -177,7 +176,6 @@ pub fn spawn_ui_root(
             camera: _,
         } = root.ui_root_type
         {
-            info!("Adding world ui root to entity");
             commands.insert(WorldUiRoot);
         }
     }
@@ -205,7 +203,6 @@ fn clear_ui_on_exit(mut commands: Commands, query: Query<(Entity, &UiRoot)>, sta
                 continue;
             }
         }
-        info!("Clearing Ui Root: {root:?}");
         commands.entity(entity).despawn_recursive();
     }
 }

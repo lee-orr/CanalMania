@@ -82,7 +82,6 @@ pub(crate) fn spawn_text(
     };
 
     for (entity, main_text) in texts.iter() {
-        println!("Spawning text: {main_text:?}");
         let text = main_text.text.clone();
         let size = main_text.size;
         let justify_content = main_text.alignment;

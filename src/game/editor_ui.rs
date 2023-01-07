@@ -414,6 +414,7 @@ fn save(tiles: &Query<&Tile>, level: &Level) {
     level.tiles = tiles;
 
     let mut path = FileAssetIo::get_base_path();
+    path.push("temporary_levels");
     if let Ok(time) = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH) {
         let time = time.as_secs();
         path.push(format!("edited_level_{time:?}.lvl.json"));

@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::assets::CanalManiaAssets;
 
-#[derive(Component, Default, Debug, Clone, Reflect, Serialize, Deserialize)]
+#[derive(Component, Default, Debug, Clone, FromReflect, Reflect, Serialize, Deserialize)]
 #[reflect(Component)]
 pub struct Tile {
     pub x: usize,
@@ -23,7 +23,7 @@ pub struct Tile {
     pub cost_modifier: TileCostModifier,
 }
 
-#[derive(Clone, Copy, Debug, Reflect, Serialize, Deserialize, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Reflect, FromReflect, Serialize, Deserialize, Hash, PartialEq, Eq)]
 pub enum TileCostModifier {
     None,
     Multiplier(usize),
@@ -36,7 +36,7 @@ impl Default for TileCostModifier {
     }
 }
 
-#[derive(Clone, Copy, Debug, Reflect, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Reflect, Serialize, FromReflect, Deserialize, PartialEq, Eq)]
 pub enum Wetness {
     Dry,
     WaterSource,
@@ -49,10 +49,10 @@ impl Default for Wetness {
     }
 }
 
-#[derive(Component, Default, Clone, Debug)]
+#[derive(Component, Default, Clone, Debug, Reflect)]
 pub struct TileNeighbours(pub [Option<Entity>; 8]);
 
-#[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Reflect, FromReflect, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum TileType {
     Land,
     Farm,
@@ -65,7 +65,7 @@ impl Default for TileType {
     }
 }
 
-#[derive(Debug, Clone, Copy, Reflect, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Reflect, FromReflect, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum TileContents {
     None,
     Road,

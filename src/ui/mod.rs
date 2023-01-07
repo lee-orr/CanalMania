@@ -53,10 +53,7 @@ impl<'w, 's, 'a, T: Component + Clone + Debug, S: InternalUiSpawner<'w, 's>>
     pub fn new(value: T, spawner: &'a mut S) -> Self {
         Self {
             value,
-            id_function: Box::new(|spawner, value| {
-                println!("Spawning without id {value:?}");
-                spawner.spawn_ui_component(value.clone())
-            }),
+            id_function: Box::new(|spawner, value| spawner.spawn_ui_component(value.clone())),
             should_have_id: false,
             spawner: Some(spawner),
             phantom: PhantomData,
@@ -71,7 +68,6 @@ impl<'w, 's, 'a, T: Component + Clone + Debug, S: InternalUiSpawner<'w, 's>>
         let id = id;
         self.should_have_id = true;
         self.id_function = Box::new(move |spawner, value| {
-            println!("Spawning with id {value:?} {id:?}");
             spawner.spawn_ui_component_with_id(value.clone(), id.clone())
         });
         self

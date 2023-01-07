@@ -59,6 +59,17 @@ impl Plugin for GamePlugin {
             .add_plugin(MaterialPlugin::<TileMaterial>::default());
         #[cfg(not(target_family = "wasm"))]
         app.add_plugin(self::editor_ui::EditorUiPlugin);
+
+        #[cfg(feature = "dev")]
+        // app.add_plugin(bevy_inspector_egui::quick::AssetInspectorPlugin::<
+        //     TileMaterial,
+        // >::default());
+        // app.add_plugin(bevy_inspector_egui::quick::ResourceInspectorPlugin::<
+        //     BoardRuntimeAssets,
+        // >::default());
+        app.add_plugin(bevy_inspector_egui::quick::ResourceInspectorPlugin::<
+            level::LevelTools,
+        >::default());
     }
 }
 

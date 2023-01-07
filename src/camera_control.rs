@@ -108,9 +108,7 @@ fn control_camera(
         if ev.unit == MouseScrollUnit::Pixel {
             scalar /= controller.pixels_per_line;
         }
-        info!("Scrolling to zoom - {scalar} - {ev:?}");
         scalar = 1. - scalar.clamp(-1.5, 1.5) * controller.mouse_wheel_zoom_sensitivity;
-        info!("Scroll result - {scalar}");
         events.send(ControlEvent::Zoom(scalar));
     }
 }

@@ -13,6 +13,7 @@ pub struct GameButton {
     pub style: ButtonStyle,
     pub icon: Option<Handle<Image>>,
     pub hover_direction: Direction,
+    pub hidden: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -30,6 +31,7 @@ impl Default for GameButton {
             style: ButtonStyle::Primary,
             icon: None,
             hover_direction: Direction::Vertical,
+            hidden: false,
         }
     }
 }
@@ -57,12 +59,18 @@ impl GameButton {
         self.hover_direction = hover_direction;
         self
     }
+
+    pub fn hidden(&mut self, hidden: bool) -> &mut Self {
+        self.hidden = hidden;
+        self
+    }
 }
 
 pub trait ButtonSpawner {
     fn style(self, style: ButtonStyle) -> Self;
     fn icon(self, image: Handle<Image>) -> Self;
     fn hover_direction(self, hover_direction: Direction) -> Self;
+    fn hidden(self, hidden: bool) -> Self;
 }
 
 impl<T: UiComponentSpawner<GameButton>> ButtonSpawner for T {
@@ -76,6 +84,10 @@ impl<T: UiComponentSpawner<GameButton>> ButtonSpawner for T {
 
     fn hover_direction(self, hover_direction: Direction) -> Self {
         self.update_value(move |v| v.hover_direction(hover_direction.clone()))
+    }
+
+    fn hidden(self, hidden: bool) -> Self {
+        self.update_value(move |v| v.hidden(hidden))
     }
 }
 
@@ -125,7 +137,6 @@ pub(crate) fn spawn_button(
     buttons: Query<(Entity, &GameButton), Changed<GameButton>>,
 ) {
     for (entity, button) in buttons.iter() {
-        println!("Spawning button: {button:?}");
         let text = button.text.clone();
         let size = button.style.text_size();
         let style = TextStyle {
@@ -143,6 +154,11 @@ pub(crate) fn spawn_button(
                 border: UiRect::all(Val::Px(1.)),
                 margin: UiRect::all(Val::Px(5.)),
                 overflow: Overflow::Hidden,
+                display: if button.hidden {
+                    Display::None
+                } else {
+                    Display::Flex
+                },
                 ..Default::default()
             },
             ..Default::default()
@@ -229,7 +245,6 @@ pub fn button_events(
             Interaction::Clicked => {
                 *background = button.style.click_color().into();
                 style.overflow = Overflow::Hidden;
-                info!("Clicked on {} - {:?}", &button.name, &entity);
                 click_event.send(ButtonClickEvent(button.name.clone(), entity))
             }
             Interaction::None => {

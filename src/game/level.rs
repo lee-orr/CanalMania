@@ -3,7 +3,10 @@ use std::collections::VecDeque;
 use bevy::{prelude::*, reflect::TypeUuid};
 use serde::{Deserialize, Serialize};
 
-use super::board::{TileContents, TileCostModifier, TileType};
+use super::{
+    board::{TileContents, TileCostModifier, TileType},
+    game_state::GameActionMode,
+};
 
 #[derive(Resource, Component, Serialize, Deserialize, TypeUuid, Clone)]
 #[uuid = "b9b5565a-a06a-4647-bc62-274f32ba6a5f"]
@@ -16,6 +19,8 @@ pub struct Level {
     pub height: usize,
     #[serde(default)]
     pub events: Vec<LevelEvent>,
+    #[serde(default)]
+    pub tools: LevelTools,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -30,7 +35,7 @@ pub struct LevelList {
     pub levels: Vec<LevelListing>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Default)]
+#[derive(Serialize, Deserialize, Clone, Default, Reflect)]
 pub struct TileInfo {
     #[serde(default)]
     pub tile_type: TileType,
@@ -43,20 +48,39 @@ pub struct TileInfo {
     pub height: usize,
 }
 
+#[derive(Resource, Clone, Debug, Serialize, Deserialize, Reflect)]
+pub struct LevelTools {
+    pub canal: bool,
+    pub lock: bool,
+    pub aquaduct: bool,
+    pub demolish: bool,
+}
+
+impl Default for LevelTools {
+    fn default() -> Self {
+        Self {
+            canal: true,
+            lock: true,
+            aquaduct: true,
+            demolish: true,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Resource, Default)]
 pub struct PendingLevelEvents(pub VecDeque<LevelEvent>);
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LevelEvent(pub LevelEventType, pub Vec<EventAction>);
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Reflect)]
 pub enum LevelEventType {
     GoalReached,
     AnyActionsComplete(usize, bool),
-    BuiltNofType(usize, TileContents, bool),
+    BuiltNofType(usize, GameActionMode, bool),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Reflect, FromReflect)]
 pub enum EventAction {
     DisplayText {
         text: String,
@@ -67,4 +91,5 @@ pub enum EventAction {
     AdjustCost(usize, usize, TileCostModifier),
     AdjustContents(usize, usize, TileContents),
     SetHeight(usize, usize, usize),
+    AdjustToolAccess(GameActionMode, bool),
 }

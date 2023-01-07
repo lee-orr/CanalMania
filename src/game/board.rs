@@ -3,11 +3,8 @@ mod tile;
 
 use bevy::{
     prelude::*,
-    render::{
-        render_resource::{
-            AddressMode, Extent3d, FilterMode, SamplerDescriptor, TextureDimension, TextureFormat,
-        },
-        texture::{TextureFormatPixelInfo, Volume},
+    render::render_resource::{
+        AddressMode, Extent3d, FilterMode, SamplerDescriptor, TextureDimension, TextureFormat,
     },
     utils::HashMap,
 };
@@ -46,13 +43,6 @@ impl Plugin for BoardPlugin {
             .add_system(animate_goal.run_in_state(AppState::InGame))
             .add_system(process_selection_events.run_in_state(AppState::InGame))
             .add_exit_system(AppState::InGame, clear_board);
-        #[cfg(feature = "dev")]
-        app.add_plugin(bevy_inspector_egui::quick::AssetInspectorPlugin::<
-            TileMaterial,
-        >::default());
-        // .add_plugin(bevy_inspector_egui::quick::ResourceInspectorPlugin::<
-        //     BoardRuntimeAssets,
-        // >::default());
     }
 }
 
@@ -216,9 +206,7 @@ fn build_tile(
         );
     }
     if updated {
-        info!("Updated at least one entity!");
         if let Ok(board) = boards.get_single() {
-            info!("We got a board!");
             let width = board.width;
             let height = board.height;
             let mut content = vec![(0u8, false, false, 0u8); width * height];
@@ -267,15 +255,6 @@ fn build_tile(
                     ]
                 })
                 .collect::<Vec<_>>();
-
-            info!(
-                "Size: {size:?} - {}, format : {format:?} - {}, data: {}, content_len: {}\n{data:?}",
-                size.volume(),
-                format.pixel_size(),
-                data.len(),
-                content.len()
-            );
-
             let mut image = Image::new(size, TextureDimension::D2, data, format);
             image.sampler_descriptor =
                 bevy::render::texture::ImageSampler::Descriptor(SamplerDescriptor {
@@ -288,12 +267,6 @@ fn build_tile(
                 });
 
             let result = images.set(board_assets.tile_info_map.clone(), image);
-            info!(
-                "Set the image to {result:?} from {:?}",
-                board_assets.tile_info_map
-            );
-
-            info!("Board width {} height {}", &board.width, &board.height);
 
             let (offset_x, offset_y) = (board.width % 2 == 0, board.height % 2 == 0);
 
@@ -493,7 +466,6 @@ fn spawn_content(
     match tile.contents {
         TileContents::None => {}
         TileContents::Road => {
-            println!("Setting up road!");
             let neighbours = check_neighbours(neighbours, |t| t.contents == TileContents::Road);
 
             let n = neighbours[1];
@@ -504,7 +476,6 @@ fn spawn_content(
             spawn_variant(tile, !is_wet, assets, n, w, e, s, parent, base_material);
         }
         TileContents::Canal => {
-            println!("Setting up canal!");
             let neighbours = check_neighbours(neighbours, |t| {
                 matches!(t.contents, TileContents::Canal | TileContents::River)
                     && tile.z.abs_diff(t.z) < 2
@@ -524,7 +495,6 @@ fn spawn_content(
             spawn_variant(tile, !is_wet, assets, n, w, e, s, parent, base_material);
         }
         TileContents::River => {
-            println!("Setting up river!");
             let neighbours = check_neighbours(neighbours, |t| {
                 matches!(t.contents, TileContents::Canal | TileContents::River)
                     && tile.z.abs_diff(t.z) < 2
@@ -544,7 +514,6 @@ fn spawn_content(
             spawn_variant(tile, !is_wet, assets, n, w, e, s, parent, base_material);
         }
         TileContents::Lock => {
-            println!("Setting up lock!");
             let neighbours = check_neighbours(neighbours, |t| {
                 matches!(
                     t.contents,
@@ -581,7 +550,6 @@ fn spawn_content(
             spawn_variant(tile, !is_wet, assets, n, w, e, s, parent, base_material);
         }
         TileContents::Aquaduct(h) => {
-            println!("Setting up aquaduct {h:?}");
             let z = tile.z + h;
             let neighbours = check_neighbours(neighbours, |t| {
                 matches!(

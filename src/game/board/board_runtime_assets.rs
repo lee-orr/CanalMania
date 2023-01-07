@@ -46,7 +46,6 @@ pub fn setup_board_materials(
         },
         info_map: tile_info_map.clone(),
     };
-    info!("Making sure all the values aren't optimized away... {material:?}");
     let decoration_material = tile_materials.add(material);
 
     let selector = meshes.add(shape::Box::new(1., 0.5, 1.).into());

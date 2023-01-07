@@ -11,7 +11,6 @@ impl<T: Debug + PartialEq + Eq + Hash> UiId<T> {
     }
 
     pub fn new(val: T) -> Self {
-        println!("Creating ID {val:?}");
         Self(val)
     }
 }

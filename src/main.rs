@@ -116,7 +116,6 @@ fn on_loaded(
     assets: Res<CanalManiaAssets>,
     level_list_asset: Res<Assets<LevelList>>,
 ) {
-    println!("Moving to main menu state");
     commands.insert_resource(NextState(AppState::MainMenu));
     if let Some(list) = level_list_asset.get(&assets.level_list) {
         let list = list.clone();

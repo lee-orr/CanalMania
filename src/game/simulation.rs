@@ -3,9 +3,9 @@ use iyes_loopless::{prelude::IntoConditionalSystem, state::NextState};
 
 use super::{
     board::*,
-    game_state::{GameActions, GameState},
+    game_state::{GameActionMode, GameActions, GameState},
     initial_description::CurrentDescription,
-    level::{EventAction, Level, LevelEvent, LevelEventType, PendingLevelEvents},
+    level::{EventAction, Level, LevelEvent, LevelEventType, LevelTools, PendingLevelEvents},
 };
 
 pub struct SimulationPlugin;
@@ -15,6 +15,7 @@ impl Plugin for SimulationPlugin {
         app.add_event::<LevelEvent>()
             .init_resource::<PendingLevelEvents>()
             .init_resource::<ActionTracker>()
+            .init_resource::<LevelTools>()
             .add_system(setup_level_events.run_in_state(GameState::InGame))
             .add_system(run_water_simulation.run_in_state(GameState::InGame))
             .add_system(track_actions.run_in_state(GameState::InGame))
@@ -159,11 +160,16 @@ fn propogate_wetness(
     }
 }
 
-fn setup_level_events(level: Res<Level>, mut level_events: ResMut<PendingLevelEvents>) {
+fn setup_level_events(
+    level: Res<Level>,
+    mut level_events: ResMut<PendingLevelEvents>,
+    mut commands: Commands,
+) {
     if !level.is_changed() {
         return;
     }
     level_events.0 = level.events.iter().cloned().collect();
+    commands.insert_resource(level.tools.clone());
 }
 
 fn check_goals_for_sucess(
@@ -256,18 +262,20 @@ fn track_actions(
                 LevelEventType::BuiltNofType(x, content, since_last_event) => {
                     x < if since_last_event {
                         match content {
-                            TileContents::None => action_tracker.demolished_since_last_event,
-                            TileContents::Canal => action_tracker.canals_since_last_event,
-                            TileContents::Lock => action_tracker.locks_since_last_event,
-                            TileContents::Aquaduct(_) => action_tracker.aquaducts_since_last_event,
+                            GameActionMode::Demolish => action_tracker.demolished_since_last_event,
+                            GameActionMode::DigCanal => action_tracker.canals_since_last_event,
+                            GameActionMode::ConstructLock => action_tracker.locks_since_last_event,
+                            GameActionMode::BuildAquaduct => {
+                                action_tracker.aquaducts_since_last_event
+                            }
                             _ => 0,
                         }
                     } else {
                         match content {
-                            TileContents::None => action_tracker.demolished,
-                            TileContents::Canal => action_tracker.canals,
-                            TileContents::Lock => action_tracker.locks,
-                            TileContents::Aquaduct(_) => action_tracker.aquaducts,
+                            GameActionMode::Demolish => action_tracker.demolished,
+                            GameActionMode::DigCanal => action_tracker.canals,
+                            GameActionMode::ConstructLock => action_tracker.locks,
+                            GameActionMode::BuildAquaduct => action_tracker.aquaducts,
                             _ => 0,
                         }
                     }
@@ -290,6 +298,7 @@ fn process_level_event(
     mut tiles: Query<&mut Tile>,
     mut commands: Commands,
     mut action_tracker: ResMut<ActionTracker>,
+    mut tools: ResMut<LevelTools>,
 ) {
     for event in events.iter() {
         action_tracker.total_since_last_event = 0;
@@ -332,6 +341,10 @@ fn process_level_event(
                     for mut tile in tiles.iter_mut() {
                         if tile.x == *x && tile.y == *y {
                             tile.contents = *contents;
+                            tile.wetness = match *contents {
+                                TileContents::River => Wetness::WaterSource,
+                                _ => Wetness::Dry,
+                            };
                             break;
                         }
                     }
@@ -342,6 +355,16 @@ fn process_level_event(
                             tile.z = *h;
                             break;
                         }
+                    }
+                }
+                EventAction::AdjustToolAccess(action_mode, action) => {
+                    info!("Setting the action mode {action_mode:?} {action:?}");
+                    match action_mode {
+                        GameActionMode::None => {}
+                        GameActionMode::DigCanal => tools.canal = *action,
+                        GameActionMode::ConstructLock => tools.lock = *action,
+                        GameActionMode::BuildAquaduct => tools.aquaduct = *action,
+                        GameActionMode::Demolish => tools.demolish = *action,
                     }
                 }
             }

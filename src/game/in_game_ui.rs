@@ -5,7 +5,7 @@ use crate::{app_state::AppState, assets::CanalManiaAssets, ui::*};
 
 use super::{
     game_state::{GameActionMode, GameResources, GameState},
-    level::Level,
+    level::{Level, LevelTools},
 };
 
 pub struct InGameUiPlugin;
@@ -15,6 +15,7 @@ impl Plugin for InGameUiPlugin {
         clear_ui_system_set(app, GameState::InGame)
             .add_enter_system(GameState::InGame, display_ui)
             .add_system(update_labels.run_in_state(GameState::InGame))
+            .add_system(update_buttons.run_in_state(GameState::InGame))
             .add_system(button_pressed.run_in_state(GameState::InGame));
     }
 }
@@ -23,9 +24,18 @@ impl Plugin for InGameUiPlugin {
 enum GameUiId {
     ActionText,
     CostText,
+    Dig,
+    Lock,
+    Aquaduct,
+    Demolish,
 }
 
-fn display_ui(mut commands: Commands, level: Res<Level>, asset: Res<CanalManiaAssets>) {
+fn display_ui(
+    mut commands: Commands,
+    level: Res<Level>,
+    asset: Res<CanalManiaAssets>,
+    tools: Res<LevelTools>,
+) {
     commands
         .ui_root()
         .position(Val::Px(0.), Val::Px(0.), Val::Px(0.), Val::Auto)
@@ -56,19 +66,27 @@ fn display_ui(mut commands: Commands, level: Res<Level>, asset: Res<CanalManiaAs
             parent.div().horizontal().with_children(|parent| {
                 parent
                     .button("dig", "Dig Canal")
+                    .id(GameUiId::Dig)
                     .style(ButtonStyle::Primary)
+                    .hidden(!tools.canal)
                     .icon(asset.dig_canal_icon.clone());
                 parent
                     .button("lock", "Construct Lock")
+                    .id(GameUiId::Lock)
                     .style(ButtonStyle::Primary)
+                    .hidden(!tools.lock)
                     .icon(asset.lock_icon.clone());
                 parent
                     .button("aquaduct", "Construct Aquaduct")
+                    .id(GameUiId::Aquaduct)
                     .style(ButtonStyle::Primary)
+                    .hidden(!tools.aquaduct)
                     .icon(asset.aqueduct_icon.clone());
                 parent
                     .button("demolish", "Demolish")
+                    .id(GameUiId::Demolish)
                     .style(ButtonStyle::Primary)
+                    .hidden(!tools.demolish)
                     .icon(asset.demolish_icon.clone());
             });
         });
@@ -142,6 +160,47 @@ fn update_labels(
             if let GameUiId::CostText = id.val() {
                 label.text(resources.cost_so_far.to_string());
             }
+        }
+    }
+}
+
+fn update_buttons(
+    mut buttons: Query<(&mut Style, &UiId<GameUiId>), With<GameButton>>,
+    tools: Res<LevelTools>,
+) {
+    if tools.is_changed() {
+        for (mut style, id) in buttons.iter_mut() {
+            style.display = match id.val() {
+                GameUiId::Dig => {
+                    if tools.canal {
+                        Display::Flex
+                    } else {
+                        Display::None
+                    }
+                }
+                GameUiId::Lock => {
+                    if tools.lock {
+                        Display::Flex
+                    } else {
+                        Display::None
+                    }
+                }
+                GameUiId::Aquaduct => {
+                    if tools.aquaduct {
+                        Display::Flex
+                    } else {
+                        Display::None
+                    }
+                }
+                GameUiId::Demolish => {
+                    if tools.demolish {
+                        Display::Flex
+                    } else {
+                        Display::None
+                    }
+                }
+                _ => Display::Flex,
+            };
         }
     }
 }
