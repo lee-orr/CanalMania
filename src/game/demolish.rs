@@ -48,7 +48,7 @@ fn demolish(
                     if let Ok(mut tile) = tiles.get_mut(*entity) {
                         resources.cost_so_far += tile.get_demolish_cost();
                         tile.contents = TileContents::None;
-                        tile.is_wet = false;
+                        tile.wetness = Wetness::Dry;
                     }
                 }
             }

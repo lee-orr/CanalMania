@@ -49,7 +49,7 @@ fn dig_lock(
                         if let Ok(mut tile) = tiles.get_mut(*entity) {
                             resources.cost_so_far += tile.get_lock_cost();
                             tile.contents = TileContents::Lock;
-                            tile.is_wet = false;
+                            tile.wetness = Wetness::Dry;
                         }
                     }
                 }

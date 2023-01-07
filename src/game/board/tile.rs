@@ -18,7 +18,35 @@ pub struct Tile {
     #[serde(default)]
     pub is_goal: bool,
     #[serde(default)]
-    pub is_wet: bool,
+    pub wetness: Wetness,
+    #[serde(default)]
+    pub cost_modifier: TileCostModifier,
+}
+
+#[derive(Clone, Copy, Debug, Reflect, Serialize, Deserialize)]
+pub enum TileCostModifier {
+    None,
+    Multiplier(usize),
+    Blocked,
+}
+
+impl Default for TileCostModifier {
+    fn default() -> Self {
+        Self::None
+    }
+}
+
+#[derive(Clone, Copy, Debug, Reflect, Serialize, Deserialize, PartialEq, Eq)]
+pub enum Wetness {
+    Dry,
+    WaterSource,
+    Wet(usize),
+}
+
+impl Default for Wetness {
+    fn default() -> Self {
+        Self::Dry
+    }
 }
 
 #[derive(Component, Default, Clone, Debug)]

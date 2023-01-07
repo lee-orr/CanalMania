@@ -49,7 +49,7 @@ fn dig_canal(
                         if let Ok(mut tile) = tiles.get_mut(*entity) {
                             resources.cost_so_far += tile.get_dig_cost();
                             tile.contents = TileContents::Canal;
-                            tile.is_wet = false;
+                            tile.wetness = Wetness::Dry;
                         }
                     }
                 }

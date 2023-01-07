@@ -152,7 +152,12 @@ fn build_board(
                         tile_type: row.tile_type,
                         is_goal: row.is_goal,
                         contents: row.contents,
-                        is_wet: row.is_wet,
+                        wetness: if row.is_wet {
+                            Wetness::WaterSource
+                        } else {
+                            Wetness::Dry
+                        },
+                        cost_modifier: row.cost_modifier,
                     };
                     let entity = parent.spawn(tile).id();
                     board.children.insert((x, y), entity);
@@ -214,7 +219,7 @@ fn build_tile(
                 let y = tile.y;
 
                 let height = tile.z;
-                let is_wet = tile.is_wet;
+                let is_wet = matches!(tile.wetness, Wetness::WaterSource | Wetness::Wet(_));
 
                 let i = y * width + x;
 
@@ -461,6 +466,7 @@ fn spawn_content(
     parent: &mut ChildBuilder,
     base_material: Handle<TileMaterial>,
 ) {
+    let is_wet = matches!(tile.wetness, Wetness::WaterSource | Wetness::Wet(_));
     match tile.contents {
         TileContents::None => {}
         TileContents::Road => {
@@ -474,7 +480,7 @@ fn spawn_content(
 
             spawn_variant(
                 TileContents::Road,
-                !tile.is_wet,
+                !is_wet,
                 assets,
                 n,
                 w,
@@ -504,7 +510,7 @@ fn spawn_content(
 
             spawn_variant(
                 TileContents::Canal,
-                !tile.is_wet,
+                !is_wet,
                 assets,
                 n,
                 w,
@@ -534,7 +540,7 @@ fn spawn_content(
 
             spawn_variant(
                 TileContents::Canal,
-                !tile.is_wet,
+                !is_wet,
                 assets,
                 n,
                 w,
@@ -546,7 +552,7 @@ fn spawn_content(
             );
             spawn_variant(
                 TileContents::Lock,
-                !tile.is_wet,
+                !is_wet,
                 assets,
                 n,
                 w,
@@ -576,7 +582,7 @@ fn spawn_content(
 
             spawn_variant(
                 TileContents::Aquaduct(h),
-                !tile.is_wet,
+                !is_wet,
                 assets,
                 n,
                 w,
@@ -593,14 +599,14 @@ fn spawn_content(
 pub fn check_neighbours<F: Fn(&Tile) -> bool, R>(
     neighbours: &[Option<(Entity, &Tile, R)>],
     checked: F,
-) -> [Option<(TileContents, usize)>; 8] {
+) -> [Option<(TileContents, usize, Wetness)>; 8] {
     let mut result = [None; 8];
 
     #[allow(clippy::needless_range_loop)]
     for i in 0..8 {
         if let Some(Some((_, neighbour, _))) = neighbours.get(i) {
             result[i] = if checked(neighbour) {
-                Some((neighbour.contents, neighbour.z))
+                Some((neighbour.contents, neighbour.z, neighbour.wetness))
             } else {
                 None
             };
@@ -613,10 +619,10 @@ fn spawn_variant<T: Material>(
     content_type: TileContents,
     _is_dry: bool,
     assets: &CanalManiaAssets,
-    n: Option<(TileContents, usize)>,
-    w: Option<(TileContents, usize)>,
-    e: Option<(TileContents, usize)>,
-    s: Option<(TileContents, usize)>,
+    n: Option<(TileContents, usize, Wetness)>,
+    w: Option<(TileContents, usize, Wetness)>,
+    e: Option<(TileContents, usize, Wetness)>,
+    s: Option<(TileContents, usize, Wetness)>,
     parent: &mut ChildBuilder,
     material: Handle<T>,
     height: usize,
@@ -624,7 +630,7 @@ fn spawn_variant<T: Material>(
     let results = [(n, 90f32), (w, 180.), (s, 270.), (e, 0.)]
         .into_iter()
         .filter_map(|(neighbour, angle)| {
-            if let Some((content, z)) = neighbour {
+            if let Some((content, z, _)) = neighbour {
                 match (content_type, content) {
                     (TileContents::Canal, TileContents::Aquaduct(u)) => {
                         Some((TileContents::Aquaduct(u), angle, z))

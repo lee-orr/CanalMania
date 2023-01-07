@@ -6,7 +6,7 @@ use iyes_loopless::prelude::*;
 use crate::ui::*;
 
 use super::{
-    board::{Tile, TileContents, TileEvent, TileType},
+    board::{Tile, TileContents, TileEvent, TileType, Wetness},
     game_state::GameState,
     level::{Level, TileInfo},
 };
@@ -240,10 +240,15 @@ fn tile_clicked(
                         new_tile.is_goal = !new_tile.is_goal;
                     }
                     EditorOperation::ToggleConstruction(t) => {
-                        new_tile.is_wet = matches!(
+                        let is_wet = matches!(
                             t,
                             TileContents::Canal | TileContents::Lock | TileContents::Aquaduct(_)
                         );
+                        new_tile.wetness = if is_wet {
+                            Wetness::WaterSource
+                        } else {
+                            Wetness::Dry
+                        };
                         if let (TileContents::Aquaduct(_), TileContents::Aquaduct(o)) =
                             (t, new_tile.contents)
                         {
@@ -256,7 +261,10 @@ fn tile_clicked(
                         }
                     }
                     EditorOperation::ToggleWetness => {
-                        new_tile.is_wet = !new_tile.is_wet;
+                        new_tile.wetness = match new_tile.wetness {
+                            Wetness::Dry => Wetness::WaterSource,
+                            _ => Wetness::Dry,
+                        };
                     }
                 }
             }
@@ -293,12 +301,17 @@ fn tile_hovered_set(
                             continue;
                         }
                         if let Ok(mut new_tile) = tiles.get_mut(*entity) {
-                            new_tile.is_wet = matches!(
+                            let is_wet = matches!(
                                 t,
                                 TileContents::Canal
                                     | TileContents::Lock
                                     | TileContents::Aquaduct(_)
                             );
+                            new_tile.wetness = if is_wet {
+                                Wetness::WaterSource
+                            } else {
+                                Wetness::Dry
+                            };
                             if !matches!(new_tile.contents, TileContents::Aquaduct(_)) {
                                 new_tile.contents = t;
                             }
@@ -353,7 +366,10 @@ fn tiles_to_tile_info<'a, T: Iterator<Item = &'a Tile>>(
                 info.is_goal = tile.is_goal;
                 info.tile_type = tile.tile_type;
                 info.contents = tile.contents;
-                info.is_wet = tile.is_wet;
+                info.is_wet = match tile.wetness {
+                    Wetness::Dry => false,
+                    _ => true,
+                };
             }
         }
     }

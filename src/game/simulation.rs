@@ -12,12 +12,20 @@ impl Plugin for SimulationPlugin {
     }
 }
 
+#[derive(Default)]
+struct OnlyDry(bool);
+
 fn run_water_simulation(
     mut commands: Commands,
     tiles: Query<(Entity, &Tile, &TileNeighbours)>,
-    _board: Query<&Board>,
+    mut only_dry: Local<OnlyDry>,
 ) {
+    only_dry.0 = !only_dry.0;
     for (entity, tile, neighbours) in tiles.iter() {
+        if tile.wetness == Wetness::WaterSource {
+            continue;
+        }
+
         let neighbours = neighbours
             .0
             .iter()
@@ -29,69 +37,106 @@ fn run_water_simulation(
                 }
             })
             .collect::<Vec<_>>();
-        if !tile.is_wet {
-            if tile.contents == TileContents::Canal {
-                let z = tile.z;
-                let neighbours = check_neighbours(&neighbours, |neighbour| {
-                    let (nz, diff) = match neighbour.contents {
-                        TileContents::Aquaduct(h) => (h + neighbour.z, 1),
-                        _ => (neighbour.z, 2),
-                    };
-                    neighbour.is_wet && z <= nz && z.abs_diff(nz) < diff
-                });
+        if tile.contents == TileContents::Canal {
+            let z = tile.z;
+            let neighbours = check_neighbours(&neighbours, |neighbour| {
+                let (nz, diff) = match neighbour.contents {
+                    TileContents::Aquaduct(h) => (h + neighbour.z, 1),
+                    _ => (neighbour.z, 2),
+                };
+                neighbour.wetness != Wetness::Dry && z <= nz && z.abs_diff(nz) < diff
+            });
 
-                let n = neighbours[1].is_some();
-                let w = neighbours[3].is_some();
-                let e = neighbours[4].is_some();
-                let s = neighbours[6].is_some();
+            propogate_wetness(neighbours, tile, &mut commands, entity, only_dry.0);
+        } else if tile.contents == TileContents::Lock {
+            let z = tile.z;
+            let neighbours = check_neighbours(&neighbours, |neighbour| {
+                let (nz, diff) = match neighbour.contents {
+                    TileContents::Aquaduct(h) => (h + neighbour.z, 1),
+                    _ => (neighbour.z, 5),
+                };
+                neighbour.wetness != Wetness::Dry && z <= nz && z.abs_diff(nz) < diff
+            });
 
-                if n || w || s || e {
-                    let mut tile = tile.clone();
-                    tile.is_wet = true;
-                    commands.entity(entity).insert(tile);
+            propogate_wetness(neighbours, tile, &mut commands, entity, only_dry.0);
+        } else if let TileContents::Aquaduct(h) = tile.contents {
+            let z = tile.z + h;
+            let neighbours = check_neighbours(&neighbours, |neighbour| {
+                let nz = match neighbour.contents {
+                    TileContents::Aquaduct(h) => h + neighbour.z,
+                    _ => neighbour.z,
+                };
+                neighbour.wetness != Wetness::Dry && z == nz
+            });
+
+            propogate_wetness(neighbours, tile, &mut commands, entity, only_dry.0);
+        }
+    }
+}
+
+fn propogate_wetness(
+    neighbours: [Option<(TileContents, usize, Wetness)>; 8],
+    tile: &Tile,
+    commands: &mut Commands,
+    entity: Entity,
+    only_dry: bool,
+) {
+    let min_wetness = neighbours
+        .iter()
+        .enumerate()
+        .fold(Wetness::Dry, |val, (id, n)| {
+            if id != 1 && id != 3 && id != 4 && id != 6 {
+                // Filter out diagonals...
+                return val;
+            }
+            if let Some((_, _, wetness)) = n {
+                match wetness {
+                    Wetness::Dry => val,
+                    Wetness::WaterSource => *wetness,
+                    Wetness::Wet(a) => match val {
+                        Wetness::Dry => *wetness,
+                        Wetness::WaterSource => val,
+                        Wetness::Wet(b) => Wetness::Wet(*a.min(&b)),
+                    },
                 }
-            } else if tile.contents == TileContents::Lock {
-                let z = tile.z;
-                let neighbours = check_neighbours(&neighbours, |neighbour| {
-                    let (nz, diff) = match neighbour.contents {
-                        TileContents::Aquaduct(h) => (h + neighbour.z, 1),
-                        _ => (neighbour.z, 5),
-                    };
-                    neighbour.is_wet && z <= nz && z.abs_diff(nz) < diff
-                });
+            } else {
+                val
+            }
+        });
 
-                let n = neighbours[1].is_some();
-                let w = neighbours[3].is_some();
-                let e = neighbours[4].is_some();
-                let s = neighbours[6].is_some();
-
-                if n || w || s || e {
-                    let mut tile = tile.clone();
-                    tile.is_wet = true;
-                    commands.entity(entity).insert(tile);
-                }
-            } else if let TileContents::Aquaduct(h) = tile.contents {
-                let z = tile.z + h;
-                let neighbours = check_neighbours(&neighbours, |neighbour| {
-                    let nz = match neighbour.contents {
-                        TileContents::Aquaduct(h) => h + neighbour.z,
-                        _ => neighbour.z,
-                    };
-                    neighbour.is_wet && z == nz
-                });
-
-                let n = neighbours[1].is_some();
-                let w = neighbours[3].is_some();
-                let e = neighbours[4].is_some();
-                let s = neighbours[6].is_some();
-
-                if n || w || s || e {
-                    let mut tile = tile.clone();
-                    tile.is_wet = true;
-                    commands.entity(entity).insert(tile);
-                }
+    let (should_update, new_wetness) = match (tile.wetness, min_wetness) {
+        (Wetness::Dry, Wetness::WaterSource) => (true, Wetness::Wet(1)),
+        (Wetness::Dry, Wetness::Wet(a)) => (true, Wetness::Wet(a + 1)),
+        (Wetness::Wet(_), Wetness::Dry) => (true, Wetness::Dry),
+        (Wetness::Wet(a), Wetness::WaterSource) => {
+            if a != 1 {
+                (true, Wetness::Wet(1))
+            } else {
+                (false, Wetness::Wet(a))
             }
         }
+        (Wetness::Wet(a), Wetness::Wet(b)) => {
+            if a != b + 1 {
+                (true, Wetness::Dry)
+            } else {
+                (false, Wetness::Dry)
+            }
+        }
+        _ => (false, Wetness::Dry),
+    };
+
+    if only_dry && new_wetness != Wetness::Dry {
+        return;
+    }
+
+    if should_update {
+        info!(
+            "Updating tile {}, {} wetness from {:?} to {new_wetness:?} {min_wetness:?}",
+            tile.x, tile.y, tile.wetness
+        );
+        let mut tile = tile.clone();
+        tile.wetness = new_wetness;
+        commands.entity(entity).insert(tile);
     }
 }
 
@@ -100,7 +145,7 @@ fn check_goals_for_sucess(tiles: Query<&Tile>, mut commands: Commands) {
     for tile in tiles.iter() {
         if tile.is_goal {
             found_goal = true;
-            if !tile.is_wet {
+            if matches!(tile.wetness, Wetness::Dry) {
                 return;
             }
         }
