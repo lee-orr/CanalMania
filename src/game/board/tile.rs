@@ -89,11 +89,7 @@ impl Tile {
             TileType::Farm => 4,
             TileType::City => 6,
         };
-        let road_cost = if self.contents == TileContents::Road {
-            1
-        } else {
-            0
-        };
+        let road_cost = usize::from(self.contents == TileContents::Road);
         type_cost + road_cost
     }
 
