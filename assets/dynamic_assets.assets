@@ -7,6 +7,8 @@
     "demolish_icon": File ( path: "icons/demolish.png"),
     "dig_canal_icon": File ( path: "icons/dig-dug.png"),
     "menu_icon": File ( path: "icons/hamburger-menu.png"),
+    "coins_icon": File ( path: "icons/coins.png"),
+    "coin_icon": File ( path: "icons/two-coins.png"),
     
     "land_tile": File (path: "models_2.gltf#Mesh0/Primitive0"),
 "farm_tile": File (path: "models_2.gltf#Mesh1/Primitive0"),

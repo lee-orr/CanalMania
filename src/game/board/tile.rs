@@ -85,53 +85,34 @@ impl TileContents {
 impl Tile {
     pub fn get_dig_cost(&self) -> usize {
         let type_cost = match self.tile_type {
-            TileType::Land => 1000,
-            TileType::Farm => 1500,
-            TileType::City => 3000,
+            TileType::Land => 3,
+            TileType::Farm => 4,
+            TileType::City => 6,
         };
         let road_cost = if self.contents == TileContents::Road {
-            100usize
+            1
         } else {
             0
         };
         type_cost + road_cost
     }
+
     pub fn get_lock_cost(&self) -> usize {
-        let type_cost = match self.tile_type {
-            TileType::Land => 5000,
-            TileType::Farm => 6000,
-            TileType::City => 7000,
-        };
-        let road_cost = if self.contents == TileContents::Road {
-            100usize
-        } else {
-            0
-        };
-        type_cost + road_cost
+        self.get_dig_cost() + 1
     }
 
     pub fn get_aquaduct_cost(&self) -> usize {
-        match self.tile_type {
-            TileType::Land => 8000,
-            TileType::Farm => 8000,
-            TileType::City => 9000,
-        }
+        self.get_dig_cost() + 2
     }
 
     pub fn get_demolish_cost(&self) -> usize {
-        let construction_cost = match self.contents {
+        match self.contents {
             TileContents::None => 0,
-            TileContents::Road => 100,
-            TileContents::Canal => 300,
-            TileContents::Lock => 400,
-            TileContents::Aquaduct(h) => 500 * h,
-        };
-        let type_multiplier = match self.tile_type {
-            TileType::Land => 1,
-            TileType::Farm => 2,
-            TileType::City => 3,
-        };
-        construction_cost * type_multiplier
+            TileContents::Road => 1,
+            TileContents::Canal => 3,
+            TileContents::Lock => 4,
+            TileContents::Aquaduct(h) => 5 * h,
+        }
     }
 
     pub fn get_decorations(&self, assets: &CanalManiaAssets) -> Vec<Handle<Mesh>> {

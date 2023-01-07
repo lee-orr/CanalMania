@@ -1,5 +1,6 @@
 pub mod button;
 pub mod div;
+pub mod icon;
 pub mod text;
 pub mod ui_id;
 pub mod ui_root;
@@ -14,6 +15,7 @@ use std::marker::PhantomData;
 
 pub use button::*;
 pub use div::*;
+pub use icon::*;
 pub use text::*;
 pub use ui_id::*;
 pub use ui_root::*;
@@ -30,6 +32,7 @@ impl Plugin for GameUiPlugin {
             .add_system(spawn_button.run_in_state(AppLoadingState::Loaded))
             .add_system(spawn_div.run_in_state(AppLoadingState::Loaded))
             .add_system(button_events.run_in_state(AppLoadingState::Loaded))
+            .add_system(spawn_icon.run_in_state(AppLoadingState::Loaded))
             .add_system(clear_ui_on_event);
     }
 }
@@ -133,6 +136,13 @@ pub trait InternalUiSpawner<'w, 's> {
         Self: Sized,
     {
         UiComponent::new(GameButton::new(name, text), self)
+    }
+
+    fn icon<'a>(&'a mut self, icon: Handle<Image>) -> UiComponent<'w, 's, 'a, GameIcon, Self>
+    where
+        Self: Sized,
+    {
+        UiComponent::new(GameIcon::new(icon), self)
     }
 }
 

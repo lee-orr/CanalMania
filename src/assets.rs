@@ -24,6 +24,10 @@ pub struct CanalManiaAssets {
     pub dig_canal_icon: Handle<Image>,
     #[asset(key = "menu_icon")]
     pub menu_icon: Handle<Image>,
+    #[asset(key = "coin_icon")]
+    pub coin_icon: Handle<Image>,
+    #[asset(key = "coins_icon")]
+    pub coins_icon: Handle<Image>,
 
     #[asset(key = "farm_tile")]
     pub farm_tile: Handle<Mesh>,

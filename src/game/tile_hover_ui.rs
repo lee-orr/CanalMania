@@ -1,9 +1,15 @@
 use bevy::prelude::*;
-use iyes_loopless::prelude::{AppLooplessStateExt, IntoConditionalSystem};
+use iyes_loopless::{
+    prelude::{AppLooplessStateExt, IntoConditionalSystem},
+    state::CurrentState,
+};
 
-use crate::ui::*;
+use crate::{assets::CanalManiaAssets, ui::*};
 
-use super::{board::TileEvent, game_state::GameState};
+use super::{
+    board::TileEvent,
+    game_state::{GameActionMode, GameState},
+};
 
 pub struct TileHoverUi;
 
@@ -22,7 +28,7 @@ enum HoverUiId {
     SecondaryText,
 }
 
-fn setup_tooltip(mut commands: Commands) {
+fn setup_tooltip(mut commands: Commands, asset: Res<CanalManiaAssets>) {
     commands
         .ui_root()
         .for_state(GameState::InGame)
@@ -31,22 +37,27 @@ fn setup_tooltip(mut commands: Commands) {
         .with_children(|parent| {
             parent
                 .div()
-                .size(Size::new(Val::Px(400.), Val::Auto))
+                .size(Size::new(Val::Px(150.), Val::Auto))
                 .position(Val::Auto, Val::Auto, Val::Auto, Val::Px(20.))
                 .opaque()
                 .with_children(|parent| {
                     parent.text("").size(15.).id(HoverUiId::MainText);
-                    parent.text("").size(12.).id(HoverUiId::SecondaryText);
+                    parent.div().horizontal().with_children(|parent| {
+                        parent
+                            .icon(asset.coin_icon.clone())
+                            .size(GameIconSize::Small);
+                        parent.text("").size(12.).id(HoverUiId::SecondaryText);
+                    });
                 });
         });
 }
 
 fn update_tile_hover_ui(
-    _commands: Commands,
     mut events: EventReader<TileEvent>,
     cameras: Query<Entity, With<Camera>>,
     mut tooltip_root: Query<(&mut UiRoot, &UiId<HoverUiId>)>,
     mut tooltip_text: Query<(&mut GameText, &UiId<HoverUiId>)>,
+    operation: Res<CurrentState<GameActionMode>>,
 ) {
     if let (Ok(camera), Ok((mut root, _))) = (cameras.get_single(), tooltip_root.get_single_mut()) {
         for event in events.iter() {
@@ -54,38 +65,18 @@ fn update_tile_hover_ui(
                 TileEvent::HoverStarted(tile, entity) => {
                     root.world_position(*entity, camera);
 
-                    let cost_to_dig = tile.get_dig_cost();
-                    let cost_to_lock = tile.get_lock_cost();
-
-                    let (tile_type, display_dig, display_lock) = match tile.tile_type {
-                        super::board::TileType::Land => ("A Plot of Land", true, true),
-                        super::board::TileType::City => ("A Constructed Area", true, true),
-                        // super::board::TileType::CanalDry => ("A Dry Canal", false, true),
-                        // super::board::TileType::CanalWet => {
-                        //     ("A Functioning Waterway", false, false)
-                        // }
-                        // super::board::TileType::LockDry => ("A Dry Lock", false, false),
-                        // super::board::TileType::LockWet => ("An Active Lock", false, false),
-                        super::board::TileType::Farm => ("Farmland", true, true),
-                        // super::board::TileType::Road => ("A Road", true, true),
+                    let cost = match operation.0 {
+                        GameActionMode::None => None,
+                        GameActionMode::DigCanal => Some(tile.get_dig_cost()),
+                        GameActionMode::ConstructLock => Some(tile.get_lock_cost()),
+                        GameActionMode::BuildAquaduct => Some(tile.get_aquaduct_cost()),
+                        GameActionMode::Demolish => Some(tile.get_demolish_cost()),
                     };
 
-                    let cost_to_dig = if display_dig {
-                        format!("Dig Cost: {cost_to_dig} Pounds")
-                    } else {
-                        "".to_string()
-                    };
-
-                    let cost_to_lock = if display_lock {
-                        format!("Lock Cost: {cost_to_lock} Pounds")
-                    } else {
-                        "".to_string()
-                    };
-
-                    let height = if tile.z > 0 {
-                        format!("Height: {}0 Meters", tile.z)
-                    } else {
-                        String::new()
+                    let tile_type = match tile.tile_type {
+                        super::board::TileType::Land => "A Plot of Land",
+                        super::board::TileType::City => "A Constructed Area",
+                        super::board::TileType::Farm => "Farmland",
                     };
 
                     for (mut text, id) in tooltip_text.iter_mut() {
@@ -95,7 +86,10 @@ fn update_tile_hover_ui(
                                 text.text(tile_type);
                             }
                             HoverUiId::SecondaryText => {
-                                text.text(format!("{cost_to_dig} {cost_to_lock} {height}"));
+                                text.text(match cost {
+                                    Some(cost) => cost.to_string(),
+                                    None => 0.to_string(),
+                                });
                             }
                         }
                     }

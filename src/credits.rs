@@ -28,6 +28,7 @@ fn display_credits(mut commands: Commands) {
 
             parent
                 .text("Using the Libre-Baskerville font by Rodrigo Fuenzalida and Pablo Impallari");
+
             parent.text("Icons from game-icons.net");
 
             parent.button("menu", "Back");

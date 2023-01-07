@@ -35,7 +35,12 @@ fn display_ui(mut commands: Commands, level: Res<Level>, asset: Res<CanalManiaAs
             if let Some(label) = &level.title {
                 parent.text(label).size(30.);
             }
-            parent.text("").size(20.).id(GameUiId::CostText);
+            parent.div().horizontal().with_children(|parent| {
+                parent
+                    .icon(asset.coin_icon.clone())
+                    .size(GameIconSize::Normal);
+                parent.text("").size(20.).id(GameUiId::CostText);
+            });
             parent
                 .text("Choose an Action")
                 .size(15.)
@@ -125,7 +130,7 @@ fn update_labels(
     if resources.is_changed() {
         for (mut label, id) in labels.iter_mut() {
             if let GameUiId::CostText = id.val() {
-                label.text(format!("Canal Cost: {} Pounds", resources.cost_so_far));
+                label.text(resources.cost_so_far.to_string());
             }
         }
     }
