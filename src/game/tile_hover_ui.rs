@@ -26,6 +26,7 @@ enum HoverUiId {
     Root,
     MainText,
     SecondaryText,
+    CoinIcon,
 }
 
 fn setup_tooltip(mut commands: Commands, asset: Res<CanalManiaAssets>) {
@@ -45,7 +46,8 @@ fn setup_tooltip(mut commands: Commands, asset: Res<CanalManiaAssets>) {
                     parent.div().horizontal().with_children(|parent| {
                         parent
                             .icon(asset.coin_icon.clone())
-                            .size(GameIconSize::Small);
+                            .size(GameIconSize::Small)
+                            .id(HoverUiId::CoinIcon);
                         parent.text("").size(12.).id(HoverUiId::SecondaryText);
                     });
                 });
@@ -57,6 +59,7 @@ fn update_tile_hover_ui(
     cameras: Query<Entity, With<Camera>>,
     mut tooltip_root: Query<(&mut UiRoot, &UiId<HoverUiId>)>,
     mut tooltip_text: Query<(&mut GameText, &UiId<HoverUiId>)>,
+    mut coin_icon: Query<(&mut Style, &GameIcon, &UiId<HoverUiId>)>,
     operation: Res<CurrentState<GameActionMode>>,
 ) {
     if let (Ok(camera), Ok((mut root, _))) = (cameras.get_single(), tooltip_root.get_single_mut()) {
@@ -95,18 +98,31 @@ fn update_tile_hover_ui(
                         "{} {added_text}",
                         match cost {
                             Some(Some(v)) => v.to_string(),
-                            _ => 0.to_string(),
+                            _ => "".to_string(),
                         }
                     );
 
                     for (mut text, id) in tooltip_text.iter_mut() {
                         match id.val() {
-                            HoverUiId::Root => {}
                             HoverUiId::MainText => {
                                 text.text(tile_type);
                             }
                             HoverUiId::SecondaryText => {
                                 text.text(&secondary_text);
+                            }
+                            _ => {}
+                        }
+                    }
+
+                    for (mut style, _icon, id) in coin_icon.iter_mut() {
+                        if &HoverUiId::CoinIcon == id.val() {
+                            match cost {
+                                Some(Some(_)) => {
+                                    style.display = Display::Flex;
+                                }
+                                _ => {
+                                    style.display = Display::None;
+                                }
                             }
                         }
                     }
