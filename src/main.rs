@@ -1,7 +1,9 @@
 mod app_state;
 mod assets;
+mod camera_control;
 mod choose_level;
 mod credits;
+mod custom_picking_plugin;
 mod game;
 mod menu;
 mod ui;
@@ -11,10 +13,12 @@ use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 use bevy_common_assets::{json::JsonAssetPlugin, yaml::YamlAssetPlugin};
 
-use bevy_mod_picking::{DefaultPickingPlugins, PickingCameraBundle};
+use bevy_mod_picking::PickingCameraBundle;
 
+use camera_control::CameraControlPlugin;
 use choose_level::ChooseLevelPlugin;
 use credits::CreditsPlugin;
+use custom_picking_plugin::CustomPickingPlugin;
 use game::{
     level::{Level, LevelList},
     GamePlugin,
@@ -51,9 +55,10 @@ fn main() {
                 }),
         )
         .add_plugin(NoisyShaderPlugin)
-        .add_plugins(DefaultPickingPlugins)
         .add_plugin(LookTransformPlugin)
-        .add_plugin(OrbitCameraPlugin::default())
+        .add_plugin(OrbitCameraPlugin {
+            override_input_system: true,
+        })
         .add_plugin(JsonAssetPlugin::<Level>::new(&["lvl.json"]))
         .add_plugin(YamlAssetPlugin::<LevelList>::new(&["levels.yml"]));
 
@@ -74,11 +79,10 @@ fn main() {
         .add_plugin(ChooseLevelPlugin)
         .add_plugin(CreditsPlugin)
         .add_plugin(GamePlugin)
+        .add_plugin(CameraControlPlugin)
+        .add_plugin(CustomPickingPlugin)
         .add_startup_system(setup)
         .add_enter_system(AppLoadingState::Loaded, on_loaded);
-
-    // #[cfg(feature = "dev")]
-    // app.add_plugin(bevy_inspector_egui::quick::WorldInspectorPlugin);
 
     app.run();
 }
@@ -90,7 +94,10 @@ fn setup(mut commands: Commands) {
         .spawn(Camera3dBundle::default())
         .insert(OrbitCameraBundle::new(
             OrbitCameraController {
-                enabled: true,
+                enabled: false,
+                mouse_translate_sensitivity: Vec2::splat(0.5),
+                mouse_rotate_sensitivity: Vec2::splat(0.08),
+                mouse_wheel_zoom_sensitivity: 1.5,
                 ..Default::default()
             },
             eye,

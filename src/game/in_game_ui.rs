@@ -93,10 +93,20 @@ fn display_ui(mut commands: Commands, level: Res<Level>, asset: Res<CanalManiaAs
                     .size(Size::new(Val::Px(200.), Val::Auto))
                     .with_children(|parent| {
                         parent.text(text).size(15.);
-                        parent.div().padding(2.);
-                        parent.text("Right-click and drag to pan, Ctrl and move the mouse to orbit, Scroll to zoom.").size(15.);
                     });
             }
+            parent.div().padding(20.);
+            parent
+            .div()
+            .opaque()
+            .size(Size::new(Val::Px(200.), Val::Auto))
+            .with_children(|parent| {
+                parent.text("Drag Midde Mouse Button, Arrow Keys or WSAD to move the camera").size(15.);
+                parent.div().padding(3.);
+                parent.text("Drag Right Mouse Button, Control + Arrow Keys or WSAD to orbit the camera").size(15.);
+                parent.div().padding(3.);
+                parent.text("Scroll Wheel, + or - Keys to zoom").size(15.);
+            });
         });
 
     #[cfg(feature = "dev")]
