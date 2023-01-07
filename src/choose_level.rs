@@ -57,21 +57,28 @@ fn button_pressed(
     mut events: EventReader<ButtonClickEvent>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
+    levels: Res<Assets<Level>>,
     mut texts: Query<(&UiId<ElId>, &mut GameText)>,
     containers: Query<(Entity, &UiId<ElId>), With<Div>>,
 ) {
     for event in events.iter() {
         if event.0.starts_with("level:") {
             let file = event.0.replace("level:", "levels/");
-            let _ = asset_server.load::<Level, String>(file);
-            for (id, mut text) in texts.iter_mut() {
-                if id.val() == &ElId::Text {
-                    text.text = "Loading...".into();
+            let handle = asset_server.load::<Level, String>(file);
+
+            if let Some(asset) = levels.get(&handle) {
+                commands.insert_resource(asset.clone());
+                commands.insert_resource(NextState(AppState::InGame));
+            } else {
+                for (id, mut text) in texts.iter_mut() {
+                    if id.val() == &ElId::Text {
+                        text.text = "Loading...".into();
+                    }
                 }
-            }
-            for (entity, id) in containers.iter() {
-                if id.val() == &ElId::LevelButtonContainer {
-                    commands.entity(entity).despawn_recursive();
+                for (entity, id) in containers.iter() {
+                    if id.val() == &ElId::LevelButtonContainer {
+                        commands.entity(entity).despawn_recursive();
+                    }
                 }
             }
         } else if event.0 == "back" {
