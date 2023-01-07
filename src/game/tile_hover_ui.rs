@@ -59,50 +59,54 @@ fn update_tile_hover_ui(
     mut tooltip_text: Query<(&mut GameText, &UiId<HoverUiId>)>,
     operation: Res<CurrentState<GameActionMode>>,
 ) {
-    if let (Ok(camera), Ok((mut root, _))) = (cameras.get_single(), tooltip_root.get_single_mut()) {
-        for event in events.iter() {
-            match event {
-                TileEvent::HoverStarted(tile, entity) => {
-                    root.world_position(*entity, camera);
+    if operation.0 != GameActionMode::None {
+        if let (Ok(camera), Ok((mut root, _))) =
+            (cameras.get_single(), tooltip_root.get_single_mut())
+        {
+            for event in events.iter() {
+                match event {
+                    TileEvent::HoverStarted(tile, entity) => {
+                        root.world_position(*entity, camera);
 
-                    let cost = match operation.0 {
-                        GameActionMode::None => None,
-                        GameActionMode::DigCanal => Some(tile.get_dig_cost()),
-                        GameActionMode::ConstructLock => Some(tile.get_lock_cost()),
-                        GameActionMode::BuildAquaduct => Some(tile.get_aquaduct_cost()),
-                        GameActionMode::Demolish => Some(tile.get_demolish_cost()),
-                    };
+                        let cost = match operation.0 {
+                            GameActionMode::None => None,
+                            GameActionMode::DigCanal => Some(tile.get_dig_cost()),
+                            GameActionMode::ConstructLock => Some(tile.get_lock_cost()),
+                            GameActionMode::BuildAquaduct => Some(tile.get_aquaduct_cost()),
+                            GameActionMode::Demolish => Some(tile.get_demolish_cost()),
+                        };
 
-                    let tile_type = match tile.tile_type {
-                        super::board::TileType::Land => "A Plot of Land",
-                        super::board::TileType::City => "A Constructed Area",
-                        super::board::TileType::Farm => "Farmland",
-                    };
+                        let tile_type = match tile.tile_type {
+                            super::board::TileType::Land => "A Plot of Land",
+                            super::board::TileType::City => "A Constructed Area",
+                            super::board::TileType::Farm => "Farmland",
+                        };
 
-                    for (mut text, id) in tooltip_text.iter_mut() {
-                        match id.val() {
-                            HoverUiId::Root => {}
-                            HoverUiId::MainText => {
-                                text.text(tile_type);
-                            }
-                            HoverUiId::SecondaryText => {
-                                text.text(match cost {
-                                    Some(cost) => cost.to_string(),
-                                    None => 0.to_string(),
-                                });
+                        for (mut text, id) in tooltip_text.iter_mut() {
+                            match id.val() {
+                                HoverUiId::Root => {}
+                                HoverUiId::MainText => {
+                                    text.text(tile_type);
+                                }
+                                HoverUiId::SecondaryText => {
+                                    text.text(match cost {
+                                        Some(cost) => cost.to_string(),
+                                        None => 0.to_string(),
+                                    });
+                                }
                             }
                         }
                     }
-                }
-                TileEvent::HoverEnded(_tile, entity) => {
-                    if let UiRootType::World { track, camera: _ } = root.ui_root_type {
-                        if track != *entity {
-                            continue;
+                    TileEvent::HoverEnded(_tile, entity) => {
+                        if let UiRootType::World { track, camera: _ } = root.ui_root_type {
+                            if track != *entity {
+                                continue;
+                            }
                         }
+                        root.position(Val::Px(-100.), Val::Auto, Val::Px(-100.), Val::Auto);
                     }
-                    root.position(Val::Px(-100.), Val::Auto, Val::Px(-100.), Val::Auto);
+                    _ => {}
                 }
-                _ => {}
             }
         }
     }

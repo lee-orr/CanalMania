@@ -63,4 +63,5 @@ impl Plugin for GamePlugin {
 
 fn prepare_for_setup(mut commands: Commands) {
     commands.insert_resource(NextState(GameState::Setup));
+    commands.insert_resource(NextState(GameActionMode::None));
 }
