@@ -104,10 +104,13 @@ fn control_camera(
     }
 
     for ev in mouse_wheel.iter() {
-        let mut scalar = ev.y * controller.mouse_wheel_zoom_sensitivity;
-        if ev.unit == MouseScrollUnit::Line {
+        let mut scalar = ev.y;
+        if ev.unit == MouseScrollUnit::Pixel {
             scalar /= controller.pixels_per_line;
         }
-        events.send(ControlEvent::Zoom(1. - scalar));
+        info!("Scrolling to zoom - {scalar} - {ev:?}");
+        scalar = 1. - scalar.clamp(-1.5, 1.5) * controller.mouse_wheel_zoom_sensitivity;
+        info!("Scroll result - {scalar}");
+        events.send(ControlEvent::Zoom(scalar));
     }
 }
