@@ -63,7 +63,7 @@ fn run_water_simulation(
             let neighbours = check_neighbours(&neighbours, |neighbour| {
                 let (nz, diff) = match neighbour.contents {
                     TileContents::Aquaduct(h) => (h + neighbour.z, 1),
-                    _ => (neighbour.z, 2),
+                    _ => (neighbour.z, 1),
                 };
                 neighbour.wetness != Wetness::Dry && z <= nz && z.abs_diff(nz) < diff
             });

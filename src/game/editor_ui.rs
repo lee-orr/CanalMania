@@ -425,6 +425,7 @@ fn tiles_to_tile_info<'a, T: Iterator<Item = &'a Tile>>(
                 info.is_goal = tile.is_goal;
                 info.tile_type = tile.tile_type;
                 info.contents = tile.contents;
+                info.cost_modifier = tile.cost_modifier;
             }
         }
     }
@@ -440,14 +441,11 @@ fn save(tiles: &Query<&Tile>, level: &Level) {
 
     let mut path = FileAssetIo::get_base_path();
     path.push("temporary_levels");
-    if let Ok(time) = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH) {
-        let time = time.as_secs();
-        path.push(format!("edited_level_{time:?}.lvl.json"));
+    path.push("edited_level.lvl.json");
 
-        if let Ok(json) = serde_json::to_string(&level) {
-            if let Ok(mut file) = std::fs::File::create(path) {
-                let _ = write!(&mut file, "{json}");
-            }
+    if let Ok(json) = serde_json::to_string_pretty(&level) {
+        if let Ok(mut file) = std::fs::File::create(path) {
+            let _ = write!(&mut file, "{json}");
         }
     }
 }

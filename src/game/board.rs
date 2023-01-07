@@ -484,7 +484,7 @@ fn spawn_content(
         TileContents::Canal => {
             let neighbours = check_neighbours(neighbours, |t| {
                 matches!(t.contents, TileContents::Canal | TileContents::River)
-                    && tile.z.abs_diff(t.z) < 2
+                    && tile.z.abs_diff(t.z) < 1
                     || matches!(t.contents, TileContents::Lock) && tile.z.abs_diff(t.z) < 5
                     || if let TileContents::Aquaduct(h) = t.contents {
                         tile.z == h + t.z
@@ -502,9 +502,9 @@ fn spawn_content(
         }
         TileContents::River => {
             let neighbours = check_neighbours(neighbours, |t| {
-                matches!(t.contents, TileContents::Canal | TileContents::River)
-                    && tile.z.abs_diff(t.z) < 2
+                matches!(t.contents, TileContents::Canal) && tile.z.abs_diff(t.z) < 2
                     || matches!(t.contents, TileContents::Lock) && tile.z.abs_diff(t.z) < 5
+                    || matches!(t.contents, TileContents::River)
                     || if let TileContents::Aquaduct(h) = t.contents {
                         tile.z == h + t.z
                     } else {

@@ -1,5 +1,7 @@
 levels:
   - name: Tutorial - Beverley Beck
     file: beverley.lvl.json
+  - name: Blyth Navigation
+    file: blyth.lvl.json
   - name: test
     file: test.lvl.json
