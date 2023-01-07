@@ -100,7 +100,7 @@ fn fragment(
     let sample = textureSample(info_map, info_map_sampler, world_uv);
     let wetness = sample.y;
     if modify_wetness {
-        vertex_color = vertex_color * wetness;
+        vertex_color = mix(parchment_dark, vertex_color, wetness * 2.);
     }
 
     var test_position : vec3<f32> = world_position.xyz * 0.3;
@@ -166,6 +166,6 @@ fn fragment(
 
     let color = mix(bg * ink , bg  * parchment_dark, 1. - depth);
 
-    let test_vec = vec4<f32>(f32(descriminator % 5), 0., 0., 1.);
+    let test_vec = vec4<f32>(sample.y, 0., 0., 1.);
     return color;
 }
