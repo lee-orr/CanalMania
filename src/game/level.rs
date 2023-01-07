@@ -39,8 +39,6 @@ pub struct TileInfo {
     #[serde(default)]
     pub is_goal: bool,
     #[serde(default)]
-    pub is_wet: bool,
-    #[serde(default)]
     pub cost_modifier: TileCostModifier,
     pub height: usize,
 }
@@ -54,8 +52,8 @@ pub struct LevelEvent(pub LevelEventType, pub Vec<EventAction>);
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum LevelEventType {
     GoalReached,
-    AnyActionsComplete(usize),
-    BuiltNofType(usize, TileContents),
+    AnyActionsComplete(usize, bool),
+    BuiltNofType(usize, TileContents, bool),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -68,4 +66,5 @@ pub enum EventAction {
     SetNewGoal(usize, usize),
     AdjustCost(usize, usize, TileCostModifier),
     AdjustContents(usize, usize, TileContents),
+    SetHeight(usize, usize, usize),
 }

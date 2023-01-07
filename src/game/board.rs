@@ -155,7 +155,7 @@ fn build_board(
                         tile_type: row.tile_type,
                         is_goal: row.is_goal,
                         contents: row.contents,
-                        wetness: if row.is_wet || row.contents == TileContents::River {
+                        wetness: if row.contents == TileContents::River {
                             Wetness::WaterSource
                         } else {
                             Wetness::Dry

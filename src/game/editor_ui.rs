@@ -401,7 +401,6 @@ fn tiles_to_tile_info<'a, T: Iterator<Item = &'a Tile>>(
                 info.is_goal = tile.is_goal;
                 info.tile_type = tile.tile_type;
                 info.contents = tile.contents;
-                info.is_wet = tile.wetness == Wetness::Dry;
             }
         }
     }
@@ -416,8 +415,6 @@ fn save(tiles: &Query<&Tile>, level: &Level) {
     level.tiles = tiles;
 
     let mut path = FileAssetIo::get_base_path();
-    path.push("assets");
-    path.push("levels");
     if let Ok(time) = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH) {
         let time = time.as_secs();
         path.push(format!("edited_level_{time:?}.lvl.json"));

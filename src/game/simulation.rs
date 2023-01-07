@@ -3,7 +3,7 @@ use iyes_loopless::{prelude::IntoConditionalSystem, state::NextState};
 
 use super::{
     board::*,
-    game_state::GameState,
+    game_state::{GameActions, GameState},
     initial_description::CurrentDescription,
     level::{EventAction, Level, LevelEvent, LevelEventType, PendingLevelEvents},
 };
@@ -14,8 +14,10 @@ impl Plugin for SimulationPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<LevelEvent>()
             .init_resource::<PendingLevelEvents>()
+            .init_resource::<ActionTracker>()
             .add_system(setup_level_events.run_in_state(GameState::InGame))
             .add_system(run_water_simulation.run_in_state(GameState::InGame))
+            .add_system(track_actions.run_in_state(GameState::InGame))
             .add_system(
                 check_goals_for_sucess
                     .run_in_state(GameState::InGame)
@@ -198,12 +200,104 @@ fn check_goals_for_sucess(
     }
 }
 
+#[derive(Resource, Default, Debug)]
+pub struct ActionTracker {
+    pub canals: usize,
+    pub locks: usize,
+    pub aquaducts: usize,
+    pub demolished: usize,
+    pub total: usize,
+
+    pub canals_since_last_event: usize,
+    pub locks_since_last_event: usize,
+    pub aquaducts_since_last_event: usize,
+    pub demolished_since_last_event: usize,
+    pub total_since_last_event: usize,
+}
+
+fn track_actions(
+    mut event_reader: EventReader<GameActions>,
+    mut action_tracker: ResMut<ActionTracker>,
+    mut level_events: ResMut<PendingLevelEvents>,
+    mut events: EventWriter<LevelEvent>,
+) {
+    for event in event_reader.iter() {
+        match event {
+            GameActions::DigCanal(_) => {
+                action_tracker.canals += 1;
+                action_tracker.canals_since_last_event += 1;
+            }
+            GameActions::ConstructLock(_) => {
+                action_tracker.locks += 1;
+                action_tracker.locks_since_last_event += 1;
+            }
+            GameActions::BuildAquaduct(_, _) => {
+                action_tracker.aquaducts += 1;
+                action_tracker.aquaducts_since_last_event += 1;
+            }
+            GameActions::Demolish(_) => {
+                action_tracker.demolished += 1;
+                action_tracker.demolished_since_last_event += 1;
+            }
+        }
+        action_tracker.total += 1;
+        action_tracker.total_since_last_event += 1;
+
+        let mut pop = false;
+        if let Some(event) = level_events.0.front() {
+            pop = match event.0 {
+                LevelEventType::AnyActionsComplete(x, since_last_event) => {
+                    x < if since_last_event {
+                        action_tracker.total_since_last_event
+                    } else {
+                        action_tracker.total
+                    }
+                }
+                LevelEventType::BuiltNofType(x, content, since_last_event) => {
+                    x < if since_last_event {
+                        match content {
+                            TileContents::None => action_tracker.demolished_since_last_event,
+                            TileContents::Canal => action_tracker.canals_since_last_event,
+                            TileContents::Lock => action_tracker.locks_since_last_event,
+                            TileContents::Aquaduct(_) => action_tracker.aquaducts_since_last_event,
+                            _ => 0,
+                        }
+                    } else {
+                        match content {
+                            TileContents::None => action_tracker.demolished,
+                            TileContents::Canal => action_tracker.canals,
+                            TileContents::Lock => action_tracker.locks,
+                            TileContents::Aquaduct(_) => action_tracker.aquaducts,
+                            _ => 0,
+                        }
+                    }
+                }
+                _ => false,
+            }
+        }
+        if pop {
+            if let Some(event) = level_events.0.pop_front() {
+                info!("Reached Event {event:?}");
+                events.send(event);
+                return;
+            }
+        }
+    }
+}
+
 fn process_level_event(
     mut events: EventReader<LevelEvent>,
     mut tiles: Query<&mut Tile>,
     mut commands: Commands,
+    mut action_tracker: ResMut<ActionTracker>,
 ) {
     for event in events.iter() {
+        action_tracker.total_since_last_event = 0;
+        action_tracker.demolished_since_last_event = 0;
+        action_tracker.aquaducts_since_last_event = 0;
+        action_tracker.locks_since_last_event = 0;
+        action_tracker.canals_since_last_event = 0;
+
         for action in event.1.iter() {
             match action {
                 EventAction::DisplayText {
@@ -238,6 +332,14 @@ fn process_level_event(
                     for mut tile in tiles.iter_mut() {
                         if tile.x == *x && tile.y == *y {
                             tile.contents = *contents;
+                            break;
+                        }
+                    }
+                }
+                EventAction::SetHeight(x, y, h) => {
+                    for mut tile in tiles.iter_mut() {
+                        if tile.x == *x && tile.y == *y {
+                            tile.z = *h;
                             break;
                         }
                     }

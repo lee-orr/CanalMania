@@ -94,11 +94,8 @@ fn update_tile_hover_ui(
                     let secondary_text = format!(
                         "{} {added_text}",
                         match cost {
-                            Some(cost) => match cost {
-                                Some(v) => v.to_string(),
-                                None => 0.to_string(),
-                            },
-                            None => 0.to_string(),
+                            Some(Some(v)) => v.to_string(),
+                            _ => 0.to_string(),
                         }
                     );
 
