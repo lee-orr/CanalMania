@@ -31,6 +31,7 @@ pub struct InkSettings {
     pub size: Vec4,
     pub blocked_color: Color,
     pub cost_color: Color,
+    pub sea_color: Color,
 }
 
 impl Default for InkSettings {
@@ -46,6 +47,7 @@ impl Default for InkSettings {
             size: Vec4::ZERO,
             cost_color: Color::rgb_u8(232, 89, 89),
             blocked_color: Color::rgb_u8(68, 5, 5),
+            sea_color: Color::rgb_u8(0, 63, 184),
         }
     }
 }

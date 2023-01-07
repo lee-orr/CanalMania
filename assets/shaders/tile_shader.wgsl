@@ -9,6 +9,7 @@ struct InkSettings {
     size: vec4<f32>,
     blocked_color: vec4<f32>,
     cost_color: vec4<f32>,
+    sea_color: vec4<f32>,
 }
 
 @group(1) @binding(0)
@@ -58,9 +59,14 @@ fn vertex(vertex: Vertex) -> VertexOutput {
         position.y = target_y + position.y;
     }
     
+    out.world_position = mesh_position_local_to_world(model, vec4<f32>(position, 1.0));
+
+    
+    if out.world_position.y <= 0.05 & out.world_position.y > -1.5 {
+        out.world_position.y = 0.05;
+    }
 
     out.world_normal = mesh_normal_local_to_world(normal);
-    out.world_position = mesh_position_local_to_world(model, vec4<f32>(position, 1.0));
 
     out.clip_position = mesh_position_world_to_clip(out.world_position);
 
@@ -101,6 +107,11 @@ fn fragment(
     let world_uv = vec2<f32>(in.world_position.x / settings.size.x + 0.5,in.world_position.z / settings.size.z + 0.5) + 1. / ( 2. * settings.size.xz);
     let sample = textureSample(info_map, info_map_sampler, world_uv);
     let wetness = sample.y;
+
+    if world_position.y <= 0.06 && in.world_normal.y > 0.7{
+        vertex_color = settings.sea_color;
+    }
+
     if modify_wetness {
         let wetness = clamp(wetness * 5. - 4., -0.5, 1.);
 

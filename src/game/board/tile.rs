@@ -57,6 +57,7 @@ pub enum TileType {
     Land,
     Farm,
     City,
+    Sea,
 }
 
 impl Default for TileType {
@@ -131,6 +132,7 @@ impl Tile {
             TileType::Land => 3,
             TileType::Farm => 4,
             TileType::City => 6,
+            TileType::Sea => 1,
         };
         let road_cost = usize::from(self.contents == TileContents::Road);
         self.get_modified_cost(type_cost + road_cost)
@@ -161,11 +163,13 @@ impl Tile {
                 TileType::Land => 3.,
                 TileType::Farm => 3.,
                 TileType::City => 8.,
+                TileType::Sea => 0.,
             },
             _ => match self.tile_type {
                 TileType::Land => 1.,
                 TileType::Farm => 1.,
                 TileType::City => 4.,
+                TileType::Sea => 0.,
             },
         };
 
@@ -207,6 +211,7 @@ impl Tile {
                             _ => assets.house.clone(),
                         }
                     }
+                    TileType::Sea => assets.house.clone(),
                 }
             })
             .collect()

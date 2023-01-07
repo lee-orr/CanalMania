@@ -80,6 +80,7 @@ fn update_tile_hover_ui(
                         super::board::TileType::Land => "A Plot of Land",
                         super::board::TileType::City => "A Constructed Area",
                         super::board::TileType::Farm => "Farmland",
+                        super::board::TileType::Sea => "Open Water",
                     };
 
                     #[cfg(not(feature = "dev"))]

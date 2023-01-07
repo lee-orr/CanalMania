@@ -28,6 +28,15 @@
         },
         {
             "mesh" : 3,
+            "name" : "SeaTile",
+            "translation" : [
+                -2.5731234550476074,
+                0,
+                -1.1333204507827759
+            ]
+        },
+        {
+            "mesh" : 4,
             "name" : "Tree1",
             "translation" : [
                 2.8266868591308594,
@@ -36,7 +45,7 @@
             ]
         },
         {
-            "mesh" : 4,
+            "mesh" : 5,
             "name" : "Tree4",
             "translation" : [
                 2.8619654178619385,
@@ -45,7 +54,7 @@
             ]
         },
         {
-            "mesh" : 5,
+            "mesh" : 6,
             "name" : "Tree3",
             "translation" : [
                 2.9325220584869385,
@@ -54,7 +63,7 @@
             ]
         },
         {
-            "mesh" : 6,
+            "mesh" : 7,
             "name" : "Tree2",
             "translation" : [
                 2.544459104537964,
@@ -63,7 +72,7 @@
             ]
         },
         {
-            "mesh" : 7,
+            "mesh" : 8,
             "name" : "House",
             "translation" : [
                 2.10347843170166,
@@ -72,7 +81,7 @@
             ]
         },
         {
-            "mesh" : 8,
+            "mesh" : 9,
             "name" : "House2",
             "translation" : [
                 2.13875675201416,
@@ -81,7 +90,7 @@
             ]
         },
         {
-            "mesh" : 9,
+            "mesh" : 10,
             "name" : "House3",
             "translation" : [
                 2.5003609657287598,
@@ -90,7 +99,7 @@
             ]
         },
         {
-            "mesh" : 10,
+            "mesh" : 11,
             "name" : "House4",
             "translation" : [
                 2.4871315956115723,
@@ -99,7 +108,7 @@
             ]
         },
         {
-            "mesh" : 11,
+            "mesh" : 12,
             "name" : "Goal",
             "translation" : [
                 2.0285115242004395,
@@ -108,7 +117,7 @@
             ]
         },
         {
-            "mesh" : 12,
+            "mesh" : 13,
             "name" : "CanalLine",
             "translation" : [
                 0,
@@ -117,7 +126,7 @@
             ]
         },
         {
-            "mesh" : 13,
+            "mesh" : 14,
             "name" : "CanalEnd",
             "translation" : [
                 0,
@@ -126,11 +135,11 @@
             ]
         },
         {
-            "mesh" : 14,
+            "mesh" : 15,
             "name" : "CanalCenter"
         },
         {
-            "mesh" : 15,
+            "mesh" : 16,
             "name" : "RiverLine",
             "translation" : [
                 -1.3780651092529297,
@@ -139,7 +148,7 @@
             ]
         },
         {
-            "mesh" : 16,
+            "mesh" : 17,
             "name" : "RiverEnd",
             "translation" : [
                 -1.3780651092529297,
@@ -148,7 +157,7 @@
             ]
         },
         {
-            "mesh" : 17,
+            "mesh" : 18,
             "name" : "RiverCenter",
             "translation" : [
                 -1.3780651092529297,
@@ -157,7 +166,7 @@
             ]
         },
         {
-            "mesh" : 18,
+            "mesh" : 19,
             "name" : "RiverToCanalLine",
             "translation" : [
                 -2.3970816135406494,
@@ -166,7 +175,7 @@
             ]
         },
         {
-            "mesh" : 19,
+            "mesh" : 20,
             "name" : "RiverToCanalEnd",
             "translation" : [
                 -2.3970816135406494,
@@ -175,7 +184,7 @@
             ]
         },
         {
-            "mesh" : 20,
+            "mesh" : 21,
             "name" : "AquaductLine",
             "translation" : [
                 -0.6000000238418579,
@@ -184,7 +193,7 @@
             ]
         },
         {
-            "mesh" : 21,
+            "mesh" : 22,
             "name" : "AquaductEnd",
             "translation" : [
                 -0.6000000238418579,
@@ -193,7 +202,7 @@
             ]
         },
         {
-            "mesh" : 22,
+            "mesh" : 23,
             "name" : "AquaductCenter",
             "translation" : [
                 -0.6000000238418579,
@@ -202,7 +211,7 @@
             ]
         },
         {
-            "mesh" : 23,
+            "mesh" : 24,
             "name" : "Lock",
             "translation" : [
                 0,
@@ -211,7 +220,7 @@
             ]
         },
         {
-            "mesh" : 24,
+            "mesh" : 25,
             "name" : "RoadLine",
             "translation" : [
                 0.6000000238418579,
@@ -220,7 +229,7 @@
             ]
         },
         {
-            "mesh" : 25,
+            "mesh" : 26,
             "name" : "RoadEnd",
             "translation" : [
                 0.6000000238418579,
@@ -229,7 +238,7 @@
             ]
         },
         {
-            "mesh" : 26,
+            "mesh" : 27,
             "name" : "RoadCenter",
             "translation" : [
                 0.6000000238418579,

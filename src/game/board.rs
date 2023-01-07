@@ -145,7 +145,9 @@ fn build_board(
                         tile_type: row.tile_type,
                         is_goal: row.is_goal,
                         contents: row.contents,
-                        wetness: if row.contents == TileContents::River {
+                        wetness: if row.contents == TileContents::River
+                            || row.tile_type == TileType::Sea
+                        {
                             Wetness::WaterSource
                         } else {
                             Wetness::Dry
@@ -215,7 +217,11 @@ fn build_tile(
                 let x = tile.x;
                 let y = tile.y;
 
-                let height = tile.z;
+                let height = if tile.tile_type == TileType::Sea {
+                    0
+                } else {
+                    tile.z + 1
+                };
                 let is_wet = matches!(tile.wetness, Wetness::WaterSource | Wetness::Wet(_));
 
                 let i = y * width + x;
@@ -362,6 +368,7 @@ fn update_tile(
                         TileType::Land => assets.land_tile.clone(),
                         TileType::City => assets.city_tile.clone(),
                         TileType::Farm => assets.farm_tile.clone(),
+                        TileType::Sea => assets.sea_tile.clone(),
                     },
                     material: base_material.clone(),
                     ..Default::default()

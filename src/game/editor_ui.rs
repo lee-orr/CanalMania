@@ -153,7 +153,8 @@ fn button_pressed(
                 EditorOperation::ToggleType(t) => match t {
                     super::board::TileType::Land => super::board::TileType::Farm,
                     super::board::TileType::Farm => super::board::TileType::City,
-                    super::board::TileType::City => super::board::TileType::Land,
+                    super::board::TileType::City => super::board::TileType::Sea,
+                    super::board::TileType::Sea => super::board::TileType::Land,
                 },
                 _ => TileType::Land,
             };
@@ -244,6 +245,9 @@ fn tile_clicked(
                 match operation.0 {
                     EditorOperation::None => {}
                     EditorOperation::RaiseHeight(_) => {
+                        if new_tile.tile_type == TileType::Sea {
+                            continue;
+                        }
                         new_tile.z = old_tile.z + 1;
                         commands
                             .insert_resource(NextState(EditorOperation::RaiseHeight(new_tile.z)));
@@ -255,6 +259,15 @@ fn tile_clicked(
                     }
                     EditorOperation::ToggleType(t) => {
                         new_tile.tile_type = t;
+                        if t == TileType::Sea {
+                            new_tile.z = 0;
+                            new_tile.wetness = Wetness::WaterSource;
+                        } else {
+                            new_tile.wetness = match new_tile.contents {
+                                TileContents::River => Wetness::WaterSource,
+                                _ => Wetness::Dry,
+                            }
+                        }
                     }
                     EditorOperation::SetGoal => {
                         new_tile.is_goal = !new_tile.is_goal;
@@ -311,6 +324,15 @@ fn tile_hovered_set(
                         }
                         if let Ok(mut new_tile) = tiles.get_mut(*entity) {
                             new_tile.tile_type = t;
+                            if t == TileType::Sea {
+                                new_tile.z = 0;
+                                new_tile.wetness = Wetness::WaterSource;
+                            } else {
+                                new_tile.wetness = match new_tile.contents {
+                                    TileContents::River => Wetness::WaterSource,
+                                    _ => Wetness::Dry,
+                                }
+                            }
                         }
                     }
                 }
@@ -347,6 +369,9 @@ fn tile_hovered_set(
             if buttons.pressed(MouseButton::Left) {
                 for event in events.iter() {
                     if let TileEvent::HoverStarted(old_tile, entity) = event {
+                        if old_tile.tile_type == TileType::Sea {
+                            continue;
+                        }
                         if old_tile.z < h {
                             if let Ok(mut new_tile) = tiles.get_mut(*entity) {
                                 new_tile.z = h;
