@@ -255,7 +255,7 @@ fn build_tile(
                         *height * TILE_HEIGHT,
                         if *is_wet { u8::MAX } else { u8::MIN },
                         if *blocked { u8::MAX } else { u8::MIN },
-                        if *cost_modifier { u8::MAX} else { u8::MIN},
+                        if *cost_modifier { u8::MAX } else { u8::MIN },
                     ]
                 })
                 .collect::<Vec<_>>();
