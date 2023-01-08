@@ -1,16 +1,24 @@
 use bevy::prelude::*;
-use iyes_loopless::prelude::IntoConditionalSystem;
+use iyes_loopless::prelude::{ConditionHelpers, IntoConditionalSystem};
 
 use super::{
     board::*,
-    game_state::{GameActionMode, GameActions, GameResources},
+    game_state::{GameActionMode, GameActions, GameResources, GameState},
 };
 pub struct DigLockPlugin;
 
 impl Plugin for DigLockPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(trigger_dig_lock.run_in_state(GameActionMode::ConstructLock))
-            .add_system(dig_lock.run_in_state(GameActionMode::ConstructLock));
+        app.add_system(
+            trigger_dig_lock
+                .run_in_state(GameActionMode::ConstructLock)
+                .run_not_in_state(GameState::Description),
+        )
+        .add_system(
+            dig_lock
+                .run_in_state(GameActionMode::ConstructLock)
+                .run_not_in_state(GameState::Description),
+        );
     }
 }
 

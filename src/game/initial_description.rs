@@ -5,7 +5,6 @@ use iyes_loopless::state::NextState;
 
 use crate::ui::*;
 
-use super::game_state::GameActionMode;
 use super::game_state::GameState;
 
 pub struct InitialDescriptionUiPlugin;
@@ -30,7 +29,6 @@ fn display_ui(mut commands: Commands, current_description: Res<CurrentDescriptio
     if !current_description.is_changed() {
         return;
     }
-    commands.insert_resource(NextState(GameActionMode::None));
     if let Some(description) = &current_description.text {
         commands
             .ui_root()

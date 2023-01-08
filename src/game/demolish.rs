@@ -1,16 +1,24 @@
 use bevy::prelude::*;
-use iyes_loopless::prelude::IntoConditionalSystem;
+use iyes_loopless::prelude::{ConditionHelpers, IntoConditionalSystem};
 
 use super::{
     board::*,
-    game_state::{GameActionMode, GameActions, GameResources},
+    game_state::{GameActionMode, GameActions, GameResources, GameState},
 };
 pub struct DemolishPlugin;
 
 impl Plugin for DemolishPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(trigger_demolish.run_in_state(GameActionMode::Demolish))
-            .add_system(demolish.run_in_state(GameActionMode::Demolish));
+        app.add_system(
+            trigger_demolish
+                .run_in_state(GameActionMode::Demolish)
+                .run_not_in_state(GameState::Description),
+        )
+        .add_system(
+            demolish
+                .run_in_state(GameActionMode::Demolish)
+                .run_not_in_state(GameState::Description),
+        );
     }
 }
 
