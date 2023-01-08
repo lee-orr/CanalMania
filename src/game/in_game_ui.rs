@@ -79,25 +79,25 @@ fn display_ui(
                 parent
                     .button("dig", "Dig Canal")
                     .id(GameUiId::Dig)
-                    .style(ButtonStyle::Primary)
+                    .style(ButtonStyle::Action)
                     .hidden(!tools.canal)
                     .icon(asset.dig_canal_icon.clone());
                 parent
                     .button("lock", "Construct Lock")
                     .id(GameUiId::Lock)
-                    .style(ButtonStyle::Primary)
+                    .style(ButtonStyle::Action)
                     .hidden(!tools.lock)
                     .icon(asset.lock_icon.clone());
                 parent
                     .button("aquaduct", "Construct Aquaduct")
                     .id(GameUiId::Aquaduct)
-                    .style(ButtonStyle::Primary)
+                    .style(ButtonStyle::Action)
                     .hidden(!tools.aquaduct)
                     .icon(asset.aqueduct_icon.clone());
                 parent
                     .button("demolish", "Demolish")
                     .id(GameUiId::Demolish)
-                    .style(ButtonStyle::Primary)
+                    .style(ButtonStyle::Action)
                     .hidden(!tools.demolish)
                     .icon(asset.demolish_icon.clone());
             });

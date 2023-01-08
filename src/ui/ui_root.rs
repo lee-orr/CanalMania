@@ -1,3 +1,4 @@
+use bevy::ui::FocusPolicy;
 use bevy::{ecs::schedule::StateData, prelude::*};
 use iyes_loopless::prelude::AppLooplessStateExt;
 
@@ -162,12 +163,19 @@ pub fn spawn_ui_root(
                         get_world_ui_position(track, camera, &transformables, &cameras)
                     }
                 },
-
                 ..Default::default()
             },
             background_color: match root.background {
                 Background::Transparent => Color::rgba(0., 0., 0., 0.).into(),
                 Background::Opaque => Color::rgb_u8(177, 162, 124).into(),
+            },
+            focus_policy: match root.ui_root_type {
+                UiRootType::World { track, camera } => bevy::ui::FocusPolicy::Pass,
+                _ => FocusPolicy::default()
+            },
+            z_index:  match root.ui_root_type {
+                UiRootType::World { track, camera } => ZIndex::Global(-1),
+                _ => ZIndex::Global(1)
             },
             ..Default::default()
         },));

@@ -21,6 +21,7 @@ pub enum ButtonStyle {
     Primary,
     Secondary,
     Small,
+    Action
 }
 
 impl Default for GameButton {
@@ -97,6 +98,7 @@ impl ButtonStyle {
             Self::Primary => Color::rgb_u8(213, 194, 125),
             Self::Secondary => Color::rgb_u8(244, 235, 201),
             Self::Small => Color::rgb_u8(213, 194, 125),
+            Self::Action => Color::rgb_u8(208, 170, 89)
         }
     }
 
@@ -105,6 +107,7 @@ impl ButtonStyle {
             Self::Primary => Color::rgb_u8(162, 147, 95),
             Self::Secondary => Color::rgb_u8(193, 185, 158),
             Self::Small => Color::rgb_u8(162, 147, 95),
+            Self::Action => Color::rgb_u8(233, 190, 99),
         }
     }
 
@@ -113,6 +116,7 @@ impl ButtonStyle {
             Self::Primary => Color::rgb_u8(110, 100, 65),
             Self::Secondary => Color::rgb_u8(193, 185, 158),
             Self::Small => Color::rgb_u8(110, 100, 65),
+            Self::Action => Color::rgb_u8(157, 128, 67)
         }
     }
 
