@@ -44,6 +44,7 @@ fn display_ui(
     tools: Res<LevelTools>,
     sidebar: Res<SidebarText>,
     resources: Res<GameResources>,
+    operation: Res<CurrentState<GameActionMode>>,
 ) {
     commands
         .ui_root()
@@ -81,24 +82,28 @@ fn display_ui(
                     .id(GameUiId::Dig)
                     .style(ButtonStyle::Action)
                     .hidden(!tools.canal)
+                    .selected(operation.0 == GameActionMode::DigCanal)
                     .icon(asset.dig_canal_icon.clone());
                 parent
                     .button("lock", "Construct Lock")
                     .id(GameUiId::Lock)
                     .style(ButtonStyle::Action)
                     .hidden(!tools.lock)
+                    .selected(operation.0 == GameActionMode::ConstructLock)
                     .icon(asset.lock_icon.clone());
                 parent
                     .button("aquaduct", "Construct Aquaduct")
                     .id(GameUiId::Aquaduct)
                     .style(ButtonStyle::Action)
                     .hidden(!tools.aquaduct)
+                    .selected(operation.0 == GameActionMode::BuildAquaduct)
                     .icon(asset.aqueduct_icon.clone());
                 parent
                     .button("demolish", "Demolish")
                     .id(GameUiId::Demolish)
                     .style(ButtonStyle::Action)
                     .hidden(!tools.demolish)
+                    .selected(operation.0 == GameActionMode::Demolish)
                     .icon(asset.demolish_icon.clone());
             });
         });
@@ -151,6 +156,7 @@ fn display_ui(
 
 fn update_labels(
     mut labels: Query<(&mut GameText, &UiId<GameUiId>)>,
+    mut buttons: Query<(&mut GameButton, &UiId<GameUiId>)>,
     operation: Res<CurrentState<GameActionMode>>,
     resources: Res<GameResources>,
 ) {
@@ -165,6 +171,19 @@ fn update_labels(
                     GameActionMode::Demolish => "Demolish Existing Construction",
                 });
             }
+        }
+
+        for (mut button, id) in buttons.iter_mut() {
+            let selected = match id.val() {
+                GameUiId::Dig => operation.0 == GameActionMode::DigCanal,
+                GameUiId::Lock => operation.0 == GameActionMode::ConstructLock,
+                GameUiId::Aquaduct => operation.0 == GameActionMode::BuildAquaduct,
+                GameUiId::Demolish => operation.0 == GameActionMode::Demolish,
+                _ => {
+                    continue;
+                }
+            };
+            button.selected(selected);
         }
     }
     if resources.is_changed() {
@@ -202,42 +221,20 @@ fn update_sidebar(
 }
 
 fn update_buttons(
-    mut buttons: Query<(&mut Style, &UiId<GameUiId>), With<GameButton>>,
+    mut buttons: Query<(&mut GameButton, &UiId<GameUiId>), With<GameButton>>,
     tools: Res<LevelTools>,
 ) {
     if tools.is_changed() {
-        for (mut style, id) in buttons.iter_mut() {
-            style.display = match id.val() {
-                GameUiId::Dig => {
-                    if tools.canal {
-                        Display::Flex
-                    } else {
-                        Display::None
-                    }
-                }
-                GameUiId::Lock => {
-                    if tools.lock {
-                        Display::Flex
-                    } else {
-                        Display::None
-                    }
-                }
-                GameUiId::Aquaduct => {
-                    if tools.aquaduct {
-                        Display::Flex
-                    } else {
-                        Display::None
-                    }
-                }
-                GameUiId::Demolish => {
-                    if tools.demolish {
-                        Display::Flex
-                    } else {
-                        Display::None
-                    }
-                }
-                _ => Display::Flex,
+        for (mut button, id) in buttons.iter_mut() {
+            let hidden = !match id.val() {
+                GameUiId::Dig => tools.canal,
+                GameUiId::Lock => tools.lock,
+                GameUiId::Aquaduct => tools.aquaduct,
+                GameUiId::Demolish => tools.demolish,
+                _ => true,
             };
+
+            button.hidden(hidden);
         }
     }
 }

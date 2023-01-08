@@ -14,6 +14,7 @@ pub struct GameButton {
     pub icon: Option<Handle<Image>>,
     pub hover_direction: Direction,
     pub hidden: bool,
+    pub selected: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -33,6 +34,7 @@ impl Default for GameButton {
             icon: None,
             hover_direction: Direction::Vertical,
             hidden: false,
+            selected: false,
         }
     }
 }
@@ -65,6 +67,11 @@ impl GameButton {
         self.hidden = hidden;
         self
     }
+
+    pub fn selected(&mut self, selected: bool) -> &mut Self {
+        self.selected = selected;
+        self
+    }
 }
 
 pub trait ButtonSpawner {
@@ -72,6 +79,7 @@ pub trait ButtonSpawner {
     fn icon(self, image: Handle<Image>) -> Self;
     fn hover_direction(self, hover_direction: Direction) -> Self;
     fn hidden(self, hidden: bool) -> Self;
+    fn selected(self, selected: bool) -> Self;
 }
 
 impl<T: UiComponentSpawner<GameButton>> ButtonSpawner for T {
@@ -89,6 +97,10 @@ impl<T: UiComponentSpawner<GameButton>> ButtonSpawner for T {
 
     fn hidden(self, hidden: bool) -> Self {
         self.update_value(move |v| v.hidden(hidden))
+    }
+
+    fn selected(self, selected: bool) -> Self {
+        self.update_value(move |v| v.selected(selected))
     }
 }
 
@@ -108,6 +120,15 @@ impl ButtonStyle {
             Self::Secondary => Color::rgb_u8(193, 185, 158),
             Self::Small => Color::rgb_u8(162, 147, 95),
             Self::Action => Color::rgb_u8(233, 190, 99),
+        }
+    }
+
+    fn selected_color(&self) -> Color {
+        match self {
+            Self::Primary => Color::rgb_u8(162, 147, 95),
+            Self::Secondary => Color::rgb_u8(193, 185, 158),
+            Self::Small => Color::rgb_u8(162, 147, 95),
+            Self::Action => Color::rgb_u8(255, 217, 108),
         }
     }
 
@@ -150,7 +171,11 @@ pub(crate) fn spawn_button(
         };
         commands.entity(entity).despawn_descendants();
         commands.entity(entity).insert(ButtonBundle {
-            background_color: button.style.main_color().into(),
+            background_color: if button.selected {
+                button.style.selected_color().into()
+            } else {
+                button.style.main_color().into()
+            },
             style: Style {
                 padding: UiRect::all(Val::Px(button.style.padding())),
                 justify_content: JustifyContent::Center,
@@ -253,7 +278,11 @@ pub fn button_events(
             }
             Interaction::None => {
                 style.overflow = Overflow::Hidden;
-                *background = button.style.main_color().into();
+                *background = if button.selected {
+                    button.style.selected_color().into()
+                } else {
+                    button.style.main_color().into()
+                };
             }
         }
     }

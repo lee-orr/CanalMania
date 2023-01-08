@@ -101,7 +101,7 @@ fn update_tile_hover_ui(
                         tile.z * 20
                     );
                     #[cfg(feature = "dev")]
-                    let secondary_text = format!("{secondary_text}\n{},{}",  tile.x, tile.y);
+                    let secondary_text = format!("{secondary_text}\n{},{}", tile.x, tile.y);
 
                     let primary_text = format!(
                         "{} {tile_type}",
