@@ -24,7 +24,6 @@ impl Plugin for InGameUiPlugin {
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 enum GameUiId {
-    ActionText,
     CostText,
     SidebarText,
     Sidebar,
@@ -74,10 +73,6 @@ fn display_ui(
         .with_children(|parent| {
             parent.div().horizontal().opaque().with_children(|parent| {
                 parent
-                    .text("Choose An Action:")
-                    .id(GameUiId::ActionText)
-                    .size(25.);
-                parent
                     .button("dig", "Dig Canal")
                     .id(GameUiId::Dig)
                     .style(ButtonStyle::Action)
@@ -114,13 +109,16 @@ fn display_ui(
         .position(Val::Px(0.), Val::Auto, Val::Px(0.), Val::Auto)
         .with_children(|parent| {
             parent.div().padding(20.);
-            parent.div().position(Val::Px(0.), Val::Auto, Val::Px(0.), Val::Auto).with_children(|parent| {
-                parent
-                    .button("choose-level", "Choose Another Level")
-                    .style(ButtonStyle::Small)
-                    .icon(asset.menu_icon.clone())
-                    .hover_direction(crate::ui::div::Direction::Horizontal);
-            });
+            parent
+                .div()
+                .position(Val::Px(0.), Val::Auto, Val::Px(0.), Val::Auto)
+                .with_children(|parent| {
+                    parent
+                        .button("choose-level", "Choose Another Level")
+                        .style(ButtonStyle::Small)
+                        .icon(asset.menu_icon.clone())
+                        .hover_direction(crate::ui::div::Direction::Horizontal);
+                });
             parent
                 .div()
                 .opaque()
@@ -128,27 +126,36 @@ fn display_ui(
                 .hidden(sidebar.0.is_none())
                 .id(GameUiId::Sidebar)
                 .with_children(|parent| {
-                    parent.text(sidebar.0.as_ref().unwrap_or(&String::new())).size(15.).id(GameUiId::SidebarText);
+                    parent
+                        .text(sidebar.0.as_ref().unwrap_or(&String::new()))
+                        .size(15.)
+                        .id(GameUiId::SidebarText);
                 });
-            parent.div().padding(20.);
-            parent
-            .div()
-            .opaque()
-            .size(Size::new(Val::Px(200.), Val::Auto))
-            .with_children(|parent| {
-                parent.text("Drag Midde Mouse Button, Arrow Keys or WSAD to move the camera").size(15.);
-                parent.div().padding(3.);
-                parent.text("Drag Right Mouse Button, Control + Arrow Keys or WSAD to orbit the camera").size(15.);
-                parent.div().padding(3.);
-                parent.text("Scroll Wheel, + or - Keys to zoom").size(15.);
-            });
         });
+
+    commands
+            .ui_root()
+            .for_state(GameState::InGame)
+            .position(Val::Auto,Val::Px(0.), Val::Px(0.),  Val::Auto)
+            .with_children(|parent| {
+                parent
+                .div()
+                .opaque()
+                .size(Size::new(Val::Px(200.), Val::Auto))
+                .with_children(|parent| {
+                    parent.text("Drag Midde Mouse Button, Arrow Keys or WSAD to move the camera").size(15.);
+                    parent.div().padding(3.);
+                    parent.text("Drag Right Mouse Button, Control + Arrow Keys or WSAD to orbit the camera").size(15.);
+                    parent.div().padding(3.);
+                    parent.text("Scroll Wheel, + or - Keys to zoom").size(15.);
+                });
+            });
 
     #[cfg(feature = "dev")]
     commands
         .ui_root()
         .for_state(GameState::InGame)
-        .position(Val::Auto, Val::Px(0.), Val::Px(0.), Val::Auto)
+        .position(Val::Auto, Val::Px(0.), Val::Auto, Val::Px(0.))
         .with_children(|parent| {
             parent.button("editor", "Editor").style(ButtonStyle::Small);
         });
@@ -161,18 +168,6 @@ fn update_labels(
     resources: Res<GameResources>,
 ) {
     if operation.is_changed() {
-        for (mut label, id) in labels.iter_mut() {
-            if let GameUiId::ActionText = id.val() {
-                label.text(match operation.0 {
-                    GameActionMode::None => "Choose An Action",
-                    GameActionMode::DigCanal => "Dig Canal Tiles",
-                    GameActionMode::ConstructLock => "Construct Lock Tiles",
-                    GameActionMode::BuildAquaduct => "Build Aquaducts",
-                    GameActionMode::Demolish => "Demolish Existing Construction",
-                });
-            }
-        }
-
         for (mut button, id) in buttons.iter_mut() {
             let selected = match id.val() {
                 GameUiId::Dig => operation.0 == GameActionMode::DigCanal,

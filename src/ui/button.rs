@@ -151,6 +151,7 @@ impl ButtonStyle {
     fn text_size(&self) -> f32 {
         match self {
             Self::Small => 15.,
+            Self::Action => 35.,
             _ => 25.,
         }
     }
