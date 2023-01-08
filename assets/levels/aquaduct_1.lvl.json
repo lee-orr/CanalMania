@@ -466,7 +466,7 @@
       ]
     ],
     "title": "Across The Valley",
-    "initial_description": "The fictional town of Casterbridge has been growing slowly, and now they find they need a better way to transport their goods. Help them by connecting a Canal across the valley.",
+    "initial_description": "The fictional town of Casterbridge has been growing slowly, and now they find they need a better way to transport their goods. Help them by connecting a Canal across the valley.\nTo do this, we will need a new tool - Aquaducts!",
     "sidebar_text": "Aquaducts can be used to transfer water across lower terrain - give it a try!",
     "width": 8,
     "height": 8,
@@ -494,8 +494,8 @@
         [
           {
             "DisplayText": {
-              "text": "The new canal was a great success! As you can see, the town grew quite a bit - and ow they want the canal to reach the town center.\nOnly problem is - that's even higher up. You may need to re-build things with a new aquaduct to make this work...",
-              "title": "Complications Arise",
+              "text": "The new canal was a great success! And now the mayor asked for the canal to reach the town center.\nOnly problem is - that's even higher up. Good luck!",
+              "title": "We crossed the valley!",
               "continue_button": "Keep Going"
             }
           },

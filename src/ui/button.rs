@@ -1,5 +1,6 @@
 use crate::assets::CanalManiaAssets;
 
+use bevy::ecs::storage::Column;
 use bevy::prelude::*;
 use bevy::ui::{FocusPolicy, JustifyContent};
 
@@ -215,27 +216,49 @@ pub(crate) fn spawn_button(
                             position_type: PositionType::Absolute,
                             position: match button.hover_direction {
                                 Direction::Vertical => UiRect::bottom(Val::Percent(100.)),
-                                Direction::Horizontal => UiRect::left(Val::Percent(100.)),
+                                Direction::Horizontal => UiRect::new(Val::Percent(100.), Val::Auto, Val::Px(0.), Val::Auto),
                             },
+                            flex_direction: FlexDirection::Column,
                             padding: UiRect::all(Val::Px(5.)),
                             justify_content: JustifyContent::Center,
                             align_items: AlignItems::Center,
                             border: UiRect::all(Val::Px(1.)),
                             margin: UiRect::all(Val::Px(3.)),
-                            overflow: Overflow::Hidden,
+                            overflow: Overflow::Visible,
+                            size: Size::new(Val::Px(300.), Val::Auto),
                             ..Default::default()
                         },
                         focus_policy: FocusPolicy::Pass,
                         ..Default::default()
                     })
                     .with_children(|parent| {
-                        parent.spawn(TextBundle::from_section(text, style.clone()).with_style(
-                            Style {
-                                max_size: Size::new(Val::Undefined, Val::Px(size)),
-                                margin: UiRect::all(Val::Px(4.)),
-                                ..Default::default()
-                            },
-                        ));
+                        for line in text.lines() {
+                            parent
+                                .spawn(NodeBundle {
+                                    style: Style {
+                                        flex_direction: FlexDirection::Row,
+                                        flex_wrap: FlexWrap::Wrap,
+                                        align_content: AlignContent::FlexStart,
+                                        ..Default::default()
+                                    },
+                                    ..Default::default()
+                                })
+                                .with_children(|parent| {
+                                    for word in line.split_whitespace() {
+                                        parent.spawn(
+                                            TextBundle::from_section(
+                                                format!("{word} "),
+                                                style.clone(),
+                                            )
+                                            .with_style(Style {
+                                                max_size: Size::new(Val::Undefined, Val::Px(size)),
+                                                margin: UiRect::all(Val::Px(4.)),
+                                                ..Default::default()
+                                            }),
+                                        );
+                                    }
+                                });
+                        }
                     });
             } else {
                 parent.spawn(

@@ -452,7 +452,7 @@
       },
       {
         "tile_type": "Land",
-        "contents": "None",
+        "contents": "Canal",
         "is_goal": false,
         "cost_modifier": "None",
         "height": 3
@@ -559,7 +559,7 @@
       },
       {
         "tile_type": "Land",
-        "contents": "None",
+        "contents": "Canal",
         "is_goal": false,
         "cost_modifier": "None",
         "height": 3
@@ -1101,14 +1101,14 @@
       },
       {
         "tile_type": "Land",
-        "contents": "Canal",
+        "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
         "height": 1
       },
       {
         "tile_type": "Land",
-        "contents": "Canal",
+        "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
         "height": 1
@@ -1164,7 +1164,7 @@
       },
       {
         "tile_type": "Land",
-        "contents": "None",
+        "contents": "Lock",
         "is_goal": true,
         "cost_modifier": "None",
         "height": 1
@@ -1195,7 +1195,7 @@
       {
         "tile_type": "Farm",
         "contents": "None",
-        "is_goal": false,
+        "is_goal": true,
         "cost_modifier": "None",
         "height": 3
       },
@@ -1222,7 +1222,7 @@
       },
       {
         "tile_type": "Land",
-        "contents": "None",
+        "contents": "Canal",
         "is_goal": false,
         "cost_modifier": "None",
         "height": 1
@@ -1608,7 +1608,7 @@
   ],
   "title": "Sankey Canal",
   "initial_description": "The Sankey Canal was built alongside the Sankey Brook, to connect Warrington - on the river Mersey - to Parr",
-  "sidebar_text": null,
+  "sidebar_text": "Connect Warrington to Parr. Remember - water only flows downstream.",
   "width": 15,
   "height": 15,
   "events": [
@@ -1622,11 +1622,27 @@
             "continue_button": "Keep Going"
           }
         },
-        { "AdjustContents": [11,1, "None"] },
-        { "SetHeight": [9, 6, 0] },
-        { "SetNewGoal": [2,3] },
-        { "AdjustContents": [11,1, "Lock"] },
-        { "SetNewGoal": [10,13] }
+        {
+          "SetSidebar": "Connect St. Helens to your canal network."
+        },
+        {
+          "SetNewGoal": [
+            2,
+            3
+          ]
+        },
+        {
+          "SetNewGoal": [
+            10,
+            5
+          ]
+        },
+        {
+          "SetNewGoal": [
+            5,
+            3
+          ]
+        }
       ]
     ]
   ],

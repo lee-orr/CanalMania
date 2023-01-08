@@ -73,28 +73,28 @@ fn display_ui(
         .with_children(|parent| {
             parent.div().horizontal().opaque().with_children(|parent| {
                 parent
-                    .button("dig", "Dig Canal")
+                    .button("dig", "Dig Canal\nFlow water along a plane")
                     .id(GameUiId::Dig)
                     .style(ButtonStyle::Action)
                     .hidden(!tools.canal)
                     .selected(operation.0 == GameActionMode::DigCanal)
                     .icon(asset.dig_canal_icon.clone());
                 parent
-                    .button("lock", "Construct Lock")
+                    .button("lock", "Construct Lock\nConnect canals to water above them")
                     .id(GameUiId::Lock)
                     .style(ButtonStyle::Action)
                     .hidden(!tools.lock)
                     .selected(operation.0 == GameActionMode::ConstructLock)
                     .icon(asset.lock_icon.clone());
                 parent
-                    .button("aquaduct", "Construct Aquaduct")
+                    .button("aquaduct", "Construct Aquaduct\nAllow canals to cross a gap\nMust be built to level")
                     .id(GameUiId::Aquaduct)
                     .style(ButtonStyle::Action)
                     .hidden(!tools.aquaduct)
                     .selected(operation.0 == GameActionMode::BuildAquaduct)
                     .icon(asset.aqueduct_icon.clone());
                 parent
-                    .button("demolish", "Demolish")
+                    .button("demolish", "Demolish\nMade a mistake? Demolish it.")
                     .id(GameUiId::Demolish)
                     .style(ButtonStyle::Action)
                     .hidden(!tools.demolish)
@@ -108,7 +108,7 @@ fn display_ui(
         .for_state(GameState::InGame)
         .position(Val::Px(0.), Val::Auto, Val::Px(0.), Val::Auto)
         .with_children(|parent| {
-            parent.div().padding(20.);
+            parent.div().padding(50.);
             parent
                 .div()
                 .position(Val::Px(0.), Val::Auto, Val::Px(0.), Val::Auto)
@@ -131,25 +131,10 @@ fn display_ui(
                         .size(15.)
                         .id(GameUiId::SidebarText);
                 });
+            parent.div().position(Val::Px(0.), Val::Auto, Val::Px(30.), Val::Auto).with_children(|parent| {
+            parent.button("help", "Drag Midde Mouse Button, Arrow Keys or WSAD to move the camera\n\nDrag Right Mouse Button, Control + Arrow Keys or WSAD to orbit the camera\n\nScroll Wheel, + or - Keys to zoom").icon(asset.help_icon.clone()).hover_direction(crate::ui::div::Direction::Horizontal).style(ButtonStyle::Small);
         });
-
-    commands
-            .ui_root()
-            .for_state(GameState::InGame)
-            .position(Val::Auto,Val::Px(0.), Val::Px(0.),  Val::Auto)
-            .with_children(|parent| {
-                parent
-                .div()
-                .opaque()
-                .size(Size::new(Val::Px(200.), Val::Auto))
-                .with_children(|parent| {
-                    parent.text("Drag Midde Mouse Button, Arrow Keys or WSAD to move the camera").size(15.);
-                    parent.div().padding(3.);
-                    parent.text("Drag Right Mouse Button, Control + Arrow Keys or WSAD to orbit the camera").size(15.);
-                    parent.div().padding(3.);
-                    parent.text("Scroll Wheel, + or - Keys to zoom").size(15.);
-                });
-            });
+        });
 
     #[cfg(feature = "dev")]
     commands

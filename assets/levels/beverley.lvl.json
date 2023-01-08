@@ -1035,7 +1035,7 @@
   ],
   "title": "Beverley Beck",
   "initial_description": "The town of Beverley had a problem - boats arrive at the nearby River Hull, but the creek leading to the town isn't in good shape...",
-  "sidebar_text": "Connect the River Hull to the dried up creek using a Canal.",
+  "sidebar_text": "Connect the River Hull to the dried up creek using a Canal.\nAvoid going uphill by following the contour lines on the terrain.",
   "width": 12,
   "height": 12,
   "events": [
@@ -1044,7 +1044,7 @@
       [
         {
           "DisplayText": {
-            "text": "As you managed to get the Beck connected to the river, you find a problem... The river is tidal, and you need a lock to manage the water levels. Build a lock in the specified location to proceed.",
+            "text": "As you managed to get the Beck connected to the river, you find a problem... The river is tidal, and you need a lock to manage the water levels. Build a lock in the specified location to proceed.\n \nLocks allow you to connect a canal to a water source above it. Remember that while locks let boats travel uphill, the water always flows down.",
             "title": "Complications Arise",
             "continue_button": "Keep Going"
           }
