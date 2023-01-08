@@ -1183,7 +1183,7 @@
         "contents": "River",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 1
+        "height": 4
       },
       {
         "tile_type": "Land",
@@ -1290,14 +1290,14 @@
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 1
+        "height": 4
       },
       {
         "tile_type": "Farm",
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 0
+        "height": 3
       },
       {
         "tile_type": "Farm",
@@ -1397,21 +1397,21 @@
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 1
+        "height": 4
       },
       {
         "tile_type": "Farm",
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 0
+        "height": 2
       },
       {
         "tile_type": "Farm",
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 3
+        "height": 2
       },
       {
         "tile_type": "Land",
@@ -1504,14 +1504,14 @@
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 1
+        "height": 4
       },
       {
         "tile_type": "Land",
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 1
+        "height": 4
       },
       {
         "tile_type": "Land",
@@ -1634,7 +1634,7 @@
         {
           "SetNewGoal": [
             10,
-            13
+            14
           ]
         }
       ]

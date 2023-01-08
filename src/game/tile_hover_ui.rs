@@ -38,7 +38,7 @@ fn setup_tooltip(mut commands: Commands, asset: Res<CanalManiaAssets>) {
         .with_children(|parent| {
             parent
                 .div()
-                .size(Size::new(Val::Px(150.), Val::Auto))
+                .size(Size::new(Val::Px(300.), Val::Auto))
                 .position(Val::Auto, Val::Auto, Val::Auto, Val::Px(20.))
                 .opaque()
                 .with_children(|parent| {
@@ -47,7 +47,7 @@ fn setup_tooltip(mut commands: Commands, asset: Res<CanalManiaAssets>) {
                             .icon(asset.coin_icon.clone())
                             .size(GameIconSize::Small)
                             .id(HoverUiId::CoinIcon);
-                        parent.text("").size(15.).id(HoverUiId::MainText);
+                        parent.text("").size(18.).id(HoverUiId::MainText);
                     });
                     parent.text("").size(12.).id(HoverUiId::SecondaryText);
                 });
@@ -77,38 +77,39 @@ fn update_tile_hover_ui(
                     };
 
                     let tile_type = match tile.tile_type {
-                        super::board::TileType::Land => "Open",
+                        super::board::TileType::Land => "Open Land",
                         super::board::TileType::City => "Town",
                         super::board::TileType::Farm => "Farmland",
                         super::board::TileType::Sea => "Water",
                     };
 
                     let secondary_text = format!(
-                        "{}\n{}\n{:?} meters",
+                        "{}{} with {}",
                         match tile.contents {
                             super::board::TileContents::None => "",
-                            super::board::TileContents::Road => "A Road",
-                            super::board::TileContents::Canal => "A Canal",
-                            super::board::TileContents::Lock => "A Lock",
-                            super::board::TileContents::Aquaduct(_) => "An Aquaduct",
-                            super::board::TileContents::River => "A River",
+                            super::board::TileContents::Road => "A Road on ",
+                            super::board::TileContents::Canal => "A Canal on ",
+                            super::board::TileContents::Lock => "A Lock on ",
+                            super::board::TileContents::Aquaduct(_) => "An Aquaduct on ",
+                            super::board::TileContents::River => "A River on ",
                         },
+                        tile_type,
                         match tile.wetness {
                             super::board::Wetness::Dry => "No Water Flow",
-                            super::board::Wetness::WaterSource => "Water Source",
-                            super::board::Wetness::Wet(_) => "Contains Water Flow",
-                        },
-                        tile.z * 20
+                            super::board::Wetness::WaterSource => "a Water Source",
+                            super::board::Wetness::Wet(_) => "Running Water",
+                        }
                     );
                     #[cfg(feature = "dev")]
                     let secondary_text = format!("{secondary_text}\n{},{}", tile.x, tile.y);
 
                     let primary_text = format!(
-                        "{} {tile_type}",
+                        "{} {:?} Meters High",
                         match cost {
                             Some(Some(v)) => v.to_string(),
                             _ => "".to_string(),
-                        }
+                        },
+                        tile.z * 20
                     );
 
                     for (mut text, id) in tooltip_text.iter_mut() {

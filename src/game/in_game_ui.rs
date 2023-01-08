@@ -80,7 +80,7 @@ fn display_ui(
                     .selected(operation.0 == GameActionMode::DigCanal)
                     .icon(asset.dig_canal_icon.clone());
                 parent
-                    .button("lock", "Construct Lock\nConnect canals to water above them")
+                    .button("lock", "Construct Lock\nConnect canals to water above them.\nMust be placed on lower ground.")
                     .id(GameUiId::Lock)
                     .style(ButtonStyle::Action)
                     .hidden(!tools.lock)
@@ -89,7 +89,7 @@ fn display_ui(
                 parent
                     .button(
                         "aquaduct",
-                        "Construct Aquaduct\nAllow canals to cross a gap\nMust be built to level",
+                        "Construct Aquaduct\nAllow canals to cross a gap\nMust exactly match the canal's height to connect.",
                     )
                     .id(GameUiId::Aquaduct)
                     .style(ButtonStyle::Action)

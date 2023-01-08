@@ -1035,7 +1035,7 @@
   ],
   "title": "Beverley Beck",
   "initial_description": "The town of Beverley had a problem - boats arrive at the nearby River Hull, but the creek leading to the town isn't in good shape...",
-  "sidebar_text": "Connect the River Hull to the dried up creek using a Canal.\nAvoid going uphill by following the contour lines on the terrain.",
+  "sidebar_text": "To build the Canal, click the \"Dig Canal\" button below, and then connect the river to the target location.\nAvoid crossing the contour lines on the terrain - a Canal cannot go uphill.",
   "width": 12,
   "height": 12,
   "events": [
