@@ -62,6 +62,7 @@ impl Plugin for GamePlugin {
 
         #[cfg(feature = "dev")]
         {
+            // app.add_plugin(bevy_inspector_egui::quick::WorldInspectorPlugin);
             // app.add_plugin(bevy_inspector_egui::quick::AssetInspectorPlugin::<
             //     TileMaterial,
             // >::default());

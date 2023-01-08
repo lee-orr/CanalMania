@@ -42,14 +42,14 @@ fn setup_tooltip(mut commands: Commands, asset: Res<CanalManiaAssets>) {
                 .position(Val::Auto, Val::Auto, Val::Auto, Val::Px(20.))
                 .opaque()
                 .with_children(|parent| {
-                    parent.text("").size(15.).id(HoverUiId::MainText);
                     parent.div().horizontal().with_children(|parent| {
                         parent
                             .icon(asset.coin_icon.clone())
                             .size(GameIconSize::Small)
                             .id(HoverUiId::CoinIcon);
-                        parent.text("").size(12.).id(HoverUiId::SecondaryText);
+                        parent.text("").size(15.).id(HoverUiId::MainText);
                     });
+                    parent.text("").size(12.).id(HoverUiId::SecondaryText);
                 });
         });
 }
@@ -77,26 +77,34 @@ fn update_tile_hover_ui(
                     };
 
                     let tile_type = match tile.tile_type {
-                        super::board::TileType::Land => "A Plot of Land",
-                        super::board::TileType::City => "A Constructed Area",
+                        super::board::TileType::Land => "Open",
+                        super::board::TileType::City => "Town",
                         super::board::TileType::Farm => "Farmland",
-                        super::board::TileType::Sea => "Open Water",
+                        super::board::TileType::Sea => "Water",
                     };
 
-                    #[cfg(not(feature = "dev"))]
-                    let added_text = format!(
-                        "{:?}",
+                    let secondary_text = format!(
+                        "{}\n{}\n{:?} meters",
+                        match tile.contents {
+                            super::board::TileContents::None => "",
+                            super::board::TileContents::Road => "A Road",
+                            super::board::TileContents::Canal => "A Canal",
+                            super::board::TileContents::Lock => "A Lock",
+                            super::board::TileContents::Aquaduct(_) => "An Aquaduct",
+                            super::board::TileContents::River => "A River",
+                        },
                         match tile.wetness {
                             super::board::Wetness::Dry => "No Water Flow",
                             super::board::Wetness::WaterSource => "Water Source",
                             super::board::Wetness::Wet(_) => "Contains Water Flow",
-                        }
+                        },
+                        tile.z * 20
                     );
                     #[cfg(feature = "dev")]
-                    let added_text = format!("{:?} {},{}", tile.wetness, tile.x, tile.y);
+                    let secondary_text = format!("{secondary_text}\n{},{}",  tile.x, tile.y);
 
-                    let secondary_text = format!(
-                        "{} {added_text}",
+                    let primary_text = format!(
+                        "{} {tile_type}",
                         match cost {
                             Some(Some(v)) => v.to_string(),
                             _ => "".to_string(),
@@ -106,7 +114,7 @@ fn update_tile_hover_ui(
                     for (mut text, id) in tooltip_text.iter_mut() {
                         match id.val() {
                             HoverUiId::MainText => {
-                                text.text(tile_type);
+                                text.text(&primary_text);
                             }
                             HoverUiId::SecondaryText => {
                                 text.text(&secondary_text);
