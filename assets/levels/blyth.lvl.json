@@ -54,9 +54,8 @@
         "tile_type": "Farm",
         "contents": "None",
         "is_goal": false,
-        "cost_modifier": {
-          "Multiplier": 3
-        },
+        "cost_modifier":
+          "Multiplier",
         "height": 2
       },
       {
@@ -128,18 +127,16 @@
         "tile_type": "Farm",
         "contents": "None",
         "is_goal": false,
-        "cost_modifier": {
-          "Multiplier": 3
-        },
+        "cost_modifier": 
+          "Multiplier",
         "height": 2
       },
       {
         "tile_type": "Farm",
         "contents": "None",
         "is_goal": false,
-        "cost_modifier": {
-          "Multiplier": 3
-        },
+        "cost_modifier":
+          "Multiplier",
         "height": 2
       },
       {
@@ -197,9 +194,8 @@
         "tile_type": "Farm",
         "contents": "None",
         "is_goal": false,
-        "cost_modifier": {
-          "Multiplier": 3
-        },
+        "cost_modifier": 
+          "Multiplier",
         "height": 0
       },
       {
@@ -278,9 +274,8 @@
         "tile_type": "Farm",
         "contents": "None",
         "is_goal": false,
-        "cost_modifier": {
-          "Multiplier": 3
-        },
+        "cost_modifier":
+          "Multiplier",
         "height": 0
       },
       {

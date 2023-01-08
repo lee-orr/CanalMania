@@ -26,7 +26,7 @@ pub struct Tile {
 #[derive(Clone, Copy, Debug, Reflect, FromReflect, Serialize, Deserialize, Hash, PartialEq, Eq)]
 pub enum TileCostModifier {
     None,
-    Multiplier(usize),
+    Multiplier,
     Blocked,
 }
 
@@ -119,7 +119,7 @@ impl Tile {
     fn get_modified_cost(&self, cost: usize) -> Option<usize> {
         match self.cost_modifier {
             TileCostModifier::None => Some(cost),
-            TileCostModifier::Multiplier(x) => Some(cost * x),
+            TileCostModifier::Multiplier => Some(cost * 2),
             TileCostModifier::Blocked => None,
         }
     }

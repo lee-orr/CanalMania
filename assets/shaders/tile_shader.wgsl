@@ -121,8 +121,14 @@ fn fragment(
 
         vertex_color = mix(parchment_dark, vertex_color, wetness);
     }
-    vertex_color = mix(vertex_color, vertex_color * settings.blocked_color, sample.z * settings.size.w);
-    vertex_color = mix(vertex_color, vertex_color * settings.cost_color, sample.w);
+    if sample.z > 0.5 {
+        let ratio = clamp((sample.z - 0.5) * 8., 0., settings.size.w);
+        vertex_color = mix(vertex_color, vertex_color * settings.blocked_color, ratio);
+    }
+    if sample.w > 0.5 {
+        let ratio = clamp((sample.w - 0.5) * 8., 0., 1.);
+        vertex_color = mix(vertex_color, vertex_color * settings.cost_color, ratio);
+    }
 
     var test_position : vec3<f32> = world_position.xyz * 0.3;
     var overlay_1: f32 = simplex_noise_3d(test_position);

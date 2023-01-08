@@ -179,7 +179,6 @@ fn build_board(
 }
 
 const TILE_HEIGHT: u8 = u8::MAX / 10;
-const TILE_COST_MAX: u8 = u8::MAX / 5;
 
 fn build_tile(
     mut commands: Commands,
@@ -210,7 +209,7 @@ fn build_tile(
         if let Ok(board) = boards.get_single() {
             let width = board.width;
             let height = board.height;
-            let mut content = vec![(0u8, false, false, 0u8); width * height];
+            let mut content = vec![(0u8, false, false, false); width * height];
 
             for (_, tile, _) in neighbour_tiles.iter() {
                 let x = tile.x;
@@ -233,8 +232,8 @@ fn build_tile(
 
                     match tile.cost_modifier {
                         TileCostModifier::None => {}
-                        TileCostModifier::Multiplier(a) => {
-                            content.3 = a as u8;
+                        TileCostModifier::Multiplier => {
+                            content.3 = true;
                         }
                         TileCostModifier::Blocked => {
                             content.2 = true;
@@ -256,7 +255,7 @@ fn build_tile(
                         *height * TILE_HEIGHT,
                         if *is_wet { u8::MAX } else { u8::MIN },
                         if *blocked { u8::MAX } else { u8::MIN },
-                        *cost_modifier * TILE_COST_MAX,
+                        if *cost_modifier { u8::MAX} else { u8::MIN},
                     ]
                 })
                 .collect::<Vec<_>>();

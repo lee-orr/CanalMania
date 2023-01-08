@@ -163,14 +163,9 @@ fn button_pressed(
             let next = match operation.0 {
                 EditorOperation::SetCostModifier(t) => match t {
                     TileCostModifier::None => TileCostModifier::Blocked,
-                    TileCostModifier::Multiplier(u) => {
-                        if u < 4 {
-                            TileCostModifier::Multiplier(u + 1)
-                        } else {
-                            TileCostModifier::None
-                        }
-                    }
-                    TileCostModifier::Blocked => TileCostModifier::Multiplier(2),
+                    TileCostModifier::Multiplier => 
+                            TileCostModifier::None,
+                    TileCostModifier::Blocked => TileCostModifier::Multiplier,
                 },
                 _ => TileCostModifier::Blocked,
             };
