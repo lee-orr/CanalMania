@@ -170,12 +170,18 @@ pub fn spawn_ui_root(
                 Background::Opaque => Color::rgb_u8(177, 162, 124).into(),
             },
             focus_policy: match root.ui_root_type {
-                UiRootType::World { track, camera } => bevy::ui::FocusPolicy::Pass,
-                _ => FocusPolicy::default()
+                UiRootType::World {
+                    track: _,
+                    camera: _,
+                } => bevy::ui::FocusPolicy::Pass,
+                _ => FocusPolicy::default(),
             },
-            z_index:  match root.ui_root_type {
-                UiRootType::World { track, camera } => ZIndex::Global(-1),
-                _ => ZIndex::Global(1)
+            z_index: match root.ui_root_type {
+                UiRootType::World {
+                    track: _,
+                    camera: _,
+                } => ZIndex::Global(-1),
+                _ => ZIndex::Global(1),
             },
             ..Default::default()
         },));

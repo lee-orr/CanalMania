@@ -52,9 +52,9 @@ fn display_ui(
         .for_state(GameState::InGame)
         .with_children(|parent| {
             if let Some(label) = &level.title {
-                parent.text(label).size(30.);
+                parent.text(label).size(35.);
             }
-            parent.div().horizontal().with_children(|parent| {
+            parent.div().horizontal().opaque().with_children(|parent| {
                 parent
                     .icon(asset.coin_icon.clone())
                     .size(GameIconSize::Normal);
@@ -63,10 +63,6 @@ fn display_ui(
                     .size(20.)
                     .id(GameUiId::CostText);
             });
-            parent
-                .text("Choose an Action")
-                .size(15.)
-                .id(GameUiId::ActionText);
         });
 
     commands
@@ -75,7 +71,11 @@ fn display_ui(
         .padding(3.)
         .for_state(GameState::InGame)
         .with_children(|parent| {
-            parent.div().horizontal().with_children(|parent| {
+            parent.div().horizontal().opaque().with_children(|parent| {
+                parent
+                    .text("Choose An Action:")
+                    .id(GameUiId::ActionText)
+                    .size(25.);
                 parent
                     .button("dig", "Dig Canal")
                     .id(GameUiId::Dig)
