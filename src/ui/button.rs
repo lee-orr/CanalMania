@@ -1,6 +1,5 @@
 use crate::assets::CanalManiaAssets;
 
-use bevy::ecs::storage::Column;
 use bevy::prelude::*;
 use bevy::ui::{FocusPolicy, JustifyContent};
 
@@ -216,7 +215,12 @@ pub(crate) fn spawn_button(
                             position_type: PositionType::Absolute,
                             position: match button.hover_direction {
                                 Direction::Vertical => UiRect::bottom(Val::Percent(100.)),
-                                Direction::Horizontal => UiRect::new(Val::Percent(100.), Val::Auto, Val::Px(0.), Val::Auto),
+                                Direction::Horizontal => UiRect::new(
+                                    Val::Percent(100.),
+                                    Val::Auto,
+                                    Val::Px(0.),
+                                    Val::Auto,
+                                ),
                             },
                             flex_direction: FlexDirection::Column,
                             padding: UiRect::all(Val::Px(5.)),

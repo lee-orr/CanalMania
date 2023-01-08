@@ -87,7 +87,10 @@ fn display_ui(
                     .selected(operation.0 == GameActionMode::ConstructLock)
                     .icon(asset.lock_icon.clone());
                 parent
-                    .button("aquaduct", "Construct Aquaduct\nAllow canals to cross a gap\nMust be built to level")
+                    .button(
+                        "aquaduct",
+                        "Construct Aquaduct\nAllow canals to cross a gap\nMust be built to level",
+                    )
                     .id(GameUiId::Aquaduct)
                     .style(ButtonStyle::Action)
                     .hidden(!tools.aquaduct)

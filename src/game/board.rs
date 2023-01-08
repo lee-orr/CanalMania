@@ -55,7 +55,7 @@ pub struct Board {
 }
 
 impl Board {
-    pub fn neighbour_ids(&self, x: usize, y: usize) -> [Option<(usize, usize)>; 8] {
+    pub fn neighbour_ids(&self, x: usize, y: usize) -> [Option<(usize, usize)>; 4] {
         let above = y.checked_sub(1);
         let left = x.checked_sub(1);
         let center_x = Some(x);
@@ -72,18 +72,14 @@ impl Board {
         };
 
         [
-            tile_position(left, above),
             tile_position(center_x, above),
-            tile_position(right, above),
             tile_position(left, center_y),
             tile_position(right, center_y),
-            tile_position(left, below),
             tile_position(center_x, below),
-            tile_position(right, below),
         ]
     }
 
-    pub fn neighbours(&self, x: usize, y: usize) -> [Option<Entity>; 8] {
+    pub fn neighbours(&self, x: usize, y: usize) -> [Option<Entity>; 4] {
         self.neighbour_ids(x, y).map(|p| match p {
             Some(p) => self.children.get(&p).cloned(),
             None => None,
@@ -154,7 +150,12 @@ fn build_board(
                         },
                         cost_modifier: row.cost_modifier,
                     };
-                    let entity = parent.spawn(tile).id();
+                    let source = if tile.wetness == Wetness::WaterSource {
+                        WetnessSource::Source(x, y)
+                    } else {
+                        WetnessSource::None
+                    };
+                    let entity = parent.spawn((tile, source)).id();
                     board.children.insert((x, y), entity);
                 }
             }
@@ -471,70 +472,86 @@ fn spawn_content(
     match tile.contents {
         TileContents::None => {}
         TileContents::Road => {
-            let neighbours = check_neighbours(neighbours, |t| t.contents == TileContents::Road);
+            let neighbours = check_neighbours(
+                neighbours,
+                |t| t.contents == TileContents::Road,
+                |t, _, _| t.wetness,
+            );
 
-            let n = neighbours[1];
-            let w = neighbours[3];
-            let e = neighbours[4];
-            let s = neighbours[6];
+            let n = neighbours[0];
+            let w = neighbours[1];
+            let e = neighbours[2];
+            let s = neighbours[3];
 
             spawn_variant(tile, !is_wet, assets, n, w, e, s, parent, base_material);
         }
         TileContents::Canal => {
-            let neighbours = check_neighbours(neighbours, |t| {
-                matches!(t.contents, TileContents::Canal | TileContents::River)
-                    && tile.z.abs_diff(t.z) < 1
-                    || matches!(t.contents, TileContents::Lock) && tile.z.abs_diff(t.z) < 5
-                    || if let TileContents::Aquaduct(h) = t.contents {
-                        tile.z == h + t.z
-                    } else {
-                        false
-                    }
-            });
+            let neighbours = check_neighbours(
+                neighbours,
+                |t| {
+                    matches!(t.contents, TileContents::Canal | TileContents::River)
+                        && tile.z.abs_diff(t.z) < 1
+                        || matches!(t.contents, TileContents::Lock) && tile.z.abs_diff(t.z) < 5
+                        || if let TileContents::Aquaduct(h) = t.contents {
+                            tile.z == h + t.z
+                        } else {
+                            false
+                        }
+                },
+                |t, _, _| t.wetness,
+            );
 
-            let n = neighbours[1];
-            let w = neighbours[3];
-            let e = neighbours[4];
-            let s = neighbours[6];
+            let n = neighbours[0];
+            let w = neighbours[1];
+            let e = neighbours[2];
+            let s = neighbours[3];
 
             spawn_variant(tile, !is_wet, assets, n, w, e, s, parent, base_material);
         }
         TileContents::River => {
-            let neighbours = check_neighbours(neighbours, |t| {
-                matches!(t.contents, TileContents::Canal) && tile.z.abs_diff(t.z) < 2
-                    || matches!(t.contents, TileContents::Lock) && tile.z.abs_diff(t.z) < 5
-                    || matches!(t.contents, TileContents::River)
-                    || if let TileContents::Aquaduct(h) = t.contents {
-                        tile.z == h + t.z
-                    } else {
-                        false
-                    }
-            });
+            let neighbours = check_neighbours(
+                neighbours,
+                |t| {
+                    matches!(t.contents, TileContents::Canal) && tile.z.abs_diff(t.z) < 2
+                        || matches!(t.contents, TileContents::Lock) && tile.z.abs_diff(t.z) < 5
+                        || matches!(t.contents, TileContents::River)
+                        || if let TileContents::Aquaduct(h) = t.contents {
+                            tile.z == h + t.z
+                        } else {
+                            false
+                        }
+                },
+                |t, _, _| t.wetness,
+            );
 
-            let n = neighbours[1];
-            let w = neighbours[3];
-            let e = neighbours[4];
-            let s = neighbours[6];
+            let n = neighbours[0];
+            let w = neighbours[1];
+            let e = neighbours[2];
+            let s = neighbours[3];
 
             spawn_variant(tile, !is_wet, assets, n, w, e, s, parent, base_material);
         }
         TileContents::Lock => {
-            let neighbours = check_neighbours(neighbours, |t| {
-                matches!(
-                    t.contents,
-                    TileContents::Canal | TileContents::River | TileContents::Lock
-                ) && tile.z.abs_diff(t.z) < 5
-                    || if let TileContents::Aquaduct(h) = t.contents {
-                        tile.z == h + t.z
-                    } else {
-                        false
-                    }
-            });
+            let neighbours = check_neighbours(
+                neighbours,
+                |t| {
+                    matches!(
+                        t.contents,
+                        TileContents::Canal | TileContents::River | TileContents::Lock
+                    ) && tile.z.abs_diff(t.z) < 5
+                        || if let TileContents::Aquaduct(h) = t.contents {
+                            tile.z == h + t.z
+                        } else {
+                            false
+                        }
+                },
+                |t, _, _| t.wetness,
+            );
 
-            let n = neighbours[1];
-            let w = neighbours[3];
-            let e = neighbours[4];
-            let s = neighbours[6];
+            let n = neighbours[0];
+            let w = neighbours[1];
+            let e = neighbours[2];
+            let s = neighbours[3];
 
             let tmp = Tile {
                 contents: TileContents::Canal,
@@ -556,22 +573,26 @@ fn spawn_content(
         }
         TileContents::Aquaduct(h) => {
             let z = tile.z + h;
-            let neighbours = check_neighbours(neighbours, |t| {
-                matches!(
-                    t.contents,
-                    TileContents::Canal | TileContents::River | TileContents::Lock
-                ) && z == t.z
-                    || if let TileContents::Aquaduct(h) = t.contents {
-                        z == h + t.z
-                    } else {
-                        false
-                    }
-            });
+            let neighbours = check_neighbours(
+                neighbours,
+                |t| {
+                    matches!(
+                        t.contents,
+                        TileContents::Canal | TileContents::River | TileContents::Lock
+                    ) && z == t.z
+                        || if let TileContents::Aquaduct(h) = t.contents {
+                            z == h + t.z
+                        } else {
+                            false
+                        }
+                },
+                |t, _, _| t.wetness,
+            );
 
-            let n = neighbours[1];
-            let w = neighbours[3];
-            let e = neighbours[4];
-            let s = neighbours[6];
+            let n = neighbours[0];
+            let w = neighbours[1];
+            let e = neighbours[2];
+            let s = neighbours[3];
 
             spawn_variant(tile, !is_wet, assets, n, w, e, s, parent, base_material);
         }
@@ -585,17 +606,27 @@ pub enum NeighbourMatch<T> {
     NoNeighbour,
 }
 
-pub fn check_neighbours<F: Fn(&Tile) -> bool, R>(
+pub fn check_neighbours<
+    F: Fn(&Tile) -> bool,
+    R,
+    Z: std::fmt::Debug + Clone + Copy,
+    S: Fn(&Tile, &R, &Entity) -> Z,
+>(
     neighbours: &[Option<(Entity, &Tile, R)>],
     checked: F,
-) -> [NeighbourMatch<(TileContents, usize, Wetness)>; 8] {
-    let mut result = [NeighbourMatch::NoNeighbour; 8];
+    selector: S,
+) -> [NeighbourMatch<(TileContents, usize, Z)>; 4] {
+    let mut result = [NeighbourMatch::NoNeighbour; 4];
 
     #[allow(clippy::needless_range_loop)]
     for i in 0..8 {
-        if let Some(Some((_, neighbour, _))) = neighbours.get(i) {
+        if let Some(Some((e, neighbour, v))) = neighbours.get(i) {
             result[i] = if checked(neighbour) {
-                NeighbourMatch::Matches((neighbour.contents, neighbour.z, neighbour.wetness))
+                NeighbourMatch::Matches((
+                    neighbour.contents,
+                    neighbour.z,
+                    selector(neighbour, v, e),
+                ))
             } else {
                 NeighbourMatch::DoesntMatch
             };

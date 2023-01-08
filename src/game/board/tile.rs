@@ -49,8 +49,52 @@ impl Default for Wetness {
     }
 }
 
+#[derive(
+    Component, Clone, Copy, Debug, Reflect, Serialize, FromReflect, Deserialize, PartialEq, Eq,
+)]
+pub enum WetnessSource {
+    None,
+    Source(usize, usize),
+}
+
+impl PartialOrd for WetnessSource {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for WetnessSource {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        match (self, other) {
+            (WetnessSource::None, WetnessSource::None) => std::cmp::Ordering::Equal,
+            (WetnessSource::None, WetnessSource::Source(_, _)) => std::cmp::Ordering::Greater,
+            (WetnessSource::Source(_, _), WetnessSource::None) => std::cmp::Ordering::Less,
+            (WetnessSource::Source(x1, y1), WetnessSource::Source(x2, y2)) => {
+                let a = x1 * 10000 + y1;
+                let b = x2 * 10000 + y2;
+                a.cmp(&b)
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::WetnessSource;
+
+    #[test]
+    fn wetness_source_order() {
+        let a = WetnessSource::None;
+        let b = WetnessSource::Source(3, 2);
+        let c = WetnessSource::Source(1, 5);
+
+        assert!(a > b);
+        assert!(b > c);
+    }
+}
+
 #[derive(Component, Default, Clone, Debug, Reflect)]
-pub struct TileNeighbours(pub [Option<Entity>; 8]);
+pub struct TileNeighbours(pub [Option<Entity>; 4]);
 
 #[derive(Debug, Clone, Copy, Reflect, FromReflect, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum TileType {
