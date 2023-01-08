@@ -5,7 +5,7 @@ levels:
     file: blyth.lvl.json
   - name: Sankey Canal
     file: sankey.lvl.json
-  - name: Across The Valley
+  - name: Across The Valley (fictional)
     file: aquaduct_1.lvl.json
   - name: test
     file: test.lvl.json

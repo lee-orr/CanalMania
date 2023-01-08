@@ -224,7 +224,7 @@
       },
       {
         "tile_type": "City",
-        "contents": "River",
+        "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
         "height": 4
@@ -1180,14 +1180,14 @@
     [
       {
         "tile_type": "Land",
-        "contents": "None",
+        "contents": "River",
         "is_goal": false,
         "cost_modifier": "None",
         "height": 1
       },
       {
         "tile_type": "Land",
-        "contents": "None",
+        "contents": "River",
         "is_goal": false,
         "cost_modifier": "None",
         "height": 3
@@ -1607,11 +1607,29 @@
     ]
   ],
   "title": "Sankey Canal",
-  "initial_description": "The Sankey Canal was built alongside the Sankey Brook, to connect Warrington - on the river Mersey - to St. Helens.",
+  "initial_description": "The Sankey Canal was built alongside the Sankey Brook, to connect Warrington - on the river Mersey - to Parr",
   "sidebar_text": null,
   "width": 15,
   "height": 15,
-  "events": [],
+  "events": [
+    [
+      "GoalReached",
+      [
+        {
+          "DisplayText": {
+            "text": "Now that we've managed to connect to Parr, we can extend the canal over to St. Helens.",
+            "title": "Continue to St. Helens",
+            "continue_button": "Keep Going"
+          }
+        },
+        { "AdjustContents": [11,1, "None"] },
+        { "SetHeight": [9, 6, 0] },
+        { "SetNewGoal": [2,3] },
+        { "AdjustContents": [11,1, "Lock"] },
+        { "SetNewGoal": [10,13] }
+      ]
+    ]
+  ],
   "tools": {
     "canal": true,
     "lock": true,

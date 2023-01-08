@@ -5,6 +5,7 @@ use iyes_loopless::state::NextState;
 
 use crate::app_state::*;
 
+use crate::assets::CanalManiaAssets;
 use crate::game::level::Level;
 use crate::game::level::LevelList;
 use crate::ui::*;
@@ -26,31 +27,37 @@ enum ElId {
     LevelButtonContainer,
 }
 
-fn display_ui(mut commands: Commands, levels: Res<LevelList>) {
-    commands
-        .ui_root()
-        .for_state(AppState::ChooseLevel)
-        .with_children(|parent| {
-            parent
-                .text("Choose Level")
-                .size(100.)
-                .style(FontStyle::Italic)
-                .id(ElId::Text);
+fn display_ui(
+    mut commands: Commands,
+    level_list_asset: Res<Assets<LevelList>>,
+    assets: Res<CanalManiaAssets>,
+) {
+    if let Some(levels) = level_list_asset.get(&assets.level_list) {
+        commands
+            .ui_root()
+            .for_state(AppState::ChooseLevel)
+            .with_children(|parent| {
+                parent
+                    .text("Choose Level")
+                    .size(100.)
+                    .style(FontStyle::Italic)
+                    .id(ElId::Text);
 
-            parent
-                .div()
-                .id(ElId::LevelButtonContainer)
-                .with_children(|parent| {
-                    for level in levels.levels.iter() {
-                        let file = &level.file;
-                        let name = &level.name;
-                        parent.button(format!("level:{file}"), name);
-                    }
+                parent
+                    .div()
+                    .id(ElId::LevelButtonContainer)
+                    .with_children(|parent| {
+                        for level in levels.levels.iter() {
+                            let file = &level.file;
+                            let name = &level.name;
+                            parent.button(format!("level:{file}"), name);
+                        }
+                    });
+                parent.div().padding(5.).with_children(|parent| {
+                    parent.button("back", "Back").style(ButtonStyle::Small);
                 });
-            parent.div().padding(5.).with_children(|parent| {
-                parent.button("back", "Back").style(ButtonStyle::Small);
             });
-        });
+    }
 }
 
 fn button_pressed(

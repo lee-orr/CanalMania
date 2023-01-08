@@ -6,14 +6,14 @@
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 0
+        "height": 1
       },
       {
         "tile_type": "City",
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 0
+        "height": 1
       },
       {
         "tile_type": "City",
@@ -27,7 +27,7 @@
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 1
+        "height": 0
       },
       {
         "tile_type": "City",
@@ -54,7 +54,9 @@
         "tile_type": "Farm",
         "contents": "None",
         "is_goal": false,
-        "cost_modifier": { "Multiplier": 3 },
+        "cost_modifier": {
+          "Multiplier": 3
+        },
         "height": 2
       },
       {
@@ -78,13 +80,20 @@
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 0
+        "height": 1
       },
       {
         "tile_type": "Land",
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
+        "height": 1
+      },
+      {
+        "tile_type": "City",
+        "contents": "None",
+        "is_goal": false,
+        "cost_modifier": "None",
         "height": 0
       },
       {
@@ -99,14 +108,7 @@
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 1
-      },
-      {
-        "tile_type": "City",
-        "contents": "None",
-        "is_goal": false,
-        "cost_modifier": "None",
-        "height": 1
+        "height": 0
       },
       {
         "tile_type": "City",
@@ -126,14 +128,18 @@
         "tile_type": "Farm",
         "contents": "None",
         "is_goal": false,
-        "cost_modifier": { "Multiplier": 3 },
+        "cost_modifier": {
+          "Multiplier": 3
+        },
         "height": 2
       },
       {
         "tile_type": "Farm",
         "contents": "None",
         "is_goal": false,
-        "cost_modifier": { "Multiplier": 3 },
+        "cost_modifier": {
+          "Multiplier": 3
+        },
         "height": 2
       },
       {
@@ -147,6 +153,80 @@
     [
       {
         "tile_type": "City",
+        "contents": "None",
+        "is_goal": false,
+        "cost_modifier": "None",
+        "height": 1
+      },
+      {
+        "tile_type": "City",
+        "contents": "None",
+        "is_goal": false,
+        "cost_modifier": "None",
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "cost_modifier": "None",
+        "height": 1
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "cost_modifier": "None",
+        "height": 0
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "cost_modifier": "None",
+        "height": 0
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "cost_modifier": "None",
+        "height": 1
+      },
+      {
+        "tile_type": "Farm",
+        "contents": "None",
+        "is_goal": false,
+        "cost_modifier": {
+          "Multiplier": 3
+        },
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "cost_modifier": "None",
+        "height": 0
+      },
+      {
+        "tile_type": "Land",
+        "contents": "None",
+        "is_goal": false,
+        "cost_modifier": "None",
+        "height": 2
+      },
+      {
+        "tile_type": "Land",
+        "contents": "River",
+        "is_goal": false,
+        "cost_modifier": "None",
+        "height": 2
+      }
+    ],
+    [
+      {
+        "tile_type": "Land",
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
@@ -164,88 +244,16 @@
         "contents": "None",
         "is_goal": true,
         "cost_modifier": "None",
-        "height": 0
+        "height": 1
       },
       {
         "tile_type": "Land",
-        "contents": "None",
-        "is_goal": false,
-        "cost_modifier": "None",
-        "height": 0
-      },
-      {
-        "tile_type": "Land",
-        "contents": "None",
-        "is_goal": false,
-        "cost_modifier": "None",
-        "height": 0
-      },
-      {
-        "tile_type": "Farm",
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
         "height": 1
       },
       {
-        "tile_type": "Farm",
-        "contents": "None",
-        "is_goal": false,
-        "cost_modifier": { "Multiplier": 3 },
-        "height": 0
-      },
-      {
-        "tile_type": "Land",
-        "contents": "None",
-        "is_goal": false,
-        "cost_modifier": "None",
-        "height": 0
-      },
-      {
-        "tile_type": "Land",
-        "contents": "None",
-        "is_goal": false,
-        "cost_modifier": "None",
-        "height": 2
-      },
-      {
-        "tile_type": "Land",
-        "contents": "River",
-        "is_goal": false,
-        "cost_modifier": "None",
-        "height": 2
-      }
-    ],
-    [
-      {
-        "tile_type": "Land",
-        "contents": "None",
-        "is_goal": false,
-        "cost_modifier": "None",
-        "height": 0
-      },
-      {
-        "tile_type": "City",
-        "contents": "None",
-        "is_goal": false,
-        "cost_modifier": "None",
-        "height": 0
-      },
-      {
-        "tile_type": "Land",
-        "contents": "None",
-        "is_goal": false,
-        "cost_modifier": "None",
-        "height": 0
-      },
-      {
-        "tile_type": "Land",
-        "contents": "None",
-        "is_goal": false,
-        "cost_modifier": "None",
-        "height": 0
-      },
-      {
         "tile_type": "Land",
         "contents": "None",
         "is_goal": false,
@@ -270,7 +278,9 @@
         "tile_type": "Farm",
         "contents": "None",
         "is_goal": false,
-        "cost_modifier": { "Multiplier": 3 },
+        "cost_modifier": {
+          "Multiplier": 3
+        },
         "height": 0
       },
       {
@@ -315,7 +325,7 @@
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 0
+        "height": 1
       },
       {
         "tile_type": "Land",
@@ -387,28 +397,28 @@
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 0
+        "height": 1
       },
       {
         "tile_type": "Land",
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 0
+        "height": 1
       },
       {
         "tile_type": "Land",
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 0
+        "height": 1
       },
       {
         "tile_type": "Farm",
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 0
+        "height": 1
       },
       {
         "tile_type": "Farm",
@@ -480,7 +490,7 @@
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 0
+        "height": 1
       },
       {
         "tile_type": "Land",
@@ -510,7 +520,7 @@
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 0
+        "height": 1
       },
       {
         "tile_type": "Land",
@@ -552,17 +562,17 @@
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 0
+        "height": 1
       },
       {
         "tile_type": "Land",
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 0
+        "height": 1
       },
       {
-        "tile_type": "Farm",
+        "tile_type": "Land",
         "contents": "River",
         "is_goal": false,
         "cost_modifier": "None",
@@ -603,7 +613,7 @@
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 1
+        "height": 2
       },
       {
         "tile_type": "Farm",
@@ -668,14 +678,14 @@
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 0
+        "height": 2
       },
       {
         "tile_type": "Farm",
         "contents": "None",
         "is_goal": false,
         "cost_modifier": "None",
-        "height": 0
+        "height": 2
       },
       {
         "tile_type": "Farm",
@@ -726,6 +736,30 @@
   "sidebar_text": "Connect Halesworth to the River Blyth.\n\nNotice the terrain tinted red - the darker it is, the more it costs.",
   "width": 10,
   "height": 10,
-  "events": [],
-  "tools": { "canal": true, "lock": true, "aquaduct": false, "demolish": true }
+  "events": [
+    [
+      "GoalReached",
+      [
+        {
+          "DisplayText": {
+            "text": "The people of Halesworth are happy with your work, they just want to open a new warf - and need the canal to reach it.",
+            "title": "Great Success",
+            "continue_button": "Keep Going"
+          }
+        },
+        {
+          "SetNewGoal": [
+            1,
+            3
+          ]
+        }
+      ]
+    ]
+  ],
+  "tools": {
+    "canal": true,
+    "lock": true,
+    "aquaduct": false,
+    "demolish": true
+  }
 }

@@ -113,12 +113,8 @@ fn setup(mut commands: Commands) {
 
 fn on_loaded(
     mut commands: Commands,
-    assets: Res<CanalManiaAssets>,
-    level_list_asset: Res<Assets<LevelList>>,
+    _assets: Res<CanalManiaAssets>,
+    _level_list_asset: Res<Assets<LevelList>>,
 ) {
     commands.insert_resource(NextState(AppState::MainMenu));
-    if let Some(list) = level_list_asset.get(&assets.level_list) {
-        let list = list.clone();
-        commands.insert_resource(list);
-    }
 }
