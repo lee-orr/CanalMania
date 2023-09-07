@@ -1,4 +1,4 @@
-use bevy::prelude::{default, States};
+use bevy::prelude::States;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Default, States)]
 pub enum AppLoadingState {

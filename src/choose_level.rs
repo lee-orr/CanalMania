@@ -13,7 +13,7 @@ impl Plugin for ChooseLevelPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
         clear_ui_system_set(app, AppState::ChooseLevel)
             .add_systems(OnEnter(AppState::ChooseLevel), display_ui)
-            .add_system(load_board)
+            .add_systems(Update, load_board)
             .add_systems(
                 Update,
                 button_pressed.run_if(in_state(AppState::ChooseLevel)),

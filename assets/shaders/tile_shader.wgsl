@@ -1,3 +1,11 @@
+#import noisy_bevy simplex_noise_3d
+#import bevy_pbr::mesh_bindings       mesh
+#import bevy_pbr::mesh_view_bindings
+#import bevy_pbr::mesh_bindings
+#import bevy_pbr::mesh_functions mesh_position_local_to_world 
+#import bevy_pbr::mesh_functions mesh_normal_local_to_world 
+#import bevy_pbr::mesh_functions mesh_position_world_to_clip 
+
 struct InkSettings {
     base_color: vec4<f32>,
     ink_color: vec4<f32>,
@@ -20,11 +28,6 @@ var info_map: texture_2d<f32>;
 var info_map_sampler: sampler;
 
 
-#import noisy_bevy::prelude
-#import bevy_pbr::mesh_view_bindings
-#import bevy_pbr::mesh_bindings
-#import bevy_pbr::mesh_functions
-
 
 struct Vertex {
     @location(0) position: vec3<f32>,
@@ -34,7 +37,17 @@ struct Vertex {
 
 struct VertexOutput {
     @builtin(position) clip_position: vec4<f32>,
-    #import bevy_pbr::mesh_vertex_output
+    @location(0) world_position: vec4<f32>,
+    @location(1) world_normal: vec3<f32>,
+    #ifdef VERTEX_UVS
+    @location(2) uv: vec2<f32>,
+    #endif
+    #ifdef VERTEX_TANGENTS
+    @location(3) world_tangent: vec4<f32>,
+    #endif
+    #ifdef VERTEX_COLORS
+    @location(4) color: vec4<f32>,
+    #endif
 };
 
 @vertex
@@ -82,8 +95,18 @@ fn vertex(vertex: Vertex) -> VertexOutput {
 }
 
 struct FragmentInput {
-    #import bevy_pbr::mesh_vertex_output
     @builtin(position) clip_position: vec4<f32>,
+    @location(0) world_position: vec4<f32>,
+    @location(1) world_normal: vec3<f32>,
+    #ifdef VERTEX_UVS
+    @location(2) uv: vec2<f32>,
+    #endif
+    #ifdef VERTEX_TANGENTS
+    @location(3) world_tangent: vec4<f32>,
+    #endif
+    #ifdef VERTEX_COLORS
+    @location(4) color: vec4<f32>,
+    #endif
 };
 
 @fragment

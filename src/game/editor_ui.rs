@@ -186,7 +186,7 @@ fn button_pressed(
             save(&tiles, &level);
         } else if event.0 == "new" {
             for column in level.tiles.iter_mut() {
-                for mut tile in column.iter_mut() {
+                for tile in column.iter_mut() {
                     tile.height = 0;
                     tile.tile_type = TileType::Land;
                     tile.is_goal = false;
@@ -206,7 +206,7 @@ fn button_pressed(
     }
 }
 
-fn reset_tile_dimensions(width: usize, height: usize, mut level: &mut Level, tiles: &Query<&Tile>) {
+fn reset_tile_dimensions(width: usize, height: usize, level: &mut Level, tiles: &Query<&Tile>) {
     let mut tiles = tiles_to_tile_info(tiles.iter(), level.width, level.height);
     while width < tiles.len() {
         let _ = tiles.pop();
@@ -414,7 +414,7 @@ fn tiles_to_tile_info<'a, T: Iterator<Item = &'a Tile>>(
 
     for tile in tiles {
         if let Some(row) = tile_vec.get_mut(tile.x) {
-            if let Some(mut info) = row.get_mut(tile.y) {
+            if let Some(info) = row.get_mut(tile.y) {
                 info.height = tile.z;
                 info.is_goal = tile.is_goal;
                 info.tile_type = tile.tile_type;

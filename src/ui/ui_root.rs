@@ -14,33 +14,26 @@ pub struct UiRoot {
     pub state_hash: Option<String>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub enum UiRootType {
+    #[default]
     Fill,
     Positioned(UiRect),
-    World { track: Entity, camera: Entity },
+    World {
+        track: Entity,
+        camera: Entity,
+    },
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub enum Background {
+    #[default]
     Transparent,
     Opaque,
 }
 
 #[derive(Component)]
 pub struct WorldUiRoot;
-
-impl Default for UiRootType {
-    fn default() -> Self {
-        Self::Fill
-    }
-}
-
-impl Default for Background {
-    fn default() -> Self {
-        Background::Transparent
-    }
-}
 
 impl UiRoot {
     pub fn new() -> Self {
