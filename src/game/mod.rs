@@ -16,7 +16,6 @@ mod tile_hover_ui;
 pub mod tile_shader;
 
 use bevy::prelude::*;
-use iyes_loopless::{prelude::AppLooplessStateExt, state::NextState};
 
 use crate::app_state::AppState;
 
@@ -41,35 +40,35 @@ impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<GameActions>()
             .init_resource::<GameResources>()
-            .add_loopless_state(GameState::Setup)
-            .add_loopless_state(GameActionMode::None)
-            .add_enter_system(AppState::InGame, prepare_for_setup)
-            .add_exit_system(AppState::InGame, prepare_for_setup)
-            .add_enter_system(GameState::Complete, disable_actions)
-            .add_plugin(BoardPlugin)
-            .add_plugin(TileHoverUi)
-            .add_plugin(InGameUiPlugin)
-            .add_plugin(InitialDescriptionUiPlugin)
-            .add_plugin(GameCompleteUiPlugin)
-            .add_plugin(DigCanalPlugin)
-            .add_plugin(DigLockPlugin)
-            .add_plugin(DemolishPlugin)
-            .add_plugin(BuildAquaductPlugin)
-            .add_plugin(SimulationPlugin)
-            .add_plugin(MaterialPlugin::<TileMaterial>::default());
+            .add_state::<GameState>()
+            .add_state::<GameActionMode>()
+            .add_systems(OnEnter(AppState::InGame), prepare_for_setup)
+            .add_systems(OnExit(AppState::InGame), prepare_for_setup)
+            .add_systems(OnEnter(GameState::Complete), disable_actions)
+            .add_plugins(BoardPlugin)
+            .add_plugins(TileHoverUi)
+            .add_plugins(InGameUiPlugin)
+            .add_plugins(InitialDescriptionUiPlugin)
+            .add_plugins(GameCompleteUiPlugin)
+            .add_plugins(DigCanalPlugin)
+            .add_plugins(DigLockPlugin)
+            .add_plugins(DemolishPlugin)
+            .add_plugins(BuildAquaductPlugin)
+            .add_plugins(SimulationPlugin)
+            .add_plugins(MaterialPlugin::<TileMaterial>::default());
         #[cfg(not(target_family = "wasm"))]
-        app.add_plugin(self::editor_ui::EditorUiPlugin);
+        app.add_plugins(self::editor_ui::EditorUiPlugin);
 
         #[cfg(feature = "dev")]
         {
-            // app.add_plugin(bevy_inspector_egui::quick::WorldInspectorPlugin);
-            // app.add_plugin(bevy_inspector_egui::quick::AssetInspectorPlugin::<
+            // app.add_plugins(bevy_inspector_egui::quick::WorldInspectorPlugin);
+            // app.add_plugins(bevy_inspector_egui::quick::AssetInspectorPlugin::<
             //     TileMaterial,
             // >::default());
-            // app.add_plugin(bevy_inspector_egui::quick::ResourceInspectorPlugin::<
+            // app.add_plugins(bevy_inspector_egui::quick::ResourceInspectorPlugin::<
             //     BoardRuntimeAssets,
             // >::default());
-            // app.add_plugin(bevy_inspector_egui::quick::ResourceInspectorPlugin::<
+            // app.add_plugins(bevy_inspector_egui::quick::ResourceInspectorPlugin::<
             //     in_game_ui::SidebarText,
             // >::default());
         }
@@ -78,10 +77,10 @@ impl Plugin for GamePlugin {
 
 fn prepare_for_setup(mut commands: Commands) {
     commands.insert_resource(GameResources::default());
-    commands.insert_resource(NextState(GameState::Setup));
-    commands.insert_resource(NextState(GameActionMode::None));
+    commands.insert_resource(NextState(Some(GameState::Setup)));
+    commands.insert_resource(NextState(Some(GameActionMode::None)));
 }
 
 fn disable_actions(mut commands: Commands) {
-    commands.insert_resource(NextState(GameActionMode::None));
+    commands.insert_resource(NextState(Some(GameActionMode::None)));
 }

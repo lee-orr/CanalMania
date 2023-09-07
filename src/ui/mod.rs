@@ -8,7 +8,6 @@ pub mod ui_root;
 use crate::app_state::AppLoadingState;
 
 use bevy::{ecs::system::EntityCommands, prelude::*};
-use iyes_loopless::prelude::IntoConditionalSystem;
 use std::fmt::Debug;
 use std::hash::Hash;
 use std::marker::PhantomData;
@@ -26,14 +25,26 @@ impl Plugin for GameUiPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<ButtonClickEvent>()
             .add_event::<ClearUi>()
-            .add_system(spawn_text.run_in_state(AppLoadingState::Loaded))
-            .add_system(spawn_ui_root.run_in_state(AppLoadingState::Loaded))
-            .add_system(update_world_ui.run_in_state(AppLoadingState::Loaded))
-            .add_system(spawn_button.run_in_state(AppLoadingState::Loaded))
-            .add_system(spawn_div.run_in_state(AppLoadingState::Loaded))
-            .add_system(button_events.run_in_state(AppLoadingState::Loaded))
-            .add_system(spawn_icon.run_in_state(AppLoadingState::Loaded))
-            .add_system(clear_ui_on_event);
+            .add_systems(Update, spawn_text.run_if(in_state(AppLoadingState::Loaded)))
+            .add_systems(
+                Update,
+                spawn_ui_root.run_if(in_state(AppLoadingState::Loaded)),
+            )
+            .add_systems(
+                Update,
+                update_world_ui.run_if(in_state(AppLoadingState::Loaded)),
+            )
+            .add_systems(
+                Update,
+                spawn_button.run_if(in_state(AppLoadingState::Loaded)),
+            )
+            .add_systems(Update, spawn_div.run_if(in_state(AppLoadingState::Loaded)))
+            .add_systems(
+                Update,
+                button_events.run_if(in_state(AppLoadingState::Loaded)),
+            )
+            .add_systems(Update, spawn_icon.run_if(in_state(AppLoadingState::Loaded)))
+            .add_systems(Update, clear_ui_on_event);
     }
 }
 

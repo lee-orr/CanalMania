@@ -1,7 +1,4 @@
 use bevy::prelude::*;
-use iyes_loopless::prelude::AppLooplessStateExt;
-use iyes_loopless::prelude::IntoConditionalSystem;
-use iyes_loopless::state::NextState;
 
 use crate::app_state::*;
 
@@ -15,9 +12,12 @@ pub struct ChooseLevelPlugin;
 impl Plugin for ChooseLevelPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
         clear_ui_system_set(app, AppState::ChooseLevel)
-            .add_enter_system(AppState::ChooseLevel, display_ui)
+            .add_systems(OnEnter(AppState::ChooseLevel), display_ui)
             .add_system(load_board)
-            .add_system(button_pressed.run_in_state(AppState::ChooseLevel));
+            .add_systems(
+                Update,
+                button_pressed.run_if(in_state(AppState::ChooseLevel)),
+            );
     }
 }
 
@@ -75,7 +75,7 @@ fn button_pressed(
 
             if let Some(asset) = levels.get(&handle) {
                 commands.insert_resource(asset.clone());
-                commands.insert_resource(NextState(AppState::InGame));
+                commands.insert_resource(NextState(Some(AppState::InGame)));
             } else {
                 for (id, mut text) in texts.iter_mut() {
                     if id.val() == &ElId::Text {
@@ -89,7 +89,7 @@ fn button_pressed(
                 }
             }
         } else if event.0 == "back" {
-            commands.insert_resource(NextState(AppState::MainMenu));
+            commands.insert_resource(NextState(Some(AppState::MainMenu)));
         }
     }
 }
@@ -104,13 +104,13 @@ fn load_board(
             AssetEvent::Created { handle } => {
                 if let Some(asset) = levels.get(handle) {
                     commands.insert_resource(asset.clone());
-                    commands.insert_resource(NextState(AppState::InGame));
+                    commands.insert_resource(NextState(Some(AppState::InGame)));
                 }
             }
             AssetEvent::Modified { handle } => {
                 if let Some(asset) = levels.get(handle) {
                     commands.insert_resource(asset.clone());
-                    commands.insert_resource(NextState(AppState::InGame));
+                    commands.insert_resource(NextState(Some(AppState::InGame)));
                 }
             }
             _ => {}

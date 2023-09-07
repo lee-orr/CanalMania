@@ -10,19 +10,18 @@ license = "MIT OR Apache-2.0"
 dev = []
 
 [dependencies]
-bevy = "0.9"
+bevy = "0.11"
 console_error_panic_hook = "0.1"
-bevy_asset_loader = { version = "0.14", features = ["standard_dynamic_assets", "stageless" ]}
-bevy_common_assets = { version = "0.4", features= [ "json", "yaml"]}
-serde = "*"
+bevy_asset_loader = { version = "0.17", features = ["standard_dynamic_assets"] }
+bevy_common_assets = { version = "0.7", features = ["json", "yaml"] }
+serde = "1"
 serde_json = "*"
 smooth-bevy-cameras = "*"
 bevy_egui = "*"
-bevy-inspector-egui = "0.16.0-pre.2"
-bevy-sequential-actions = "0.6.0"
-bevy_mod_picking = "0.11.0"
-bevy_prototype_lyon = "0.7.2"
-iyes_loopless = "*"
+bevy-inspector-egui = "0.19"
+bevy-sequential-actions = "0.8.0"
+bevy_mod_picking = "0.15.0"
+bevy_prototype_lyon = "0.9"
 noisy_bevy = "*"
 
 # Enable a small amount of optimization in debug mode

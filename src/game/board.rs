@@ -8,10 +8,9 @@ use bevy::{
     },
     utils::HashMap,
 };
-use bevy_mod_picking::{Highlighting, HoverEvent, PickableBundle, PickingEvent};
-use iyes_loopless::{
-    prelude::{AppLooplessStateExt, IntoConditionalSystem},
-    state::{CurrentState, NextState},
+use bevy_mod_picking::{
+    prelude::{Click, Highlight, HighlightKind, On, Out, Over, Pointer},
+    PickableBundle,
 };
 use noisy_bevy::simplex_noise_3d;
 
@@ -37,12 +36,11 @@ impl Plugin for BoardPlugin {
             .register_type::<Tile>()
             .register_type::<TileType>()
             .add_event::<TileEvent>()
-            .add_enter_system(AppLoadingState::Loaded, setup_board_materials)
-            .add_system(build_board.run_in_state(AppState::InGame))
-            .add_system(build_tile.run_in_state(AppState::InGame))
-            .add_system(animate_goal.run_in_state(AppState::InGame))
-            .add_system(process_selection_events.run_in_state(AppState::InGame))
-            .add_exit_system(AppState::InGame, clear_board);
+            .add_systems(OnEnter(AppLoadingState::Loaded), setup_board_materials)
+            .add_systems(Update, build_board.run_if(in_state(AppState::InGame)))
+            .add_systems(Update, build_tile.run_if(in_state(AppState::InGame)))
+            .add_systems(Update, animate_goal.run_if(in_state(AppState::InGame)))
+            .add_systems(OnExit(AppState::InGame), clear_board);
     }
 }
 
@@ -91,7 +89,7 @@ fn build_board(
     mut commands: Commands,
     level: Res<Level>,
     boards: Query<Entity, With<Board>>,
-    state: Res<CurrentState<GameState>>,
+    state: Res<State<GameState>>,
     board_assets: Res<BoardRuntimeAssets>,
     mut materials: ResMut<Assets<TileMaterial>>,
 ) {
@@ -162,18 +160,18 @@ fn build_board(
         })
         .insert(board);
 
-    match state.0 {
+    match state.get() {
         GameState::Editor => {}
         _ => {
             if level.initial_description.is_none() {
-                commands.insert_resource(NextState(GameState::InGame));
+                commands.insert_resource(NextState(Some(GameState::InGame)));
             } else {
                 commands.insert_resource(CurrentDescription {
                     title: level.title.clone(),
                     text: level.initial_description.clone(),
                     continue_button: Some("Play".into()),
                 });
-                commands.insert_resource(NextState(GameState::Description));
+                commands.insert_resource(NextState(Some(GameState::Description)));
             }
         }
     }
@@ -336,15 +334,39 @@ fn update_tile(
             .collect::<Vec<_>>()
     };
     let center = Vec3::new(tile.x as f32, (tile.z as f32) / 6., tile.y as f32);
+
+    let click = {
+        let tile = tile.clone();
+        let entity = entity.to_owned();
+        move |mut event: EventWriter<TileEvent>| {
+            event.send(TileEvent::Clicked(tile.clone(), entity))
+        }
+    };
+
+    let hover_enter = {
+        let tile = tile.clone();
+        let entity = entity.to_owned();
+        move |mut event: EventWriter<TileEvent>| {
+            event.send(TileEvent::HoverStarted(tile.clone(), entity))
+        }
+    };
+
+    let hover_left = {
+        let tile = tile.clone();
+        let entity = entity.to_owned();
+        move |mut event: EventWriter<TileEvent>| {
+            event.send(TileEvent::HoverEnded(tile.clone(), entity))
+        }
+    };
+
     let mut entity = commands.entity(entity);
     let base_material = materials.tile_base_material.clone();
     entity.insert((
         PickableBundle::default(),
-        Highlighting {
-            initial: materials.selector_base.clone(),
-            hovered: Some(materials.selector_hovered.clone()),
-            pressed: Some(materials.selector_pressed.clone()),
-            selected: Some(materials.selector_selected.clone()),
+        Highlight {
+            hovered: Some(HighlightKind::Fixed(materials.selector_hovered.clone())),
+            pressed: Some(HighlightKind::Fixed(materials.selector_pressed.clone())),
+            selected: Some(HighlightKind::Fixed(materials.selector_selected.clone())),
         },
         PbrBundle {
             mesh: materials.selector.clone(),
@@ -352,6 +374,9 @@ fn update_tile(
             transform: Transform::from_translation(center),
             ..Default::default()
         },
+        On::<Pointer<Click>>::run(click),
+        On::<Pointer<Over>>::run(hover_enter),
+        On::<Pointer<Out>>::run(hover_left),
     ));
     entity.despawn_descendants();
     entity.with_children(|parent| {
@@ -799,40 +824,11 @@ fn spawn_variant<T: Material>(
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Event)]
 pub enum TileEvent {
     Clicked(Tile, Entity),
     HoverStarted(Tile, Entity),
     HoverEnded(Tile, Entity),
-}
-
-pub(crate) fn process_selection_events(
-    mut events: EventReader<PickingEvent>,
-    mut out_events: EventWriter<TileEvent>,
-    tiles: Query<&Tile>,
-) {
-    for event in events.iter() {
-        match event {
-            PickingEvent::Selection(_) => {}
-            PickingEvent::Hover(e) => match e {
-                HoverEvent::JustEntered(e) => {
-                    if let Ok(tile) = tiles.get(*e) {
-                        out_events.send(TileEvent::HoverStarted(tile.clone(), *e));
-                    }
-                }
-                HoverEvent::JustLeft(e) => {
-                    if let Ok(tile) = tiles.get(*e) {
-                        out_events.send(TileEvent::HoverEnded(tile.clone(), *e));
-                    }
-                }
-            },
-            PickingEvent::Clicked(e) => {
-                if let Ok(tile) = tiles.get(*e) {
-                    out_events.send(TileEvent::Clicked(tile.clone(), *e));
-                }
-            }
-        }
-    }
 }
 
 fn clear_board(mut commands: Commands, boards: Query<Entity, With<Board>>) {

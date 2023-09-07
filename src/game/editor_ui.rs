@@ -1,7 +1,6 @@
 use std::io::Write;
 
 use bevy::{asset::FileAssetIo, prelude::*};
-use iyes_loopless::prelude::*;
 
 use crate::ui::*;
 
@@ -16,17 +15,18 @@ pub struct EditorUiPlugin;
 impl Plugin for EditorUiPlugin {
     fn build(&self, app: &mut App) {
         clear_ui_system_set(app, GameState::Editor)
-            .add_loopless_state(EditorOperation::None)
-            .add_enter_system(GameState::Editor, display_ui)
-            .add_system(update_labels.run_in_state(GameState::Editor))
-            .add_system(tile_clicked.run_in_state(GameState::Editor))
-            .add_system(tile_hovered_set.run_in_state(GameState::Editor))
-            .add_system(button_pressed.run_in_state(GameState::Editor));
+            .init_resource::<EditorOperation>()
+            .add_systems(OnEnter(GameState::Editor), display_ui)
+            .add_systems(Update, update_labels.run_if(in_state(GameState::Editor)))
+            .add_systems(Update, tile_clicked.run_if(in_state(GameState::Editor)))
+            .add_systems(Update, tile_hovered_set.run_if(in_state(GameState::Editor)))
+            .add_systems(Update, button_pressed.run_if(in_state(GameState::Editor)));
     }
 }
 
-#[derive(Debug, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq, Default, Resource)]
 enum EditorOperation {
+    #[default]
     None,
     RaiseHeight(usize),
     LowerHeight(usize),
@@ -45,8 +45,8 @@ enum EditorUiElement {
 }
 
 fn display_ui(mut commands: Commands, level: Res<Level>) {
-    commands.insert_resource(NextState(GameActionMode::None));
-    commands.insert_resource(NextState(EditorOperation::None));
+    commands.insert_resource(NextState(Some(GameActionMode::None)));
+    commands.insert_resource(EditorOperation::None);
     commands
         .ui_root()
         .for_state(GameState::Editor)
@@ -100,14 +100,14 @@ fn display_ui(mut commands: Commands, level: Res<Level>) {
 
 fn update_labels(
     mut labels: Query<(&mut GameText, &UiId<EditorUiElement>)>,
-    operation: Res<CurrentState<EditorOperation>>,
+    operation: Res<EditorOperation>,
     level: Res<Level>,
 ) {
     if operation.is_changed() || level.is_changed() {
         for (mut label, id) in labels.iter_mut() {
             match id.val() {
                 EditorUiElement::CurrentModeText => {
-                    label.text = match operation.0 {
+                    label.text = match operation.as_ref() {
                         EditorOperation::None => "No Operation Selected".to_string(),
                         EditorOperation::RaiseHeight(_) => "Raise Height".to_string(),
                         EditorOperation::LowerHeight(_) => "Lower Height".to_string(),
@@ -132,24 +132,24 @@ fn update_labels(
 fn button_pressed(
     mut events: EventReader<ButtonClickEvent>,
     mut commands: Commands,
-    operation: Res<CurrentState<EditorOperation>>,
+    operation: Res<EditorOperation>,
     tiles: Query<&Tile>,
     mut level: ResMut<Level>,
 ) {
     for event in events.iter() {
         if event.0 == "exit_editor" {
-            commands.insert_resource(NextState(EditorOperation::None));
-            commands.insert_resource(NextState(GameState::InGame));
+            commands.insert_resource(EditorOperation::None);
+            commands.insert_resource(NextState(Some(GameState::InGame)));
         } else if event.0 == "raise" {
-            commands.insert_resource(NextState(EditorOperation::RaiseHeight(1)));
+            commands.insert_resource(EditorOperation::RaiseHeight(1));
         } else if event.0 == "lower" {
-            commands.insert_resource(NextState(EditorOperation::LowerHeight(0)));
+            commands.insert_resource(EditorOperation::LowerHeight(0));
         } else if event.0 == "goal" {
-            commands.insert_resource(NextState(EditorOperation::SetGoal));
+            commands.insert_resource(EditorOperation::SetGoal);
         } else if event.0 == "water" {
-            commands.insert_resource(NextState(EditorOperation::ToggleWetness));
+            commands.insert_resource(EditorOperation::ToggleWetness);
         } else if event.0 == "toggle" {
-            let next = match operation.0 {
+            let next = match operation.as_ref() {
                 EditorOperation::ToggleType(t) => match t {
                     super::board::TileType::Land => super::board::TileType::Farm,
                     super::board::TileType::Farm => super::board::TileType::City,
@@ -158,9 +158,9 @@ fn button_pressed(
                 },
                 _ => TileType::Land,
             };
-            commands.insert_resource(NextState(EditorOperation::ToggleType(next)));
+            commands.insert_resource(EditorOperation::ToggleType(next));
         } else if event.0 == "modifier" {
-            let next = match operation.0 {
+            let next = match operation.as_ref() {
                 EditorOperation::SetCostModifier(t) => match t {
                     TileCostModifier::None => TileCostModifier::Blocked,
                     TileCostModifier::Multiplier => TileCostModifier::None,
@@ -168,9 +168,9 @@ fn button_pressed(
                 },
                 _ => TileCostModifier::Blocked,
             };
-            commands.insert_resource(NextState(EditorOperation::SetCostModifier(next)));
+            commands.insert_resource(EditorOperation::SetCostModifier(next));
         } else if event.0 == "construct" {
-            let next = match operation.0 {
+            let next = match operation.as_ref() {
                 EditorOperation::ToggleConstruction(t) => match t {
                     TileContents::None => TileContents::Road,
                     TileContents::Road => TileContents::River,
@@ -181,7 +181,7 @@ fn button_pressed(
                 },
                 _ => TileContents::Road,
             };
-            commands.insert_resource(NextState(EditorOperation::ToggleConstruction(next)));
+            commands.insert_resource(EditorOperation::ToggleConstruction(next));
         } else if event.0 == "save" {
             save(&tiles, &level);
         } else if event.0 == "new" {
@@ -233,29 +233,27 @@ fn tile_clicked(
     mut commands: Commands,
     mut events: EventReader<TileEvent>,
     mut tiles: Query<&mut Tile>,
-    operation: Res<CurrentState<EditorOperation>>,
+    operation: Res<EditorOperation>,
 ) {
     for event in events.iter() {
         if let TileEvent::Clicked(old_tile, entity) = event {
             if let Ok(mut new_tile) = tiles.get_mut(*entity) {
-                match operation.0 {
+                match operation.as_ref() {
                     EditorOperation::None => {}
                     EditorOperation::RaiseHeight(_) => {
                         if new_tile.tile_type == TileType::Sea {
                             continue;
                         }
                         new_tile.z = old_tile.z + 1;
-                        commands
-                            .insert_resource(NextState(EditorOperation::RaiseHeight(new_tile.z)));
+                        commands.insert_resource(EditorOperation::RaiseHeight(new_tile.z));
                     }
                     EditorOperation::LowerHeight(_) => {
                         new_tile.z = old_tile.z.checked_sub(1).unwrap_or_default();
-                        commands
-                            .insert_resource(NextState(EditorOperation::LowerHeight(new_tile.z)));
+                        commands.insert_resource(EditorOperation::LowerHeight(new_tile.z));
                     }
                     EditorOperation::ToggleType(t) => {
-                        new_tile.tile_type = t;
-                        if t == TileType::Sea {
+                        new_tile.tile_type = *t;
+                        if t == &TileType::Sea {
                             new_tile.z = 0;
                             new_tile.wetness = Wetness::WaterSource;
                         } else {
@@ -282,11 +280,11 @@ fn tile_clicked(
                             (t, new_tile.contents)
                         {
                             new_tile.contents = TileContents::Aquaduct(o + 1);
-                            commands.insert_resource(NextState(
-                                EditorOperation::ToggleConstruction(TileContents::Aquaduct(o + 1)),
+                            commands.insert_resource(EditorOperation::ToggleConstruction(
+                                TileContents::Aquaduct(o + 1),
                             ));
                         } else {
-                            new_tile.contents = t;
+                            new_tile.contents = *t;
                         }
                     }
                     EditorOperation::ToggleWetness => {
@@ -296,7 +294,7 @@ fn tile_clicked(
                         };
                     }
                     EditorOperation::SetCostModifier(t) => {
-                        new_tile.cost_modifier = t;
+                        new_tile.cost_modifier = *t;
                     }
                 }
             }
@@ -307,20 +305,20 @@ fn tile_clicked(
 fn tile_hovered_set(
     mut events: EventReader<TileEvent>,
     mut tiles: Query<&mut Tile>,
-    operation: Res<CurrentState<EditorOperation>>,
+    operation: Res<EditorOperation>,
     buttons: Res<Input<MouseButton>>,
 ) {
-    match operation.0 {
+    match operation.as_ref() {
         EditorOperation::ToggleType(t) => {
             if buttons.pressed(MouseButton::Left) {
                 for event in events.iter() {
                     if let TileEvent::HoverStarted(old_tile, entity) = event {
-                        if old_tile.tile_type == t {
+                        if old_tile.tile_type == *t {
                             continue;
                         }
                         if let Ok(mut new_tile) = tiles.get_mut(*entity) {
-                            new_tile.tile_type = t;
-                            if t == TileType::Sea {
+                            new_tile.tile_type = *t;
+                            if t == &TileType::Sea {
                                 new_tile.z = 0;
                                 new_tile.wetness = Wetness::WaterSource;
                             } else {
@@ -338,7 +336,7 @@ fn tile_hovered_set(
             if buttons.pressed(MouseButton::Left) {
                 for event in events.iter() {
                     if let TileEvent::HoverStarted(old_tile, entity) = event {
-                        if old_tile.contents == t {
+                        if old_tile.contents == *t {
                             continue;
                         }
                         if let Ok(mut new_tile) = tiles.get_mut(*entity) {
@@ -354,7 +352,7 @@ fn tile_hovered_set(
                                 Wetness::Dry
                             };
                             if !matches!(new_tile.contents, TileContents::Aquaduct(_)) {
-                                new_tile.contents = t;
+                                new_tile.contents = *t;
                             }
                         }
                     }
@@ -368,9 +366,9 @@ fn tile_hovered_set(
                         if old_tile.tile_type == TileType::Sea {
                             continue;
                         }
-                        if old_tile.z < h {
+                        if old_tile.z < *h {
                             if let Ok(mut new_tile) = tiles.get_mut(*entity) {
-                                new_tile.z = h;
+                                new_tile.z = *h;
                             }
                         }
                     }
@@ -381,9 +379,9 @@ fn tile_hovered_set(
             if buttons.pressed(MouseButton::Left) {
                 for event in events.iter() {
                     if let TileEvent::HoverStarted(old_tile, entity) = event {
-                        if old_tile.z > h {
+                        if old_tile.z > *h {
                             if let Ok(mut new_tile) = tiles.get_mut(*entity) {
-                                new_tile.z = h;
+                                new_tile.z = *h;
                             }
                         }
                     }
@@ -395,7 +393,7 @@ fn tile_hovered_set(
                 for event in events.iter() {
                     if let TileEvent::HoverStarted(_old_tile, entity) = event {
                         if let Ok(mut new_tile) = tiles.get_mut(*entity) {
-                            new_tile.cost_modifier = t;
+                            new_tile.cost_modifier = *t;
                         }
                     }
                 }

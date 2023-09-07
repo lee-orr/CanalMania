@@ -1,7 +1,4 @@
 use bevy::prelude::*;
-use iyes_loopless::prelude::AppLooplessStateExt;
-use iyes_loopless::prelude::IntoConditionalSystem;
-use iyes_loopless::state::NextState;
 
 use crate::ui::*;
 
@@ -13,8 +10,11 @@ impl Plugin for InitialDescriptionUiPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
         clear_ui_system_set(app, GameState::Description)
             .init_resource::<CurrentDescription>()
-            .add_enter_system(GameState::Description, display_ui)
-            .add_system(button_pressed.run_in_state(GameState::Description));
+            .add_systems(OnEnter(GameState::Description), display_ui)
+            .add_systems(
+                Update,
+                button_pressed.run_if(in_state(GameState::Description)),
+            );
     }
 }
 
@@ -55,7 +55,7 @@ fn display_ui(mut commands: Commands, current_description: Res<CurrentDescriptio
 fn button_pressed(mut events: EventReader<ButtonClickEvent>, mut commands: Commands) {
     for event in events.iter() {
         if event.0 == "play" {
-            commands.insert_resource(NextState(GameState::InGame));
+            commands.insert_resource(NextState(Some(GameState::InGame)));
         }
     }
 }

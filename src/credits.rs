@@ -1,7 +1,4 @@
 use bevy::prelude::*;
-use iyes_loopless::prelude::AppLooplessStateExt;
-use iyes_loopless::prelude::IntoConditionalSystem;
-use iyes_loopless::state::NextState;
 
 use crate::app_state::*;
 use crate::ui::*;
@@ -11,8 +8,8 @@ pub struct CreditsPlugin;
 impl Plugin for CreditsPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
         clear_ui_system_set(app, AppState::Credits)
-            .add_enter_system(AppState::Credits, display_credits)
-            .add_system(button_pressed.run_in_state(AppState::Credits));
+            .add_systems(OnEnter(AppState::Credits), display_credits)
+            .add_systems(Update, button_pressed.run_if(in_state(AppState::Credits)));
     }
 }
 
@@ -38,7 +35,7 @@ fn display_credits(mut commands: Commands) {
 fn button_pressed(mut events: EventReader<ButtonClickEvent>, mut commands: Commands) {
     for event in events.iter() {
         if event.0 == "menu" {
-            commands.insert_resource(NextState(AppState::MainMenu));
+            commands.insert_resource(NextState(Some(AppState::MainMenu)));
         }
     }
 }

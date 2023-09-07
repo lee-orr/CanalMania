@@ -1,6 +1,5 @@
+use bevy::prelude::*;
 use bevy::ui::FocusPolicy;
-use bevy::{ecs::schedule::StateData, prelude::*};
-use iyes_loopless::prelude::AppLooplessStateExt;
 
 use std::fmt::Debug;
 use std::hash::Hash;
@@ -130,24 +129,31 @@ pub fn spawn_ui_root(
 ) {
     for (entity, root) in roots.iter() {
         let mut commands = commands.entity(entity);
+
+        let size = match root.ui_root_type {
+            UiRootType::Fill => (Val::Percent(100.), Val::Percent(100.)),
+            _ => (Val::Auto, Val::Auto),
+        };
+
+        let max_size = match root.ui_root_type {
+            UiRootType::Fill => (Val::Percent(100.), Val::Percent(100.)),
+            _ => (Val::Auto, Val::Auto),
+        };
+
+        let pos = match root.ui_root_type {
+            UiRootType::Fill => UiRect::default(),
+            UiRootType::Positioned(rect) => rect,
+            UiRootType::World { track, camera } => {
+                get_world_ui_position(track, camera, &transformables, &cameras)
+            }
+        };
+
         commands.insert((NodeBundle {
             style: Style {
-                size: match root.ui_root_type {
-                    UiRootType::Fill => Size::new(Val::Percent(100.), Val::Percent(100.)),
-                    UiRootType::Positioned(_) => Size::AUTO,
-                    UiRootType::World {
-                        track: _,
-                        camera: _,
-                    } => Size::UNDEFINED,
-                },
-                max_size: match root.ui_root_type {
-                    UiRootType::Fill => Size::new(Val::Percent(100.), Val::Percent(100.)),
-                    UiRootType::Positioned(_) => Size::AUTO,
-                    UiRootType::World {
-                        track: _,
-                        camera: _,
-                    } => Size::AUTO,
-                },
+                width: size.0,
+                height: size.1,
+                max_width: max_size.0,
+                max_height: max_size.1,
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
                 flex_direction: FlexDirection::Column,
@@ -156,13 +162,10 @@ pub fn spawn_ui_root(
                     UiRootType::Fill => PositionType::Relative,
                     _ => PositionType::Absolute,
                 },
-                position: match root.ui_root_type {
-                    UiRootType::Fill => UiRect::default(),
-                    UiRootType::Positioned(rect) => rect,
-                    UiRootType::World { track, camera } => {
-                        get_world_ui_position(track, camera, &transformables, &cameras)
-                    }
-                },
+                top: pos.top,
+                left: pos.left,
+                right: pos.right,
+                bottom: pos.bottom,
                 ..Default::default()
             },
             background_color: match root.background {
@@ -203,11 +206,15 @@ pub fn update_world_ui(
     for (_entity, root, mut style) in roots.iter_mut() {
         if let UiRootType::World { track, camera } = root.ui_root_type {
             let position = get_world_ui_position(track, camera, &transformables, &cameras);
-            style.position = position;
+            style.top = position.top;
+            style.bottom = position.bottom;
+            style.left = position.left;
+            style.right = position.right;
         }
     }
 }
 
+#[derive(Event)]
 pub struct ClearUi;
 
 fn clear_ui_on_exit(mut commands: Commands, query: Query<(Entity, &UiRoot)>, state_hash: String) {
@@ -234,13 +241,13 @@ pub fn clear_ui_on_event(
     }
 }
 
-pub fn clear_ui_system_set<T: Debug + Clone + Eq + PartialEq + Hash + StateData>(
+pub fn clear_ui_system_set<T: Debug + Clone + Eq + PartialEq + Hash + States>(
     app: &mut App,
     t: T,
 ) -> &mut App {
     let state_hash = format!("{t:?}");
-    app.add_exit_system(
-        t,
+    app.add_systems(
+        OnExit(t),
         move |commands: Commands, query: Query<(Entity, &UiRoot)>| {
             let state_hash = state_hash.clone();
             clear_ui_on_exit(commands, query, state_hash)

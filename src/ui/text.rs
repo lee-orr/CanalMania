@@ -114,7 +114,8 @@ pub(crate) fn spawn_text(
                             parent.spawn(
                                 TextBundle::from_section(format!("{word} "), style.clone())
                                     .with_style(Style {
-                                        max_size: Size::new(Val::Undefined, Val::Px(size)),
+                                        max_width: Val::Auto,
+                                        max_height: Val::Px(size),
                                         margin: UiRect::all(Val::Px(4.)),
                                         ..Default::default()
                                     }),

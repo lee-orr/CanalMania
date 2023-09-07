@@ -3,7 +3,6 @@ use bevy::{
     input::mouse::{MouseMotion, MouseScrollUnit, MouseWheel},
     prelude::*,
 };
-use iyes_loopless::prelude::{AppLooplessStateExt, IntoConditionalSystem};
 use smooth_bevy_cameras::{
     controllers::orbit::{ControlEvent, OrbitCameraController},
     LookTransform,
@@ -13,17 +12,13 @@ pub struct CameraControlPlugin;
 
 impl Plugin for CameraControlPlugin {
     fn build(&self, app: &mut App) {
-        app.add_enter_system(AppState::InGame, reset_camera)
-            .add_exit_system(AppState::InGame, freeze_camera)
-            .add_system(
-                control_camera
-                    .run_in_state(AppState::InGame)
-                    .label("camera_move"),
-            )
-            .add_system(
-                keep_camera_in_line
-                    .run_in_state(AppState::InGame)
-                    .after("camera_move"),
+        app.add_systems(OnEnter(AppState::InGame), reset_camera)
+            .add_systems(OnExit(AppState::InGame), freeze_camera)
+            .add_systems(
+                Update,
+                (control_camera, keep_camera_in_line)
+                    .chain()
+                    .run_if(in_state(AppState::InGame)),
             );
     }
 }
@@ -73,7 +68,7 @@ fn control_camera(
         cursor_delta += event.delta;
     }
 
-    if keys.any_pressed([KeyCode::LControl, KeyCode::RControl]) {
+    if keys.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]) {
         // Orbit Mode
         if keys.any_pressed([KeyCode::Left, KeyCode::A]) {
             events.send(ControlEvent::Orbit(Vec2::new(3., 0.)));

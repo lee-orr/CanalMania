@@ -10,7 +10,8 @@ pub struct Div {
     pub background: Background,
     pub direction: Direction,
     pub padding: f32,
-    pub size: Size,
+    pub width: Val,
+    pub height: Val,
     pub hidden: bool,
 }
 
@@ -66,8 +67,9 @@ impl Div {
         self
     }
 
-    pub fn size(&mut self, size: Size) -> &mut Self {
-        self.size = size;
+    pub fn size(&mut self, size: (Val, Val)) -> &mut Self {
+        self.width = size.0;
+        self.height = size.1;
         self
     }
 
@@ -81,7 +83,7 @@ pub trait DivSpawner {
     fn position(self, left: Val, right: Val, top: Val, bottom: Val) -> Self;
 
     fn padding(self, padding: f32) -> Self;
-    fn size(self, size: Size) -> Self;
+    fn size(self, size: (Val, Val)) -> Self;
 
     fn horizontal(self) -> Self;
 
@@ -106,7 +108,7 @@ impl<T: UiComponentSpawner<Div>> DivSpawner for T {
         self.update_value(|v| v.opaque())
     }
 
-    fn size(self, size: Size) -> Self {
+    fn size(self, size: (Val, Val)) -> Self {
         self.update_value(|v| v.size(size))
     }
 
@@ -117,6 +119,10 @@ impl<T: UiComponentSpawner<Div>> DivSpawner for T {
 
 pub fn spawn_div(mut commands: Commands, roots: Query<(Entity, &Div), Changed<Div>>) {
     for (entity, div) in roots.iter() {
+        let pos = match div.div_type {
+            DivType::Auto => UiRect::default(),
+            DivType::Positioned(rect) => rect,
+        };
         commands.entity(entity).insert((NodeBundle {
             style: Style {
                 justify_content: JustifyContent::Center,
@@ -130,11 +136,12 @@ pub fn spawn_div(mut commands: Commands, roots: Query<(Entity, &Div), Changed<Di
                     DivType::Auto => PositionType::Relative,
                     DivType::Positioned(_) => PositionType::Absolute,
                 },
-                position: match div.div_type {
-                    DivType::Auto => UiRect::default(),
-                    DivType::Positioned(rect) => rect,
-                },
-                size: div.size,
+                top: pos.top,
+                left: pos.left,
+                right: pos.right,
+                bottom: pos.bottom,
+                width: div.width,
+                height: div.height,
                 display: if div.hidden {
                     Display::None
                 } else {

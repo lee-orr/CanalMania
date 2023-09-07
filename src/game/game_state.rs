@@ -1,13 +1,14 @@
 use bevy::{
-    prelude::Resource,
+    prelude::{Event, Resource, States},
     reflect::{FromReflect, Reflect},
 };
 use serde::{Deserialize, Serialize};
 
 use super::board::Tile;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Reflect)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Reflect, States, Default)]
 pub enum GameState {
+    #[default]
     Setup,
     Description,
     InGame,
@@ -15,8 +16,11 @@ pub enum GameState {
     Complete,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Reflect, FromReflect)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Reflect, States, Default,
+)]
 pub enum GameActionMode {
+    #[default]
     None,
     DigCanal,
     ConstructLock,
@@ -29,7 +33,7 @@ pub struct GameResources {
     pub cost_so_far: usize,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Event)]
 pub enum GameActions {
     DigCanal(Tile),
     ConstructLock(Tile),

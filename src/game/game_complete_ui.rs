@@ -1,7 +1,4 @@
 use bevy::prelude::*;
-use iyes_loopless::prelude::AppLooplessStateExt;
-use iyes_loopless::prelude::IntoConditionalSystem;
-use iyes_loopless::state::NextState;
 
 use crate::app_state::*;
 use crate::ui::*;
@@ -15,8 +12,8 @@ pub struct GameCompleteUiPlugin;
 impl Plugin for GameCompleteUiPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
         clear_ui_system_set(app, GameState::Complete)
-            .add_enter_system(GameState::Complete, display_ui)
-            .add_system(button_pressed.run_in_state(GameState::Complete));
+            .add_systems(OnEnter(GameState::Complete), display_ui)
+            .add_systems(Update, button_pressed.run_if(in_state(GameState::Complete)));
     }
 }
 
@@ -57,9 +54,9 @@ fn display_ui(mut commands: Commands, resource: Res<GameResources>, level: Res<L
 fn button_pressed(mut events: EventReader<ButtonClickEvent>, mut commands: Commands) {
     for event in events.iter() {
         if event.0 == "menu" {
-            commands.insert_resource(NextState(AppState::MainMenu));
+            commands.insert_resource(NextState(Some(AppState::MainMenu)));
         } else if event.0 == "level" {
-            commands.insert_resource(NextState(AppState::ChooseLevel));
+            commands.insert_resource(NextState(Some(AppState::ChooseLevel)));
         }
     }
 }

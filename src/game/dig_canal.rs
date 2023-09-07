@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use iyes_loopless::prelude::{ConditionHelpers, IntoConditionalSystem};
 
 use super::{
     board::*,
@@ -9,15 +8,11 @@ pub struct DigCanalPlugin;
 
 impl Plugin for DigCanalPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(
-            trigger_dig_canal
-                .run_in_state(GameActionMode::DigCanal)
-                .run_not_in_state(GameState::Description),
-        )
-        .add_system(
-            dig_canal
-                .run_in_state(GameActionMode::DigCanal)
-                .run_not_in_state(GameState::Description),
+        app.add_systems(
+            Update,
+            (trigger_dig_canal, dig_canal).run_if(
+                in_state(GameActionMode::DigCanal).and_then(not(in_state(GameState::Description))),
+            ),
         );
     }
 }

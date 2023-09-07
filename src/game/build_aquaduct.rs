@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use iyes_loopless::prelude::{ConditionHelpers, IntoConditionalSystem};
 
 use super::{
     board::*,
@@ -9,17 +8,13 @@ pub struct BuildAquaductPlugin;
 
 impl Plugin for BuildAquaductPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(LastAquaductHeight(0))
-            .add_system(
-                trigger_build_aquaduct
-                    .run_in_state(GameActionMode::BuildAquaduct)
-                    .run_not_in_state(GameState::Description),
-            )
-            .add_system(
-                build_aquaduct
-                    .run_in_state(GameActionMode::BuildAquaduct)
-                    .run_not_in_state(GameState::Description),
-            );
+        app.insert_resource(LastAquaductHeight(0)).add_systems(
+            Update,
+            (trigger_build_aquaduct, build_aquaduct).run_if(
+                in_state(GameActionMode::BuildAquaduct)
+                    .and_then(not(in_state(GameState::Description))),
+            ),
+        );
     }
 }
 

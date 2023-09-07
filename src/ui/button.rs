@@ -183,7 +183,7 @@ pub(crate) fn spawn_button(
                 align_items: AlignItems::Center,
                 border: UiRect::all(Val::Px(1.)),
                 margin: UiRect::all(Val::Px(5.)),
-                overflow: Overflow::Hidden,
+                overflow: Overflow::clip(),
                 display: if button.hidden {
                     Display::None
                 } else {
@@ -199,37 +199,38 @@ pub(crate) fn spawn_button(
                     image: icon.clone().into(),
                     focus_policy: FocusPolicy::Pass,
                     style: Style {
-                        size: Size::new(
-                            Val::Px(button.style.text_size()),
-                            Val::Px(button.style.text_size()),
-                        ),
+                        width: Val::Px(button.style.text_size()),
+                        height: Val::Px(button.style.text_size()),
                         ..Default::default()
                     },
                     ..Default::default()
                 });
+
+                let pos = match button.hover_direction {
+                    Direction::Vertical => UiRect::bottom(Val::Percent(100.)),
+                    Direction::Horizontal => {
+                        UiRect::new(Val::Percent(100.), Val::Auto, Val::Px(0.), Val::Auto)
+                    }
+                };
 
                 parent
                     .spawn(NodeBundle {
                         background_color: Color::rgba_u8(253, 231, 192, 150).into(),
                         style: Style {
                             position_type: PositionType::Absolute,
-                            position: match button.hover_direction {
-                                Direction::Vertical => UiRect::bottom(Val::Percent(100.)),
-                                Direction::Horizontal => UiRect::new(
-                                    Val::Percent(100.),
-                                    Val::Auto,
-                                    Val::Px(0.),
-                                    Val::Auto,
-                                ),
-                            },
+                            left: pos.left,
+                            right: pos.right,
+                            top: pos.top,
+                            bottom: pos.bottom,
                             flex_direction: FlexDirection::Column,
                             padding: UiRect::all(Val::Px(5.)),
                             justify_content: JustifyContent::Center,
                             align_items: AlignItems::Center,
                             border: UiRect::all(Val::Px(1.)),
                             margin: UiRect::all(Val::Px(3.)),
-                            overflow: Overflow::Visible,
-                            size: Size::new(Val::Px(300.), Val::Auto),
+                            overflow: Overflow::visible(),
+                            width: Val::Px(300.),
+                            height: Val::Auto,
                             ..Default::default()
                         },
                         focus_policy: FocusPolicy::Pass,
@@ -255,7 +256,8 @@ pub(crate) fn spawn_button(
                                                 style.clone(),
                                             )
                                             .with_style(Style {
-                                                max_size: Size::new(Val::Undefined, Val::Px(size)),
+                                                max_width: Val::Auto,
+                                                max_height: Val::Px(size),
                                                 margin: UiRect::all(Val::Px(4.)),
                                                 ..Default::default()
                                             }),
@@ -267,7 +269,8 @@ pub(crate) fn spawn_button(
             } else {
                 parent.spawn(
                     TextBundle::from_section(text, style.clone()).with_style(Style {
-                        max_size: Size::new(Val::Undefined, Val::Px(size)),
+                        max_width: Val::Auto,
+                        max_height: Val::Px(size),
                         margin: UiRect::all(Val::Px(4.)),
                         ..Default::default()
                     }),
@@ -277,7 +280,7 @@ pub(crate) fn spawn_button(
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Event)]
 pub struct ButtonClickEvent(pub String, pub Entity);
 
 pub fn button_events(
@@ -297,15 +300,15 @@ pub fn button_events(
         match *interaction {
             Interaction::Hovered => {
                 *background = button.style.hover_color().into();
-                style.overflow = Overflow::Visible;
+                style.overflow = Overflow::visible();
             }
-            Interaction::Clicked => {
+            Interaction::Pressed => {
                 *background = button.style.click_color().into();
-                style.overflow = Overflow::Hidden;
+                style.overflow = Overflow::clip();
                 click_event.send(ButtonClickEvent(button.name.clone(), entity))
             }
             Interaction::None => {
-                style.overflow = Overflow::Hidden;
+                style.overflow = Overflow::clip();
                 *background = if button.selected {
                     button.style.selected_color().into()
                 } else {

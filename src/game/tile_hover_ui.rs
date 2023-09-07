@@ -1,8 +1,4 @@
 use bevy::prelude::*;
-use iyes_loopless::{
-    prelude::{AppLooplessStateExt, IntoConditionalSystem},
-    state::CurrentState,
-};
 
 use crate::{assets::CanalManiaAssets, ui::*};
 
@@ -16,8 +12,11 @@ pub struct TileHoverUi;
 impl Plugin for TileHoverUi {
     fn build(&self, app: &mut App) {
         clear_ui_system_set(app, GameState::InGame)
-            .add_enter_system(GameState::InGame, setup_tooltip)
-            .add_system(update_tile_hover_ui.run_in_state(GameState::InGame));
+            .add_systems(OnEnter(GameState::InGame), setup_tooltip)
+            .add_systems(
+                Update,
+                update_tile_hover_ui.run_if(in_state(GameState::InGame)),
+            );
     }
 }
 
@@ -38,7 +37,7 @@ fn setup_tooltip(mut commands: Commands, asset: Res<CanalManiaAssets>) {
         .with_children(|parent| {
             parent
                 .div()
-                .size(Size::new(Val::Px(300.), Val::Auto))
+                .size((Val::Px(300.), Val::Auto))
                 .position(Val::Auto, Val::Auto, Val::Auto, Val::Px(20.))
                 .opaque()
                 .with_children(|parent| {
@@ -60,7 +59,7 @@ fn update_tile_hover_ui(
     mut tooltip_root: Query<(&mut UiRoot, &UiId<HoverUiId>)>,
     mut tooltip_text: Query<(&mut GameText, &UiId<HoverUiId>)>,
     mut coin_icon: Query<(&mut Style, &GameIcon, &UiId<HoverUiId>)>,
-    operation: Res<CurrentState<GameActionMode>>,
+    operation: Res<State<GameActionMode>>,
 ) {
     if let (Ok(camera), Ok((mut root, _))) = (cameras.get_single(), tooltip_root.get_single_mut()) {
         for event in events.iter() {
@@ -68,7 +67,7 @@ fn update_tile_hover_ui(
                 TileEvent::HoverStarted(tile, entity) => {
                     root.world_position(*entity, camera);
 
-                    let cost = match operation.0 {
+                    let cost = match operation.get() {
                         GameActionMode::None => None,
                         GameActionMode::DigCanal => Some(tile.get_dig_cost()),
                         GameActionMode::ConstructLock => Some(tile.get_lock_cost()),

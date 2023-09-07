@@ -6,11 +6,22 @@
 	"image": "ubuntu:latest",
 	"features": {
 		"ghcr.io/devcontainers/features/rust:1": {
-			"version": "latest",
-			"profile": "complete"
+			"version": "nightly",
+			"profile": "minimal"
 		},
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
-		"ghcr.io/lee-orr/rusty-dev-containers/dexterous_developer:0": {}
+		"ghcr.io/lee-orr/rusty-dev-containers/dexterous_developer:0": {},
+		"ghcr.io/lee-orr/rusty-dev-containers/wasm32-unknown-unknown:0": {},
+		"ghcr.io/lee-orr/rusty-dev-containers/wasm-server-runner:0": {}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"serayuzgur.crates",
+				"rust-lang.rust-analyzer",
+				"tamasfe.even-better-toml"
+			]
+		}
 	}
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},

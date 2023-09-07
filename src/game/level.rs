@@ -1,6 +1,9 @@
 use std::collections::VecDeque;
 
-use bevy::{prelude::*, reflect::TypeUuid};
+use bevy::{
+    prelude::*,
+    reflect::{TypePath, TypeUuid},
+};
 use serde::{Deserialize, Serialize};
 
 use super::{
@@ -8,7 +11,7 @@ use super::{
     game_state::GameActionMode,
 };
 
-#[derive(Resource, Component, Serialize, Deserialize, TypeUuid, Clone)]
+#[derive(Resource, Component, Serialize, Deserialize, TypeUuid, Clone, TypePath)]
 #[uuid = "b9b5565a-a06a-4647-bc62-274f32ba6a5f"]
 pub struct Level {
     pub tiles: Vec<Vec<TileInfo>>,
@@ -29,7 +32,7 @@ pub struct LevelListing {
     pub file: String,
 }
 
-#[derive(Resource, Serialize, Deserialize, TypeUuid, Clone)]
+#[derive(Resource, Serialize, Deserialize, TypeUuid, Clone, TypePath)]
 #[uuid = "8cbd35d0-111c-4881-8d1f-bec0ff21da47"]
 pub struct LevelList {
     pub levels: Vec<LevelListing>,
@@ -70,7 +73,7 @@ impl Default for LevelTools {
 #[derive(Clone, Debug, Resource, Default)]
 pub struct PendingLevelEvents(pub VecDeque<LevelEvent>);
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Event)]
 pub struct LevelEvent(pub LevelEventType, pub Vec<EventAction>);
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Reflect)]
@@ -80,7 +83,7 @@ pub enum LevelEventType {
     BuiltNofType(usize, GameActionMode, bool),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Reflect, FromReflect)]
+#[derive(Clone, Debug, Serialize, Deserialize, Reflect)]
 pub enum EventAction {
     DisplayText {
         text: String,

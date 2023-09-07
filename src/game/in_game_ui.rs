@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use iyes_loopless::prelude::*;
 
 use crate::{app_state::AppState, assets::CanalManiaAssets, ui::*};
 
@@ -14,11 +13,11 @@ impl Plugin for InGameUiPlugin {
     fn build(&self, app: &mut App) {
         clear_ui_system_set(app, GameState::InGame)
             .init_resource::<SidebarText>()
-            .add_enter_system(GameState::InGame, display_ui)
-            .add_system(update_labels.run_in_state(GameState::InGame))
-            .add_system(update_sidebar.run_in_state(GameState::InGame))
-            .add_system(update_buttons.run_in_state(GameState::InGame))
-            .add_system(button_pressed.run_in_state(GameState::InGame));
+            .add_systems(OnEnter(GameState::InGame), display_ui)
+            .add_systems(Update, update_labels.run_if(in_state(GameState::InGame)))
+            .add_systems(Update, update_sidebar.run_if(in_state(GameState::InGame)))
+            .add_systems(Update, update_buttons.run_if(in_state(GameState::InGame)))
+            .add_systems(Update, button_pressed.run_if(in_state(GameState::InGame)));
     }
 }
 
@@ -43,7 +42,7 @@ fn display_ui(
     tools: Res<LevelTools>,
     sidebar: Res<SidebarText>,
     resources: Res<GameResources>,
-    operation: Res<CurrentState<GameActionMode>>,
+    operation: Res<State<GameActionMode>>,
 ) {
     commands
         .ui_root()
@@ -77,14 +76,14 @@ fn display_ui(
                     .id(GameUiId::Dig)
                     .style(ButtonStyle::Action)
                     .hidden(!tools.canal)
-                    .selected(operation.0 == GameActionMode::DigCanal)
+                    .selected(operation.get() == &GameActionMode::DigCanal)
                     .icon(asset.dig_canal_icon.clone());
                 parent
                     .button("lock", "Construct Lock\nConnect canals to water above them.\nMust be placed on lower ground.")
                     .id(GameUiId::Lock)
                     .style(ButtonStyle::Action)
                     .hidden(!tools.lock)
-                    .selected(operation.0 == GameActionMode::ConstructLock)
+                    .selected(operation.get() == &GameActionMode::ConstructLock)
                     .icon(asset.lock_icon.clone());
                 parent
                     .button(
@@ -94,14 +93,14 @@ fn display_ui(
                     .id(GameUiId::Aquaduct)
                     .style(ButtonStyle::Action)
                     .hidden(!tools.aquaduct)
-                    .selected(operation.0 == GameActionMode::BuildAquaduct)
+                    .selected(operation.get() == &GameActionMode::BuildAquaduct)
                     .icon(asset.aqueduct_icon.clone());
                 parent
                     .button("demolish", "Demolish\nMade a mistake? Demolish it.")
                     .id(GameUiId::Demolish)
                     .style(ButtonStyle::Action)
                     .hidden(!tools.demolish)
-                    .selected(operation.0 == GameActionMode::Demolish)
+                    .selected(operation.get() == &GameActionMode::Demolish)
                     .icon(asset.demolish_icon.clone());
             });
         });
@@ -125,7 +124,7 @@ fn display_ui(
             parent
                 .div()
                 .opaque()
-                .size(Size::new(Val::Px(200.), Val::Auto))
+                .size((Val::Px(200.), Val::Auto))
                 .hidden(sidebar.0.is_none())
                 .id(GameUiId::Sidebar)
                 .with_children(|parent| {
@@ -152,16 +151,16 @@ fn display_ui(
 fn update_labels(
     mut labels: Query<(&mut GameText, &UiId<GameUiId>)>,
     mut buttons: Query<(&mut GameButton, &UiId<GameUiId>)>,
-    operation: Res<CurrentState<GameActionMode>>,
+    operation: Res<State<GameActionMode>>,
     resources: Res<GameResources>,
 ) {
     if operation.is_changed() {
         for (mut button, id) in buttons.iter_mut() {
             let selected = match id.val() {
-                GameUiId::Dig => operation.0 == GameActionMode::DigCanal,
-                GameUiId::Lock => operation.0 == GameActionMode::ConstructLock,
-                GameUiId::Aquaduct => operation.0 == GameActionMode::BuildAquaduct,
-                GameUiId::Demolish => operation.0 == GameActionMode::Demolish,
+                GameUiId::Dig => operation.get() == &GameActionMode::DigCanal,
+                GameUiId::Lock => operation.get() == &GameActionMode::ConstructLock,
+                GameUiId::Aquaduct => operation.get() == &GameActionMode::BuildAquaduct,
+                GameUiId::Demolish => operation.get() == &GameActionMode::Demolish,
                 _ => {
                     continue;
                 }
@@ -225,17 +224,17 @@ fn update_buttons(
 fn button_pressed(mut events: EventReader<ButtonClickEvent>, mut commands: Commands) {
     for event in events.iter() {
         if event.0 == "editor" {
-            commands.insert_resource(NextState(GameState::Editor));
+            commands.insert_resource(NextState(Some(GameState::Editor)));
         } else if event.0 == "dig" {
-            commands.insert_resource(NextState(GameActionMode::DigCanal));
+            commands.insert_resource(NextState(Some(GameActionMode::DigCanal)));
         } else if event.0 == "lock" {
-            commands.insert_resource(NextState(GameActionMode::ConstructLock));
+            commands.insert_resource(NextState(Some(GameActionMode::ConstructLock)));
         } else if event.0 == "aquaduct" {
-            commands.insert_resource(NextState(GameActionMode::BuildAquaduct));
+            commands.insert_resource(NextState(Some(GameActionMode::BuildAquaduct)));
         } else if event.0 == "demolish" {
-            commands.insert_resource(NextState(GameActionMode::Demolish));
+            commands.insert_resource(NextState(Some(GameActionMode::Demolish)));
         } else if event.0 == "choose-level" {
-            commands.insert_resource(NextState(AppState::ChooseLevel));
+            commands.insert_resource(NextState(Some(AppState::ChooseLevel)));
         }
     }
 }

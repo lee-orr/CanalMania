@@ -74,7 +74,8 @@ pub(crate) fn spawn_icon(
             image: icon.icon.clone().into(),
             focus_policy: FocusPolicy::Pass,
             style: Style {
-                size: Size::new(Val::Px(size), Val::Px(size)),
+                width: Val::Px(size),
+                height: Val::Px(size),
                 ..Default::default()
             },
             ..Default::default()

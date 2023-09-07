@@ -1,5 +1,4 @@
 use bevy::{prelude::*, utils::HashMap};
-use iyes_loopless::{prelude::IntoConditionalSystem, state::NextState};
 
 use super::{
     board::*,
@@ -17,19 +16,24 @@ impl Plugin for SimulationPlugin {
             .init_resource::<PendingLevelEvents>()
             .init_resource::<ActionTracker>()
             .init_resource::<LevelTools>()
-            .add_system(setup_level_events.run_in_state(GameState::InGame))
-            .add_system(run_water_simulation.run_in_state(GameState::InGame))
-            .add_system(propogate_water_sources.run_in_state(GameState::InGame))
-            .add_system(track_actions.run_in_state(GameState::InGame))
-            .add_system(
-                check_goals_for_sucess
-                    .run_in_state(GameState::InGame)
-                    .label("check_goal"),
+            .add_systems(
+                Update,
+                setup_level_events.run_if(in_state(GameState::InGame)),
             )
-            .add_system(
-                process_level_event
-                    .run_in_state(GameState::InGame)
-                    .after("check_gaol"),
+            .add_systems(
+                Update,
+                run_water_simulation.run_if(in_state(GameState::InGame)),
+            )
+            .add_systems(
+                Update,
+                propogate_water_sources.run_if(in_state(GameState::InGame)),
+            )
+            .add_systems(Update, track_actions.run_if(in_state(GameState::InGame)))
+            .add_systems(
+                Update,
+                (check_goals_for_sucess, process_level_event)
+                    .chain()
+                    .run_if(in_state(GameState::InGame)),
             );
     }
 }
@@ -350,7 +354,7 @@ fn check_goals_for_sucess(
                 return;
             }
         }
-        commands.insert_resource(NextState(GameState::Complete));
+        commands.insert_resource(NextState(Some(GameState::Complete)));
     }
 }
 
@@ -467,7 +471,7 @@ fn process_level_event(
                         title: title.clone(),
                         continue_button: continue_button.clone(),
                     });
-                    commands.insert_resource(NextState(GameState::Description));
+                    commands.insert_resource(NextState(Some(GameState::Description)));
                 }
                 EventAction::SetNewGoal(x, y) => {
                     for mut tile in tiles.iter_mut() {

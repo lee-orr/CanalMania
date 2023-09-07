@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use iyes_loopless::prelude::{ConditionHelpers, IntoConditionalSystem};
 
 use super::{
     board::*,
@@ -9,15 +8,11 @@ pub struct DemolishPlugin;
 
 impl Plugin for DemolishPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(
-            trigger_demolish
-                .run_in_state(GameActionMode::Demolish)
-                .run_not_in_state(GameState::Description),
-        )
-        .add_system(
-            demolish
-                .run_in_state(GameActionMode::Demolish)
-                .run_not_in_state(GameState::Description),
+        app.add_systems(
+            Update,
+            (trigger_demolish, demolish).run_if(
+                in_state(GameActionMode::Demolish).and_then(not(in_state(GameState::Description))),
+            ),
         );
     }
 }
