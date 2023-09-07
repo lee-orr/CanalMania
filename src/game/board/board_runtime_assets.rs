@@ -51,7 +51,7 @@ pub fn setup_board_materials(
     let selector = meshes.add(shape::Box::new(1., 0.5, 1.).into());
 
     let selector_base = materials.add(StandardMaterial {
-        base_color: Color::rgba(0., 0., 0., 0.0),
+        base_color: Color::rgba(0., 0., 0., 0.),
         alpha_mode: AlphaMode::Blend,
         ..Default::default()
     });

@@ -9,7 +9,7 @@ use bevy::{
     utils::HashMap,
 };
 use bevy_mod_picking::{
-    prelude::{Click, Highlight, HighlightKind, On, Out, Over, Pointer},
+    prelude::{Click, Highlight, HighlightKind, On, Out, Over, Pointer, RaycastPickTarget},
     PickableBundle,
 };
 use noisy_bevy::simplex_noise_3d;
@@ -361,6 +361,7 @@ fn update_tile(
 
     let mut entity = commands.entity(entity);
     let base_material = materials.tile_base_material.clone();
+
     entity.insert((
         PickableBundle::default(),
         Highlight {
@@ -374,10 +375,12 @@ fn update_tile(
             transform: Transform::from_translation(center),
             ..Default::default()
         },
+        RaycastPickTarget::default(),
         On::<Pointer<Click>>::run(click),
         On::<Pointer<Over>>::run(hover_enter),
         On::<Pointer<Out>>::run(hover_left),
     ));
+
     entity.despawn_descendants();
     entity.with_children(|parent| {
         parent
